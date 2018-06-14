@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!-- © Highlands Negotiations, 29 May 2018 -->
+<html>
+<head>
+  <meta charset="utf-8" />
+
+  <meta name='viewport' 
+       content='width=device-width, height=device-height, user-scalable=no,
+              initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+
+  <meta http-equiv="Cache-Control" content="max-age=31536000">
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">
+<link rel="stylesheet" href="css/jquery-ui-1.12.1.css">
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/jquery-ui-1.12.1.js"></script>
+<script src="js/canvasjs.min.js"></script>
+<script src="js/jquery_cookie.js"></script>
+<script src="js/jquery.mobile.custom.js"></script>
+<script src="js/jquery.ui.touch-punch.min.js"></script>
+<script src="js/d3.min.js" charset="utf-8"></script>
+<script src="js/c3.min.js"></script>
+<script src="client.js"></script>
+<script src="client-graph.js"></script>
+<script src="client-chart.js"></script>
+<style type="text/css">
+
+body {
+    margin-left: 2vw;
+    overscroll-behavior: none;
+}
+
+#tabs {
+    background-color: rgb(170, 170, 205);
+}
+
+#charts-tab, #others-tab, .ui-page {
+    background-color: rgb(220, 220, 255);
+}
+
+#piechart > div {
+    background-color: rgb(220, 220, 255);
+}
+
+input[type=text] { 
+	width: 60%; 
+	box-sizing: border-box; 
+}
+
+.square {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+div.newLine {
+    clear: both;    
+}
+
+.internal {
+    height: 100%;
+    width: 100%;
+    font-size: 150%;    
+    line-height: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: white;
+    filter: drop-shadow(1px 1px 5px #808080);
+    overscroll-behavior: contain;
+}
+.button {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	background-color: blue;
+}
+#showResults {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	background-color: gold;
+	width: 50%;
+	height: 10vh;
+	transform: translateX(50%);
+	margin-top: 10vh;
+	margin-bottom: 10vh;
+	font-size: xx-large;
+}
+#errorMessage {
+	font-size: x-large;
+	color: yellow;
+}
+</style>
+
+<script>
+var results;
+var questions;
+var options;
+var chartData;
+var BACKGROUND = "#9fcaad";
+var MARGIN_LEFT = "5%";
+var MARGIN_RIGHT = "5%";
+var android = navigator.appVersion.indexOf("Android") !== -1;
+var touchMoveInProgress = false;
+if(android) {
+    var ROWS = 10;
+    var COLS = 10;
+} else {
+    var ROWS = 20;
+    var COLS = 20;
+}
+
+//$(document).ready(function() {
+$(window).on('load', function () {
+	getQuestions();
+	getOptions();
+	addClickHandlers();
+	setupTapHandlers();
+	positionCopyright();
+});
+
+$(function() {
+    $("#tabs").tabs({
+		activate: function(event, ui) { 
+			let activeTab = $('#tabs').tabs('option', 'active');
+			if (activeTab == 1) { 
+//				console.log("chart tab activated"); 
+				displayCharts();
+			}
+			if (activeTab == 2) { 
+//				console.log("piechart tab activated"); 
+				displayCharts();
+			}
+		}
+	});
+});
+
+</script>
+
+</head>
+<body>
+    <div id="tabs">
+	  <ul>
+	    <li><a href="#questions-tab">Questions</a></li>
+	    <li><a href="#charts-tab">Charts</a></li>
+	    <li><a href="#others-tab">Pie Charts</a></li>
+	  </ul>
+	  <div id="questions-tab">
+		<div id='canvas' style='float:left'>
+		    <div id='questions'></div>
+	    </div>
+	    <div id='results' style='float:left'></div>
+	    <div id='errorMessage'>&nbsp;</div>
+	    <button id="showResults" type="button">Submit Form</button>
+	  </div>
+	  <div id="charts-tab">
+	  	<div id="xx">
+		    <p>Average marks for questions:
+			<div id="chart"></div>
+		</div>
+	  </div>
+	  <div id="others-tab">
+	    <p>Average marks for questions:
+		<div id="piechart"></div>
+	  </div>
+	</div>    
+    <div id="copyright">&nbsp;&nbsp;&nbsp;© Highlands Negotiations, 29 May 2018</div>
+</body>
+</html>
+
