@@ -11,6 +11,8 @@ import pandas as pd
 import uuid
 import datetime
 from ast import literal_eval
+import server_excel as xl
+
 cgitb.enable()
 
 def connect():
@@ -90,8 +92,14 @@ def printResults():
                 print(row)
     finally:
         connection.close()
+        
+def getPieChartQuestionsAndOptions():
+    questions = xl.filterQuestions("radio")
+    options = xl.filterOptions("radio")
+    questionsAndOptions = pd.concat([questions, options], axis=1)
+    return questionsAndOptions.values.tolist()
 
-def getChartData():
+def getPieChartData():
     connection = connect()
     try:
         with connection.cursor() as cursor:
@@ -100,43 +108,51 @@ def getChartData():
             results = cursor.fetchall()
             entries = len(results)
             
-            totals = []
+            chartData = []
             for row in results:
                 arr = []
-                keyValuePairs = row['result'].split(",")
+                keyValuePairs = literal_eval(row['result'])
                 for pair in keyValuePairs:
-                    h = literal_eval(pair)
-                    if 'radio' in h:
-                        arr.append(h["radio"])
-                totals.append(arr)
-        # all totals should be of the same length, but during development this might be the case
+                    if 'radio' in pair:
+                        arr.append((pair["radio"]["selection"],pair["radio"]["optionCount"]))
+                chartData.append(arr)
         def getMinSize():
             minimum = 100
-            for array in totals:
+            for array in chartData:
                 if len(array) < minimum: minimum = len(array)
             return minimum
         def truncateArrays(length):
-            for i in range(len(totals)):
-                totals[i] = totals[i][:length]
+            for i in range(len(chartData)):
+                chartData[i] = chartData[i][:length]
         try:
+            # all totals should be of the same length, but during development this might be the case
             truncateArrays(getMinSize())            
-            totals = np.array(totals)
-            totals = np.sum(totals, axis=0)/entries
         except Exception as e:
             print(e) 
     finally:
         connection.close()
-    
-    chartData = {}
-    for i, val in enumerate(totals):
-        chartData["Q{}".format(i)] = val
-    return chartData
 
-import datetime
+    chartData = pd.DataFrame(chartData)
+    
+    def seriesAsFrequencies(s):
+        # pd.value_count doesn't return anything for missing indices and sorts highest frequency first
+        # so convert to a list in order including zero counts
+        optionCount = int(s.index.values.tolist()[0][1])
+        zz = [0]*optionCount
+        for (value,size),count in s.iteritems():
+            zz[int(value)] = count
+        return zz
+        
+    print(chartData.shape, entries)
+    recordCount = chartData.shape[1]
+    for i in range(recordCount):
+        series = pd.value_counts(chartData[i])
+        zz = seriesAsFrequencies(series)
+        print("zz:",zz)
+        # !!!!!! aggregate the zz's to form a result to send to client
+    return pd.DataFrame(chartData).values.tolist()
+
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 if __name__ == "__main__":
-    print(str(uuid.uuid4()))
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(timestamp)
-    #print(getChartData())
+    print(getPieChartData())
 

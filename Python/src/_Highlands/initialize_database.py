@@ -116,6 +116,16 @@ def showUsers(user, password, database):
         connection.close()
 
 def addSampleData(user, password, database):
+    def form_sql(r1, r2, r3, r4, r5, c1, c2, c3, c4, c5):
+        sql = """{'title': 'blank'},{'email': 'bbb@def.co.uk'},{'text': 'chris'},{'text': 'ibm'},{'text': 'guy'},{'text': 'finance'}, \
+{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
+{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
+{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
+{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
+{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}}""" % (r1, c1, r2, c2, r3, c3, r4, c4, r5, c5)
+        return sql
+
+    
     connection = connect(user, password, database)
     try:
         with connection.cursor() as cursor:
@@ -125,8 +135,16 @@ def addSampleData(user, password, database):
                                VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
             
             samples = []
-            samples.append(("{'title': 'blank'},{'email': 'bbb@def.co.uk'},{'text': 'chris'},{'text': 'ibm'},{'text': 'guy'},{'text': 'finance'},"  
-                                                                      "{'radio': 3},{'radio': 7},{'radio': 1},{'radio': 5},{'radio': 5}"))
+#                        optionCounts =            3  5  3  2  3
+            samples.append(form_sql(1, 2, 2, 0, 0, 3, 5, 3, 2, 3))
+            samples.append(form_sql(1, 4, 0, 0, 2, 3, 5, 3, 2, 3))
+            samples.append(form_sql(0, 2, 0, 1, 2, 3, 5, 3, 2, 3))
+            samples.append(form_sql(2, 1, 1, 0, 0, 3, 5, 3, 2, 3))
+            samples.append(form_sql(2, 3, 2, 1, 1, 3, 5, 3, 2, 3))
+            samples.append(form_sql(1, 3, 1, 0, 0, 3, 5, 3, 2, 3))
+            samples.append(form_sql(0, 3, 1, 1, 0, 3, 5, 3, 2, 3))
+            samples.append(form_sql(1, 2, 1, 0, 2, 3, 5, 3, 2, 3))
+
             for sample in samples:
                 guid = str(uuid.uuid4())
                 cursor.execute(sql, (guid, timestamp, "abc@def.com", "question", sample))

@@ -21,9 +21,13 @@ function setupTapHandlers() {
     $(".internal").bind("touchmove", hovering);
 }
 
-function displayQuestion(question, i, questionType) {
+function displayQuestion(questionNumber, questionText, i, questionType) {
 	let selector = `#border${i}`;
-	let title = div(`<br/><b>${question}</b>`);
+	if(questionNumber === "0") 
+		questionNumber = "";	// titles don't have question numbers  
+	else
+		questionNumber = `${questionNumber}. `;  
+	let title = div(`<br/><b>${questionNumber}${questionText}</b>`);
 	$(selector).append(title);
 	if(questionType === "title") {
 		let css = {"background-color":"aquamarine", 
@@ -60,9 +64,6 @@ function displayCheckboxes(options, marks, n, questionType) {
 	    $(`input[name="checkbox${n}"]:checked`).each(function() {
 	    	values += marks[this.value] + " ";
 	    });
-//    	let result = {}
-//    	result[`${key}`] = values;
-//	    results[n] = result;
 		results[n] = keyValuePair(key, values);
 	});
 }
@@ -78,14 +79,12 @@ function displayRadioButtons(options, marks, n, questionType) {
 	}
 
 	// change the color when radio button selected
-	$(`input[type=radio][name=radioButton${n}]`).change({type:questionType}, function(event) {
+	$(`input[type=radio][name=radioButton${n}]`).change({type:questionType, optionCount:option.length}, function(event) {
     	questionAnswered(selector);
     	let key = event.data.type;
+    	let optionCount = event.data.optionCount;
     	let value = $(`input[name=radioButton${n}]:checked`).val();
-//    	let result = {}
-//    	result[`${key}`] = marks[value];
-//    	results[n] = result;
-		results[n] = keyValuePair(key, marks[value]);
+		results[n] = keyValuePair(key, {"selection":value, "marks":marks[value], "optionCount":optionCount});
 	});
 }
 
@@ -240,8 +239,9 @@ function displayQuestionsAndOptions() {
  	let entries = zip(questions, options);
     for(var i = 0; i < entries.length; i++) {
     	let entry = entries[i];
-		let question = entry[0][0];
-		let questionType = entry[0][1]; 
+		let questionNumber = entry[0][0];
+		let questionText = entry[0][1];
+		let questionType = entry[0][2]; 
 		let autoFill = entry[0][2];
 		let options;
 		let marks;
@@ -249,7 +249,7 @@ function displayQuestionsAndOptions() {
 		$("#questions").append(html);
 		html.css({"margin-left":MARGIN_LEFT, "margin-right":MARGIN_RIGHT, "background-color":BACKGROUND});
 
-		displayQuestion(question, i, questionType);
+		displayQuestion(questionNumber, questionText, i, questionType);
 		if(questionType === "radio") {
 			options = entry[1][0];
 			marks = entry[1][1];

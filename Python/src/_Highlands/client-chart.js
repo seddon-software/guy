@@ -1,8 +1,14 @@
+var pieChartData;
+var pieChartQuestionsAndOptions;
+
 function displayCharts() {
-	getChartData();
+	pieChartData = undefined;
+	pieChartQuestionsAndOptions = undefined;
+	getPieChartData();
+	getPieChartQuestionsAndOptions()
 }
 
-function getChartData() {
+function getPieChartData() {
     $.ajax(
     {
         url: '/chart-data',
@@ -10,12 +16,31 @@ function getChartData() {
         contentType:'application/json',
         dataType:'json',
         success: function(data) {
-        	drawChart(data);
-        	drawPieChart(data);
+        	pieChartData = data;
+        	if (pieChartData && pieChartQuestionsAndOptions) {
+	        	drawPieChart(data);
+        	}
         }	
     });
 }
 
+function getPieChartQuestionsAndOptions() {
+    $.ajax(
+    {
+        url: '/chart-questions-options',
+        type: 'GET',
+        contentType:'application/json',
+        dataType:'json',
+        success: function(data) {
+        	pieChartQuestionsAndOptions = data;
+        	if (pieChartData && pieChartQuestionsAndOptions) {
+	        	drawPieChart(data);
+        	}
+        }	
+    });
+}
+
+/*
 function drawChart(data) {
 	let keys = Object.keys(data);
 	let values = Object.values(data);
@@ -34,8 +59,11 @@ function drawChart(data) {
 	    }
 	});
 }
+*/
 
-function drawPieChart(data) {
+function drawPieChart() {
+	let data = pieChartData;
+	console.log("drawPieChart");
 	let keys = Object.keys(data);
 	let values = Object.values(data);
 	
@@ -69,32 +97,4 @@ function drawPieChart(data) {
 	};
 }
 
-function drawPieChart2(data) {
-	let keys = Object.keys(data);
-	let values = Object.values(data);
-	console.log(keys);
-	console.log(values);
-	let w = {'width':$(window).width()/keys.length};
-	
- 	keys.forEach(function(key) {
-//        ["data1", ${data[key]}],
- 		let selector = `#${key}`;
-		let anchor = div("", `${key}`).css({"float":"left"});
- 	    $("#piechart").append(anchor);
- 	    w = 250;
- 	    o = `{
- 	    	"size": {"width":${w}},
- 	    	"bindto": "${selector}",
- 	    	"data": {
- 	    	    "columns": [
-		            ["data1", 30],
-		            ["data2", 70]
-		        ],
-		        "type" : "pie"
-		    }
-		}`;
- 	    o = JSON.parse(o);
- 		c3.generate(o);
-	});
-}
 
