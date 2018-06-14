@@ -10,7 +10,6 @@ function getChartData() {
         contentType:'application/json',
         dataType:'json',
         success: function(data) {
-        	console.log("data", data);
         	drawChart(data);
         	drawPieChart(data);
         }	

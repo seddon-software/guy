@@ -8,6 +8,8 @@ import pymysql.cursors
 import cgitb
 import numpy as np
 import pandas as pd
+import uuid
+import datetime
 from ast import literal_eval
 cgitb.enable()
 
@@ -38,14 +40,40 @@ def getNamesAndPasswords():
     port = hostFrame["OPTION"].tolist()[0]
     return [root, rootPassword, manager, managerPassword, database, table, server, port]
 
+def addSampleData(user, password, database):
+    connection = connect(user, password, database)
+    try:
+        with connection.cursor() as cursor:
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # pymysql.cursors.Cursor._defer_warnings = True
+            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
+                               VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
+            for i in range(10):
+                guid = str(uuid.uuid4())
+                cursor.execute(sql, (guid, timestamp, "abc@def.com", "abc", "def"))
+        connection.commit()    
+    finally:
+        connection.close()
+
 def saveResults(results):
     connection = connect()
     try:
         resultsAsString = ','.join(str(e) for e in results)
+        resultsAsTuple = literal_eval(resultsAsString)
+        email = ""
+        for keyValuePair in resultsAsTuple:
+            if "email" in keyValuePair: 
+                email = keyValuePair["email"]
+                break
+            
         with connection.cursor() as cursor:
             # Create a new record
-            sql = "INSERT INTO `{}` (`question`, `result`) VALUES (%s, %s)".format(table)
-            cursor.execute(sql, ("no used", resultsAsString))
+            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
+                               VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
+            guid = str(uuid.uuid4())
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            question = "This is the question"
+            cursor.execute(sql, (guid, timestamp, email, question, resultsAsString))
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
     finally:
@@ -104,7 +132,11 @@ def getChartData():
         chartData["Q{}".format(i)] = val
     return chartData
 
+import datetime
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 if __name__ == "__main__":
-    print(getChartData())
+    print(str(uuid.uuid4()))
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(timestamp)
+    #print(getChartData())
 

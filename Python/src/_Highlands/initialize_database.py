@@ -7,6 +7,8 @@
 import pymysql.cursors
 import cgitb
 cgitb.enable()
+import uuid
+import datetime
 import pandas as pd
 
 
@@ -29,6 +31,18 @@ def connect(user, password, database=""):
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
     return connection
+
+def printTable(manager, managerPassword, database, table):
+    connection = connect(manager, managerPassword, database)
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT `*` FROM `{}`".format(table)
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            for row in results:
+                print(row)
+    finally:
+        connection.close()
 
 def getNamesAndPasswords():
     pd.set_option('display.width', 1000)
@@ -60,11 +74,21 @@ def grantPrivilegesToManager(root, rootPassword, manager, database):
     sql = "GRANT ALL PRIVILEGES ON {}.* TO '{}'@'localhost'".format(database, manager)
     execute(connection, sql)
     
+def dropTable(table, manager, managerPassword, database):
+    connection = connect(manager, managerPassword, database)
+    sql = "DROP TABLE IF EXISTS {}".format(table)
+    execute(connection, sql)
+
+#         email VARCHAR(30) NOT NULL,
+
 def createTable(table, manager, managerPassword, database):
     connection = connect(manager, managerPassword, database)
     sql = """CREATE TABLE IF NOT EXISTS {} (
         id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        question VARCHAR(30) NOT NULL,
+        guid VARCHAR(36) NOT NULL,
+        timestamp TIMESTAMP NOT NULL,
+        email VARCHAR(40) NOT NULL,
+        question VARCHAR(60) NOT NULL,
         result VARCHAR(500) NOT NULL
         )""".format(table)
     execute(connection, sql)
@@ -91,13 +115,35 @@ def showUsers(user, password, database):
     finally:
         connection.close()
 
+def addSampleData(user, password, database):
+    connection = connect(user, password, database)
+    try:
+        with connection.cursor() as cursor:
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # pymysql.cursors.Cursor._defer_warnings = True
+            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
+                               VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
+            
+            samples = []
+            samples.append(("{'title': 'blank'},{'email': 'bbb@def.co.uk'},{'text': 'chris'},{'text': 'ibm'},{'text': 'guy'},{'text': 'finance'},"  
+                                                                      "{'radio': 3},{'radio': 7},{'radio': 1},{'radio': 5},{'radio': 5}"))
+            for sample in samples:
+                guid = str(uuid.uuid4())
+                cursor.execute(sql, (guid, timestamp, "abc@def.com", "question", sample))
+        connection.commit()    
+    finally:
+        connection.close()
+#{'id': 5, 'guid': 'a27ba0d1-44d7-41bc-97d3-2f273db8e991', 'timestamp': datetime.datetime(2018, 6, 14, 16, 53, 11), 'email': 'bbb@def.co.uk', 'question': 'This is the question', 'result': "{'title': 'blank'},{'email': 'bbb@def.co.uk'},{'text': 'chris'},{'text': 'ibm'},{'text': 'guy'},{'text': 'finance'},{'radio': 3},{'radio': 7},{'radio': 1},{'radio': 5},{'radio': 5}"}
+
 
 if __name__ == "__main__":
     root, rootPassword, manager, managerPassword, database, table = getNamesAndPasswords()
     createDatabase(root, rootPassword, database)
     createManagerUser(root, rootPassword, manager, managerPassword)
     grantPrivilegesToManager(root, rootPassword, manager, database)
+    dropTable(table, manager, managerPassword, database)
     createTable(table, manager, managerPassword, database)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
-    
+    addSampleData(manager, managerPassword, database)
+    printTable(manager, managerPassword, database, table)

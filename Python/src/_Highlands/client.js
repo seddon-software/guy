@@ -1,9 +1,3 @@
-// piecharts and charts fail if data awry
-
-function displayResultCharts() {
-//	console.log("results", results);
-}
-
 function div(item, id, css) {
 	let html = $(`<div>${item}</div>`);
 	if(id) html.attr("id", id);
