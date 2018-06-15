@@ -41,6 +41,15 @@ body {
     background-color: rgb(220, 220, 255);
 }
 
+svg text.c3-title {
+    stroke: blue;
+    stroke-width: 1;
+}
+
+.c3-title {
+    background-color: red;
+}
+
 input[type=text] { 
 	width: 60%; 
 	box-sizing: border-box; 
@@ -138,7 +147,7 @@ $(function() {
 	  <ul>
 	    <li><a href="#questions-tab">Questions</a></li>
 	    <li><a href="#charts-tab">Charts</a></li>
-	    <li><a href="#others-tab">Pie Charts</a></li>
+	    <li><a href="#piecharts-tab">Pie Charts</a></li>
 	  </ul>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
@@ -154,8 +163,8 @@ $(function() {
 			<div id="chart"></div>
 		</div>
 	  </div>
-	  <div id="others-tab">
-	    <p>Average marks for questions:
+	  <div id="piecharts-tab">
+	    <p>Frequency of answer:
 		<div id="piechart"></div>
 	  </div>
 	</div>    

@@ -79,7 +79,7 @@ function displayRadioButtons(options, marks, n, questionType) {
 	}
 
 	// change the color when radio button selected
-	$(`input[type=radio][name=radioButton${n}]`).change({type:questionType, optionCount:option.length}, function(event) {
+	$(`input[type=radio][name=radioButton${n}]`).change({type:questionType, optionCount:options.length}, function(event) {
     	questionAnswered(selector);
     	let key = event.data.type;
     	let optionCount = event.data.optionCount;
@@ -351,6 +351,8 @@ function addClickHandlers() {
 			   	        data: resultsAsText,
 			   	        success: function(data) {
 			   	        	console.log("results sent OK");
+			   	        	results = [];
+			   	        	setInterval(function() {location.reload()}, 500);
 			   	    }	
 			   	});
 				displayResultCharts();

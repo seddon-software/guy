@@ -62,39 +62,56 @@ function drawChart(data) {
 */
 
 function drawPieChart() {
-	let data = pieChartData;
-	console.log("drawPieChart");
-	let keys = Object.keys(data);
-	let values = Object.values(data);
+	// uses globals: pieChartData, pieChartQuestionsAndOptions
+	// the server sends data values of -1 when there is no data
 	
-	// make sure no more than 8 pie charts are drawn per line
-	let w1 = $(window).width()/keys.length;
-	let w2 = $(window).width()/8;
-	let width = Math.max(w1, w2);
-	//console.log(width, w1, w2);
-	for(let i = 0; i < keys.length; i++) {
-		let key = keys[i];
-		let value = values[i];
-		let selector = `#${key}`;
-		let anchor = div("", `${key}`).css({"float":"left"});
+	function truncate(s, length) {
+	    if (s.length > length) {
+	      s = s.substring(0, length - 3) + "...";
+	    }
+	    return s;
+	}
+	
+	let maxTitleLength = 100;
+	let maxLegendLength = 100;
+	
+	for(let i = 0; i < pieChartData.length; i++) {
+		let selector = `#chart${i}`;
+		let anchor = div("", `chart${i}`).css({"float":"left"});
  	    $("#piechart").append(anchor);
- 	    let data1 = value
- 	    let data2 = 10 - data1
+ 	    let data = pieChartData[i];
+ 	    let number = pieChartQuestionsAndOptions[i][0];
+ 	    let title = pieChartQuestionsAndOptions[i][1];
+ 	    title = `${number}. ${title}`;
+ 	    title = truncate(title, maxTitleLength);
+ 	    console.log(title);
+ 	    legend = pieChartQuestionsAndOptions[i][4];
+
+ 		// make sure no more than n pie charts are drawn per line
+ 	    let chartsPerLine = 1;
+ 		let w1 = $(window).width()/pieChartData.length;
+ 		let w2 = $(window).width()/chartsPerLine;
+ 		let width = Math.max(w1, w2);
+
+ 	    pie = `["${truncate(legend[0],maxLegendLength)}", ${data[0]}]`;
+ 	    for(let k = 1; k < data.length; k++) {
+ 	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
+ 	    }
  	    o = `{
- 	    	"title": {"text":"${key}"},
- 	    	"size": {"width":${width}},
+ 	    	"title": {"text":"${title}"},
+ 	    	"size": {"width":"${width}"},
+ 	    	"padding": {"bottom":"40"},
+ 	    	"legend": {"position":"right"},
  	    	"bindto": "${selector}",
  	    	"data": {
- 	    	    "columns": [
-		            ["yes", ${data1}],
-		            ["no", ${data2}]
-		        ],
+ 	    	    "columns": [${pie}],
 		        "type" : "pie"
 		    }
 		}`;
  	    o = JSON.parse(o);
  		c3.generate(o);
+ 		// this is a hack, because charts are always centered, even though we need left justified
+ 		$("svg").css({"transform":"translateX(-20vw)"});
 	};
 }
-
 

@@ -134,22 +134,24 @@ def getPieChartData():
 
     chartData = pd.DataFrame(chartData)
     
-    def seriesAsFrequencies(s):
+    def seriesAsFrequencies(series):
         # pd.value_count doesn't return anything for missing indices and sorts highest frequency first
         # so convert to a list in order including zero counts
-        optionCount = int(s.index.values.tolist()[0][1])
-        zz = [0]*optionCount
-        for (value,size),count in s.iteritems():
-            zz[int(value)] = count
-        return zz
+        optionCount = int(series.index.values.tolist()[0][1])
+        frequencies = [0]*optionCount
+        for (value,size),count in series.iteritems():
+            frequencies[int(value)] = count
+        return frequencies
         
-    print(chartData.shape, entries)
     recordCount = chartData.shape[1]
+    frequencies = []
     for i in range(recordCount):
         series = pd.value_counts(chartData[i])
-        zz = seriesAsFrequencies(series)
-        print("zz:",zz)
-        # !!!!!! aggregate the zz's to form a result to send to client
+        frequencies.append(seriesAsFrequencies(series))
+    chartData = pd.DataFrame(frequencies)
+    chartData.fillna(-1, inplace=True)
+    chartData = chartData.astype(int)
+
     return pd.DataFrame(chartData).values.tolist()
 
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
