@@ -62,7 +62,8 @@ input[type=text] {
 }
 
 div.newLine {
-    clear: both;    
+    clear: right;    
+	float:left;
 }
 
 .internal {
@@ -107,19 +108,21 @@ var MARGIN_RIGHT = "5%";
 var android = navigator.appVersion.indexOf("Android") !== -1;
 var touchMoveInProgress = false;
 if(android) {
-    var ROWS = 10;
-    var COLS = 10;
+    var ROWS = 11;
+    var COLS = 11;
 } else {
-    var ROWS = 20;
-    var COLS = 20;
+    var ROWS = 21;
+    var COLS = 21;
 }
+gridChildrenColor = "rgba(255, 255, 255, 0.8)";
+gridChildrenFontSize = "16px";
+
 
 //$(document).ready(function() {
 $(window).on('load', function () {
 	getQuestions();
 	getOptions();
 	addClickHandlers();
-	setupTapHandlers();
 	positionCopyright();
 });
 
@@ -128,11 +131,9 @@ $(function() {
 		activate: function(event, ui) { 
 			let activeTab = $('#tabs').tabs('option', 'active');
 			if (activeTab == 1) { 
-//				console.log("chart tab activated"); 
 				displayCharts();
 			}
 			if (activeTab == 2) { 
-//				console.log("piechart tab activated"); 
 				displayCharts();
 			}
 		}

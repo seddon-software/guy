@@ -163,5 +163,5 @@ if __name__ == "__main__":
     createTable(table, manager, managerPassword, database)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
-    addSampleData(manager, managerPassword, database)
+#    addSampleData(manager, managerPassword, database)
     printTable(manager, managerPassword, database, table)

@@ -12,15 +12,6 @@ function span(item, id, css) {
 	return html;
 }
 
-function setupTapHandlers() {   
-    // set up "hover" handlers for each cell
-    $(".internal").bind("touchstart", function() { 
-    	touchMoveInProgress = true;
-    });   
-    $(".internal").bind("touchend", function() { touchMoveInProgress = false; });   
-    $(".internal").bind("touchmove", hovering);
-}
-
 function displayQuestion(questionNumber, questionText, i, questionType) {
 	let selector = `#border${i}`;
 	if(questionNumber === "0") 
@@ -167,24 +158,41 @@ function getProperty(id, property) {
 	return style.getPropertyValue(property);
 }
 
-function drawTable(selector, rowText, columnText, n) {	
+function drawTable(selector, options, n) {
+	let rows = options.length;
+	let cols = options[0].length;
+	
+	let rowText = [];
+	let columnText = [];
+	for(let r = 1; r < rows; r++) {
+	    rowText.push(options[r][0]);	
+	}
+	for(let c = 1; c < cols; c++) {
+	    columnText.push(options[0][c]);	
+	}
+	
 	function getTemplateSpacing(hw) {
 		let n, space;
+		let extraSpaces = 2.5;
 		if(hw === 'h') {
 			n = rowText.length + 1;
 			space = 5;
 		}
 		if(hw === 'w') {
 			n = columnText.length + 1;
-			space = 90/n;
+			space = 95/(n+extraSpaces);
 		}
 		let spacing = "";
 		for(let i = 0; i < n; i++) {
-			spacing += `${space}v${hw} `;
+			// make the first width (1+extraSpaces) times as big as others
+			if(hw === 'w' && i === 0) 
+				spacing += `${(1+extraSpaces)*space}v${hw} `;
+			else
+				spacing += `${space}v${hw} `;	
 		}
 		return spacing;
 	}
-	let container = div("", "", {"display":"grid"});
+	let container = div("", `table${n}`, {"display":"grid"});
 	$(selector).append(container);
 	$(container).css({"grid-template-rows":`${getTemplateSpacing('h')}`, "grid-template-columns":`${getTemplateSpacing('w')}`}); 
 	
@@ -194,36 +202,40 @@ function drawTable(selector, rowText, columnText, n) {
 			if(row == 0 && col == 0) {
 				html = div("&nbsp;");
 			} else if(row == 0 && col >= 1) {
-				html = div(`${columnText[col-1]}`, `check-${row}:${col}`);
+				html = div(`${columnText[col-1]}`, `radio-${row}:${col}`);
 				html.css({"text-align": "center", "transform":"translateX(-50%)"});
 			} else if (row >= 1 && col == 0) {
-				html = div(`${rowText[row-1]}`, `check-${row}:${col}`);			
-				html.css({"text-align": "center", "transform":"translateX(0%)"});
+				html = div(`${rowText[row-1]}`, `radio-${row}:${col}`);			
+				html.css({"text-align":"left", "margin-left":"5px", "margin-right":"5px", "transform":"translateX(0%)"});
 			} else {
 			    let css = "display: block; margin-right: auto; margin-left: auto;";
-				html = div(`<div style="${css}""><input style="${css}" type="checkbox" name="checkbox-${n}" id="check-${n}-${row}:${col}" value="${row}:${col}"></div>`);
+				html = div(`<div style="${css}""><input style="${css}" type="radio" name="radio-${n}-${row}" id="radio-${n}-${row}:${col}" value="${row}:${col}"></div>`);
 				$(container).append(html);
 				html.css({"transform":`translateX(-50%)`});
 			}
 			if(row == 0 || col == 0) $(container).append(html);
 		}
 	}
+	return rows - 1;	// used to size array of results
 }
 
-function displayTable(rows, cols, n, questionType) {
+function displayTable(entry, n, questionType) {
 	let selector = `#border${n}`;    
-	drawTable(selector, rows, cols, n);	
-
-	// change the color when checkbox selected
-	$(`input[type=checkbox][name=checkbox-${n}]`).change({type:questionType}, function(event) {
-    	questionAnswered(selector);
-	    values = "";
-	    $(`input[name="checkbox-${n}"]:checked`).each(function() {
-	    	values += this.value + " ";
-	    });
-    	let key = event.data.type;
-		results[n] = keyValuePair(key, values);
-
+	let rows = drawTable(selector, entry[1], n);	
+	let values = Array(rows);
+	
+	$(`#table${n} input:radio`).on('change', function(event){
+		let name = event.currentTarget.name;
+		let value = event.currentTarget.value;
+		pair = value.split(':').map(Number);
+		let buttonRow = pair[0] - 1;	// row of radio buttons
+		let button = pair[1];		// which button
+		values[buttonRow] = button;
+		if(!values.includes(undefined)) {
+			questionAnswered(selector);
+			results[n] = keyValuePair(questionType, values);
+			console.log(results);
+		}
 	});
 }
  
@@ -242,7 +254,7 @@ function displayQuestionsAndOptions() {
 		let questionNumber = entry[0][0];
 		let questionText = entry[0][1];
 		let questionType = entry[0][2]; 
-		let autoFill = entry[0][2];
+		let autoFill = entry[0][3];
 		let options;
 		let marks;
 		let html = $(`<div id='border${i}'/>`);
@@ -273,13 +285,11 @@ function displayQuestionsAndOptions() {
 			displayTitle(text[0], i, questionType);
 		}
 		if(questionType === "graph") {
- 			text = entry[1][0];
-			displayGraph(text[0], i, questionType);
+ 			options = entry[1];
+			displayGraph(options, i, questionType);
 		}
 		if(questionType === "table") {
-			rows = entry[1][0].slice(1);
-			cols = entry[1][1].slice(1);
-			displayTable(rows, cols, i, questionType);
+			displayTable(entry, i, questionType);
 		}
     }
 }
@@ -320,12 +330,6 @@ function getOptions() {
 }
 
 function addClickHandlers() {
-	function removeNulls() {
-		for(let i = 0; i < results.length; i++) {
-			if(results[i] === undefined) results[i] = {};
-		}
-	}
-
 	function allQuestionsAnswered() {
 		let all = true;
 		for(let i = 0; i < results.length; i++) {
@@ -338,7 +342,6 @@ function addClickHandlers() {
 
 	$("#showResults").mousedown(function(e) {
 		setTimeout(function() {
-			//removeNulls();
 			if(allQuestionsAnswered()) {
 				$("#errorMessage").html("Results Submitted");
 				resultsAsText = JSON.stringify(results);
@@ -355,7 +358,7 @@ function addClickHandlers() {
 			   	        	setInterval(function() {location.reload()}, 500);
 			   	    }	
 			   	});
-				displayResultCharts();
+				displayCharts();
 			} else {
 				$("#errorMessage").html("Some questions still need valid answers");
 				$("#errorMessage").css({"margin-left":`${MARGIN_LEFT}`});

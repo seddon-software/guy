@@ -4,7 +4,7 @@
 #
 ############################################################
 
-import pandas as pd
+#import pandas as pd
 import http.server
 #import cgi, random, sys
 import cgitb

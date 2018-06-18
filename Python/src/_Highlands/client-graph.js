@@ -1,47 +1,42 @@
-function setupHoverHandlers() {   
-    // set up "hover" handlers for each cell
-    $(".internal").hover(hovering, function(){});   
-}
+class Grid {
+	// constructor takes the id of the container
+	constructor(selector, questionNumber) {
+	    this.selector = selector;
+	    this.questionNumber = questionNumber;
+	    $(`#${this.selector}`).css({
+	    	"display":"grid",
+            "grid-gap":"1px",
+            "grid-template-columns":"10% 10% 25% 25% 25% 5%",
+            "background-color":"#2196F3",
+            "padding":"0px"});
+	}
 
-function setupTapHandlers() {   
-    // set up "hover" handlers for each cell
-    $(".internal").bind("touchstart", function() { touchMoveInProgress = true; });   
-    $(".internal").bind("touchend", function() { touchMoveInProgress = false; });   
-    $(".internal").bind("touchmove", hovering);
-}
-
-
-function hovering(e) {
-    function findCellUnderTapMove(event) {
-        var myLocation = event.originalEvent.changedTouches[0];
-        return document.elementFromPoint(myLocation.clientX, myLocation.clientY);
-    }
-    function highlightCell(cell) {
-		// clear previous iterations
-    	$(".square").children().each(function() {
-    	    if($(this).data("id").selected === 1) {
-    	    	$(this).data("id").selected = 0;
-    	    	$(this).html("");
-    	    	colorCell(this);
-    	    }
-        });
-		// highlight cell under mouse
-        $(_this).data("id").selected = 1;
-		let blackCircle = "\u26AB"; 
-		$(_this).html(blackCircle);
-		$(_this).css({"text-align":"center", 
-			          "vertical-align":"middle", 
-			          "line-height":"2.0", 
-			          "display":"inline-block",
-			          "font-size":"small"})
-    }
-    
-    // change this pointer if using a touch device
-    var _this = this;
-    if(touchMoveInProgress) {
-        _this = findCellUnderTapMove(e);
-    }
-	highlightCell(_this);
+	// grid areas have a name
+	// the name is used as part the grid area's id: `grid-${questionNumber}-${name}`
+	addArea(name, text) {
+		if(!text) text = "";
+		let html = div(text, `grid-${this.questionNumber}-${name}`, {"grid-area":name});
+	    $(`#${this.selector}`).append(html);
+	}
+	
+	// the format uses the grid area names (ids) 
+	layout(format) {
+		$(`#${this.selector}`).css({"grid-template-areas":`${format}`});
+	}
+	
+	// flex will space out the child elements
+	// direction = "row" or "column"
+	flex(name, direction) {
+		$(`#grid-${this.questionNumber}-${name}`).css(
+				{"display":"flex", 
+				 "flex-direction":`${direction}`, 
+				 "justify-content": "space-between"});
+	}
+	
+	// apply css to all children
+	childCss(css) {
+		$(`#${this.selector} > div`).css(css);
+	}
 }
 
 function colorCell(selector) {
@@ -97,22 +92,18 @@ function colorCell(selector) {
 }
 
 function displayGraph(text, n, questionType) {
-    function fillOutTheGrid(parentSelector) {
-    	function setupGrid() {
-    	    let boxWidth = PERCENTAGE_SCREEN_USED;
-    	    let boxHeight =  boxWidth / 2;
+    function fillOutTheBoxes(parentSelector, boxWidth) {
+    	function setupBoxes() {
+    	    let boxHeight =  boxWidth;
     	    let squareSize = boxWidth / COLS;
-
-    	    let divBoxRule = "div#box { height: " + boxHeight + "vw; width: " + boxWidth + "vw; }";
-    	    let squareRule = ".square { height: " + squareSize + "vw; width: " + squareSize + "vw; } "
+    	    let squareRule = `.square { height:${squareSize}px; width:${squareSize}px; } `
     	    let sheet = window.document.styleSheets[0];
-    	    sheet.insertRule(divBoxRule, sheet.cssRules.length);
     	    sheet.insertRule(squareRule, sheet.cssRules.length);
     	}
     	function getId(row, col) {
     		return row * COLS + col;
     	}
-        setupGrid();
+        setupBoxes();
         let newLine = "<div class='newLine'></div>";
         for(let row = 0; row < ROWS; row++) {
             for(let col = 0; col < COLS; col++) {
@@ -130,81 +121,75 @@ function displayGraph(text, n, questionType) {
                 $("#" + selector).data( "id", { selected:0, row:row, col:col });
                 colorCell("#" + selector);
             }
-            $(parentSelector).append($(newLine).clone());
-            $(parentSelector).append($(newLine).clone());
         }
     }
-
-    let PERCENTAGE_SCREEN_USED = 50;
-	let selector = `#border${n}`;
-    	
+    
+	let selector = `#border${n}`;    	
 	$(selector).append(div(text));
-	
-    let html = `<div id="graph${n}"></div>`;
+	let subTitle = text[0];
+
+	let html = `<div id="graph${n}"></div>`;
     $(selector).append(html);
 
     function tabulateGraph() {
 		let frame = div("", "frame", {"margin-top":"5vh"});
-		let col1 = div("", "col1", {"display":"flex", "flex-direction":"column", "justify-content": "space-between", 
-			"margin":"0% 1% 5% 5%", "float":"left"});
-		let col2 = div("", "col2", {"float":"left"});
-		let col3 = div("", "col3", {"display":"flex", "flex-direction":"column", "justify-content": "space-evenly", 
-			"margin":"0% 1% 5% 5%", "float":"left"});
-		let leftTop = div("Very<br>Strong", "id1", {"width":"20%", "float":"left", "width":"100%"});
-		let leftMiddle = div("Flat", "id2", {"width":"20%", "float":"left", "width":"100%"});
-		let leftBottom = div("Major<br>Decline", "id3", {"width":"20%", "float":"left", "width":"100%"});
 		$(`#graph${n}`).append(frame);
-		$("#frame").append(col1);
-		$("#frame").append(col2);
-		$("#frame").append(col3);
-		fillOutTheGrid(`#col2`);
+		let frameWidth = frame.width();
+	    g = new Grid("frame", n);
+		g.addArea("header", "Header");
+		g.addArea("left-1", "Left1");
+		g.addArea("left-2");
+		g.addArea("main");
+		g.addArea("right", "Right");
+		g.addArea("footer");
+		g.layout(`'header header header header header header' 
+		    	 'left-1 left-2 main main main right' 
+		    	 'left-1 left-2 footer footer footer right'`);
+		g.flex("left-2", "column");
+		g.flex("footer", "row");
 
-		$("#col1").append(leftTop);
-		$("#col1").append(leftMiddle);
-		$("#col1").append(leftBottom);
-		
-		let footer = div("", "footer", {"padding-top":"2vh", "display":"flex", "flex-direction":"row", "justify-content": "space-between"});
-		let leftFooter = div("0");
-		let middleFooter = div("Flat");
-		let rightFooter = div("Very<br>Strong");
-		$("#col2").append(footer);
-		$("#footer").append(leftFooter);
-		$("#footer").append(middleFooter);
-		$("#footer").append(rightFooter);
-		
-		let resetButton = div(`<button id="resetGraph${n}" type="button">reset</button>`);
-		resetButton.addClass("button");
-		$("#col3").append(resetButton);
-		$(`#resetGraph${n}`).css({"background-color":"orange"});
-		$(`#resetGraph${n}`).mousedown(function(e){
-			e.stopPropagation();   // don't let the event bubble or it will interfere with graph selection
-            $(".internal").hover(hovering, function(){});
-		});
 
-		$("#col1").height($("#col2").height());
-		$(window).bind('resize', function(event) {
-			$("#col1").height($("#col2").height());
-		});
+		g.childCss({"background-color":gridChildrenColor,
+			   "text-align":"center",
+//			   "margin-top":"1%",
+//			   "margin-bottom":"1%",
+		  	   "font-size":gridChildrenFontSize});	
+
+	    let headerText = text[1];
+		let sidebarTextArray = text[2];
+	    let footerTextArray = text[3];
+
+		function addTextToGridPanel(name, textArray) {
+			for(let i = 0; i < textArray.length; i++) {
+			    $(`#grid-${n}-${name}`).append(div(textArray[i]));			
+			}			
+		}
+		$(`#grid-${n}-header`).html(headerText);
+		addTextToGridPanel("left-2", sidebarTextArray);
+		addTextToGridPanel("footer", footerTextArray);
+// !!!!!!!!!!!!!!!!!!!!!!!!!! HACK 
+		fillOutTheBoxes(`#grid-${n}-main`, frameWidth*0.75);  // 0.75 because template spacing is 75% 
     }
+    
 	tabulateGraph();
-	setupHoverHandlers();
 	graphClickHandler();
 	
 	function graphClickHandler() {
-		$(`#graph${n}`).mousedown({type:questionType}, function(event) {
-			if(!android) $(".internal").off("mouseenter mouseleave");       
-	    	$(".square").children().each(function() {
-	    	    if($(this).data("id").selected === 1) {
-	    	    	let row = $(this).data("id").row;
-	    	    	let col = $(this).data("id").col;
-	    	    	let rowFactor = row / ROWS;
-	    	    	let colFactor = col / COLS;
-	    	    	let key = event.data.type;
-	    	    	let result = {}
-	    	    	result[`${key}`] = `${rowFactor}:${colFactor}`;
-	    		    results[n] = result;
-	    	    }
-	        });
+		function repaint() {
+			$(".square").children().each(function() {
+	    	    colorCell(this);
+	        });			
+		}
+		$(`#graph${n}`).mousedown(function(event) {
+			let cell = event.target;
+	    	let row = $(cell).data("id").row;
+	    	let col = $(cell).data("id").col;
+	    	let rowFactor = row / (ROWS-1);
+	    	let colFactor = col / (COLS-1);
+		    results[n] = keyValuePair(questionType, `${rowFactor}:${colFactor}`);
+			console.log(results[n]);
+			repaint();
+			$(cell).css({"background-color":"black"});
 		});
 	}
 }
