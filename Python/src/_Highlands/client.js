@@ -12,6 +12,29 @@ function span(item, id, css) {
 	return html;
 }
 
+function questionAnswered(selector) {
+    $(selector).css("background-color", 'rgb(100, 150, 200)');	
+}
+
+function questionAnswerInvalid(selector) {
+    $(selector).css("background-color", 'rgb(255, 150, 200)');	
+}
+
+function useCookiesToSetFields(selector, textbox, n, questionType) {
+    let cookieValue = $.cookie(`cookie${n}`);
+    if(cookieValue) {
+    	$(textbox).val(cookieValue);
+    	questionAnswered(selector);
+		results[n] = keyValuePair(questionType, cookieValue);
+    }
+}
+
+function keyValuePair(key, value) {
+	let o = {}
+	o[`${key}`] = value;
+	return o;
+}
+
 function displayQuestion(questionNumber, questionText, i, questionType) {
 	let selector = `#border${i}`;
 	if(questionNumber === "0") 
@@ -29,14 +52,6 @@ function displayQuestion(questionNumber, questionText, i, questionType) {
 	}
 }
 
-function questionAnswered(selector) {
-    $(selector).css("background-color", 'rgb(100, 150, 200)');	
-}
-
-function questionAnswerInvalid(selector) {
-    $(selector).css("background-color", 'rgb(255, 150, 200)');	
-}
-
 function displayCheckboxes(options, marks, n, questionType) {
 	let selector = `#border${n}`;
 	for(var i = 0; i < options.length; i++) {
@@ -48,14 +63,18 @@ function displayCheckboxes(options, marks, n, questionType) {
 	}
 	
 	// change the color when checkbox selected
-	$(`input[type=checkbox][name=checkbox${n}]`).change({type:questionType}, function(event) {
+	$(`input[type=checkbox][name=checkbox${n}]`).change(function(event) {
     	questionAnswered(selector);
-    	let key = event.data.type;
-	    values = "";
+	    let checkedValues = "";
+	    let checkedMarks = "";
 	    $(`input[name="checkbox${n}"]:checked`).each(function() {
-	    	values += marks[this.value] + " ";
+	    	checkedValues += this.value + " ";
+	    	checkedMarks += marks[this.value] + " ";
 	    });
-		results[n] = keyValuePair(key, values);
+    	let section = questions[n][1];
+    	let optionCount = options.length;
+		results[n] = keyValuePair(questionType, {"section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
+		console.log(results[n]);
 	});
 }
 
@@ -70,28 +89,13 @@ function displayRadioButtons(options, marks, n, questionType) {
 	}
 
 	// change the color when radio button selected
-	$(`input[type=radio][name=radioButton${n}]`).change({type:questionType, optionCount:options.length}, function(event) {
+	$(`input[type=radio][name=radioButton${n}]`).change(function(event) {
     	questionAnswered(selector);
-    	let key = event.data.type;
-    	let optionCount = event.data.optionCount;
+    	let section = questions[n][1];
+    	let optionCount = options.length;
     	let value = $(`input[name=radioButton${n}]:checked`).val();
-		results[n] = keyValuePair(key, {"selection":value, "marks":marks[value], "optionCount":optionCount});
+		results[n] = keyValuePair(questionType, {"section":section, "selection":value, "marks":marks[value], "optionCount":optionCount});
 	});
-}
-
-function useCookiesToSetFields(selector, textbox, n, questionType) {
-    let cookieValue = $.cookie(`cookie${n}`);
-    if(cookieValue) {
-    	$(textbox).val(cookieValue);
-    	questionAnswered(selector);
-		results[n] = keyValuePair(questionType, cookieValue);
-    }
-}
-
-function keyValuePair(key, value) {
-	let o = {}
-	o[`${key}`] = value;
-	return o;
 }
 
 function displayEmail(text, n, questionType, autoFill) {
@@ -117,6 +121,23 @@ function displayEmail(text, n, questionType, autoFill) {
     	} else {
     		questionAnswerInvalid(selector);
     	}
+	});	
+}
+
+function displayClient(text, n, questionType, autoFill) {
+	let selector = `#border${n}`;
+	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
+	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
+    $(selector).append(textbox);
+    textbox.css({"width":"100%", "transform":"translateX(20%)"});
+    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
+
+    // change the color when text changed
+    $(`#text-${n}`).change(function(event) {
+    	let value = $(this).val();
+		questionAnswered(selector);
+		results[n] = keyValuePair(questionType, value)
+	    if(autoFill) $.cookie(`cookie${n}`, value);
 	});	
 }
 
@@ -150,12 +171,6 @@ function displayTitle(text, n) {
  	let html = div(text, `title${n}`, css);
     $(selector).append(html);
     results[n] = {"title":"blank"};
-}
-
-function getProperty(id, property) {
-	let element = document.getElementById(id);
-	let style = window.getComputedStyle(element);
-	return style.getPropertyValue(property);
 }
 
 function drawTable(selector, options, n) {
@@ -220,8 +235,9 @@ function drawTable(selector, options, n) {
 }
 
 function displayTable(entry, n, questionType) {
-	let selector = `#border${n}`;    
-	let rows = drawTable(selector, entry[1], n);	
+	let selector = `#border${n}`;
+	let options = entry[1];
+	let rows = drawTable(selector, options, n);	
 	let values = Array(rows);
 	
 	$(`#table${n} input:radio`).on('change', function(event){
@@ -231,10 +247,21 @@ function displayTable(entry, n, questionType) {
 		let buttonRow = pair[0] - 1;	// row of radio buttons
 		let button = pair[1];		// which button
 		values[buttonRow] = button;
+		
 		if(!values.includes(undefined)) {
 			questionAnswered(selector);
-			results[n] = keyValuePair(questionType, values);
-			console.log(results);
+			let marks = [];
+			for(let i = 0; i < values.length; i++) {
+				let mark = options[i+1][values[i]];
+				marks.push(mark);
+			};
+//			console.log("marks:", marks);
+	    	let section = questions[n][1];
+	    	let optionCount = options[0].length - 1;  // -1 for the sidebar text
+	    	let value = $(`input[name=radioButton${n}]:checked`).val();
+			results[n] = keyValuePair(questionType, {"section":section, "selection":values, 
+				"marks":marks, "optionCount":optionCount});
+			console.log(results[n]);
 		}
 	});
 }
@@ -252,9 +279,10 @@ function displayQuestionsAndOptions() {
     for(var i = 0; i < entries.length; i++) {
     	let entry = entries[i];
 		let questionNumber = entry[0][0];
-		let questionText = entry[0][1];
-		let questionType = entry[0][2]; 
-		let autoFill = entry[0][3];
+		let questionSection = entry[0][1];
+		let questionText = entry[0][2];
+		let questionType = entry[0][3]; 
+		let autoFill = entry[0][4];
 		let options;
 		let marks;
 		let html = $(`<div id='border${i}'/>`);
@@ -279,6 +307,10 @@ function displayQuestionsAndOptions() {
 		if(questionType === "email") {
 			text = entry[1][0];
 			displayEmail(text[0], i, questionType, autoFill);
+		}
+		if(questionType === "client") {
+			text = entry[1][0];
+			displayClient(text[0], i, questionType, autoFill);
 		}
 		if(questionType === "title") {
 			text = entry[1][0];
@@ -329,6 +361,31 @@ function getOptions() {
     });
 }
 
+function z() {
+
+	$( "#modal_dialog" ).dialog({
+	    resizable: false,
+	    height:"auto",
+	    title: "Dialog Title",
+	    modal: true,
+//	    open: function(){
+//	       //var note_text = $('#note_content').attr('note_text');
+//	       $("#contentholder").val("hello");
+//	    },
+	    buttons: {
+	                "No": function() {
+	                    $( this ).dialog( "close" );
+		   	        	setInterval(function() {location.assign("https://www.w3schools.com")}, 500);
+	                },
+	                 "Yes": function() {
+	                    $( this ).dialog( "close" );
+		   	        	setInterval(function() {location.reload()}, 500);
+	                 }
+	             }
+	});	
+	$( "#modal_dialog" ).html("do you want to complete another client profile?").css({"font-size":"xx-large", "background-color":"red"});
+}
+
 function addClickHandlers() {
 	function allQuestionsAnswered() {
 		let all = true;
@@ -342,9 +399,9 @@ function addClickHandlers() {
 
 	$("#showResults").mousedown(function(e) {
 		setTimeout(function() {
-			if(allQuestionsAnswered()) {
-				$("#errorMessage").html("Results Submitted");
-				resultsAsText = JSON.stringify(results);
+			if(!allQuestionsAnswered()) {
+				$("#errorMessage").html("Results Submitted");				
+				let resultsAsText = JSON.stringify(results);
 				$.ajax(
 			   	    {
 			   	        url: '/results',
@@ -354,11 +411,12 @@ function addClickHandlers() {
 			   	        data: resultsAsText,
 			   	        success: function(data) {
 			   	        	console.log("results sent OK");
-			   	        	results = [];
-			   	        	setInterval(function() {location.reload()}, 500);
+			   	        	z();
+//			   	        	results = [];
+//			   	        	setInterval(function() {location.reload()}, 500);
 			   	    }	
 			   	});
-				displayCharts();
+//				displayCharts();
 			} else {
 				$("#errorMessage").html("Some questions still need valid answers");
 				$("#errorMessage").css({"margin-left":`${MARGIN_LEFT}`});

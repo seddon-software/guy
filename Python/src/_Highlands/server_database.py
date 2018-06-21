@@ -14,6 +14,7 @@ from ast import literal_eval
 import server_excel as xl
 
 cgitb.enable()
+pd.set_option('display.max_rows', 1000)
 
 def connect():
     connection = pymysql.connect(host='localhost',
@@ -60,7 +61,9 @@ def addSampleData(user, password, database):
 def saveResults(results):
     connection = connect()
     try:
+#        results = results["results"]
         resultsAsString = ','.join(str(e) for e in results)
+        
         resultsAsTuple = literal_eval(resultsAsString)
         email = ""
         for keyValuePair in resultsAsTuple:
@@ -70,12 +73,13 @@ def saveResults(results):
             
         with connection.cursor() as cursor:
             # Create a new record
-            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
-                               VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
+            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `section`, `result`) 
+                               VALUES (   %s,          %s,      %s,         %s,         %s,       %s)""".format(table)
             guid = str(uuid.uuid4())
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            question = "This is the question"
-            cursor.execute(sql, (guid, timestamp, email, question, resultsAsString))
+            questionsAsString = "-"
+            section = "-"
+            cursor.execute(sql, (guid, timestamp, email, questionsAsString, section, resultsAsString))
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
     finally:
@@ -92,7 +96,53 @@ def printResults():
                 print(row)
     finally:
         connection.close()
-        
+
+def getChartData():
+    connection = connect()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT `*` FROM `{}`".format(table)
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            
+            chartData = pd.DataFrame(columns=['client','section','marks'])
+            for row in results:
+                arr = []
+                
+                keyValuePairs = literal_eval(row['result'])
+
+                for pair in keyValuePairs:
+                    if "client" in pair: 
+                        client = pair["client"]
+                        break
+                
+                for pair in keyValuePairs:
+                    def addItem(section, marks): # last parameter must be a list
+                        for mark in marks:
+                            data = {
+                                    'client' : client,
+                                    'section': section,
+                                    'marks'  : mark
+                                   }
+                            return chartData.append(data, ignore_index=True)
+                    # marks are presented differently in radio, checkbox and table entries:
+                    #   radio:    a single mark which needs to be put in a list
+                    #   checkbox: a string of marks which need to be split() into a list
+                    #   table:    marks are already a list
+                    if 'radio' in pair:
+                        chartData = addItem(pair["radio"]["section"], [pair["radio"]["marks"]])
+                    if 'checkbox' in pair:
+                        chartData = addItem(pair["checkbox"]["section"], pair["checkbox"]["marks"].split())
+                    if 'table' in pair:
+                        chartData = addItem(pair["table"]["section"], pair["table"]["marks"])
+        chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)  
+        chartData = chartData.groupby(['section', 'client']).sum()
+        chartData = chartData.to_dict()['marks']
+        chartData = {"{},{}".format(compositeKey[0], compositeKey[1]):chartData[compositeKey] for compositeKey in chartData}
+    finally:
+        connection.close()
+    return chartData
+
 def getPieChartQuestionsAndOptions():
     questions = xl.filterQuestions("radio")
     options = xl.filterOptions("radio")
@@ -156,5 +206,8 @@ def getPieChartData():
 
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 if __name__ == "__main__":
-    print(getPieChartData())
-
+    import json
+ 
+    data = getChartData()
+    jsonString = json.dumps(getChartData())
+    jsonAsBytes = jsonString.encode("UTF-8")

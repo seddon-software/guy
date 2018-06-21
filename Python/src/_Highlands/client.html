@@ -29,6 +29,19 @@ body {
     overscroll-behavior: none;
 }
 
+.ui-widget-content.ui-helper-clearfix {
+	margin-top: 0;
+}
+
+.ui-dialog {
+    background-color: rgb(170, 170, 205);
+	margin-top: 0;
+}
+
+.ui-dialog-buttonpane {
+	margin-top: 0;
+}
+
 #tabs {
     background-color: rgb(170, 170, 205);
 }
@@ -36,18 +49,8 @@ body {
 #charts-tab, #others-tab, .ui-page {
     background-color: rgb(220, 220, 255);
 }
-
-#piechart > div {
+#tabs, #piecharts-tab, #piechart > div {
     background-color: rgb(220, 220, 255);
-}
-
-svg text.c3-title {
-    stroke: blue;
-    stroke-width: 1;
-}
-
-.c3-title {
-    background-color: red;
 }
 
 input[type=text] { 
@@ -95,6 +98,22 @@ div.newLine {
 	font-size: x-large;
 	color: yellow;
 }
+.c3-title {
+	font-size: x-large;
+	fill: blue;
+}
+
+#copyright {
+	background-color: antiquewhite;
+}
+
+#charts-title, #piecharts-title {
+    text-align: center;
+    font-size: xx-large;
+    margin-bottom: 4vh;
+    color: darkmagenta;
+}
+
 </style>
 
 <script>
@@ -134,7 +153,7 @@ $(function() {
 				displayCharts();
 			}
 			if (activeTab == 2) { 
-				displayCharts();
+				displayPieCharts();
 			}
 		}
 	});
@@ -159,17 +178,16 @@ $(function() {
 	    <button id="showResults" type="button">Submit Form</button>
 	  </div>
 	  <div id="charts-tab">
-	  	<div id="xx">
-		    <p>Average marks for questions:
-			<div id="chart"></div>
-		</div>
+		<div id="charts-title">Aspects:</div>
+		<div id="chart"></div>
 	  </div>
 	  <div id="piecharts-tab">
-	    <p>Frequency of answer:
+	    <div id="piecharts-title">Frequency of Answer:</div>
 		<div id="piechart"></div>
 	  </div>
 	</div>    
-    <div id="copyright">&nbsp;&nbsp;&nbsp;© Highlands Negotiations, 29 May 2018</div>
+	<div id="modal_dialog"></div>
+    <div id="copyright">&nbsp;&nbsp;&nbsp;© Highlands Negotiations, June 2018, v0.5"</div>
 </body>
 </html>
 

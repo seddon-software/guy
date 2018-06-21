@@ -1,17 +1,44 @@
+var NUMBER = 0;
+var SECTION = 1;
+var QUESTION = 2;
+var TYPE = 3;
+var AUTOFILL = 4;
+var OPTIONS = 5;
+var VALUES = 6;
+
 var pieChartData;
 var pieChartQuestionsAndOptions;
 
-function displayCharts() {
+function displayPieCharts() {
 	pieChartData = undefined;
 	pieChartQuestionsAndOptions = undefined;
 	getPieChartData();
-	getPieChartQuestionsAndOptions()
+	getPieChartQuestionsAndOptions();
+}
+
+function displayCharts() {
+	console.log("displayCharts()");
+	getChartData();
+}
+
+function getChartData() {
+    $.ajax(
+    {
+        url: '/chart-data',
+        type: 'GET',
+        contentType:'application/json',
+        dataType:'json',
+        success: function(data) {
+        	console.log(data);
+        	drawChart(data);
+        }	
+    });
 }
 
 function getPieChartData() {
     $.ajax(
     {
-        url: '/chart-data',
+        url: '/piechart-data',
         type: 'GET',
         contentType:'application/json',
         dataType:'json',
@@ -27,7 +54,7 @@ function getPieChartData() {
 function getPieChartQuestionsAndOptions() {
     $.ajax(
     {
-        url: '/chart-questions-options',
+        url: '/piechart-questions-options',
         type: 'GET',
         contentType:'application/json',
         dataType:'json',
@@ -40,26 +67,77 @@ function getPieChartQuestionsAndOptions() {
     });
 }
 
-/*
 function drawChart(data) {
+ 	function zip(a, b) {
+		var result = [];
+		for(var i = 0; i < a.length; i++){
+			result.push([a[i], b[i]]);
+		}
+		return result;
+	}
+ 	function splitKeys(keys) {
+		var result = [];
+		for(var i = 0; i < keys.length; i++){
+			result.push([keys[i].split(',')]);
+		}
+		return result;
+ 		
+ 	} 	
+	function determineClients() {
+		let clients = [];
+		keys.forEach(function(key) {
+			let client = key.split(",")[1];
+			if($.inArray(client, clients) === -1) clients.push(client);
+		});
+		return clients;
+	}
+	function determineAspects() {
+		let aspects = [];
+		keys.forEach(function(key) {
+			let aspect = key.split(",")[0];
+			if($.inArray(aspect, aspects) === -1) aspects.push(aspect);
+		});
+		return aspects;
+	}
+	function splitValues() {
+		var array = [];
+		while(values.length) array.push(values.splice(0,clients.length));
+		return array;
+	}
+	function addAspectNamesToStartOfColumn() {
+		for(let i = 0; i < aspects.length; i++) {
+			values[i].unshift(aspects[i]);
+		}
+	}	
 	let keys = Object.keys(data);
 	let values = Object.values(data);
-	
-	keys.unshift('x');
-	values.unshift('averages');
-	let chart = c3.generate({
-	    data: {
-	        x : 'x',
-	        columns: [keys, values],
+	let clients = determineClients();
+	let aspects = determineAspects();
+	values = splitValues()
+	addAspectNamesToStartOfColumn();
+
+	var chart = c3.generate({
+		title: {
+		    text:'Strength of each Aspect'
+		},
+		data: {
+	        columns: values,
 	        type: 'bar'
+	    },
+	    bar: {
+	        width: {
+	            ratio: 0.5 // this makes bar width 50% of length between ticks
+	        }
 	    },
 	    axis: {
 			rotated: true,
-	        x: { type: 'category' }
+		    x: {
+	            type: 'category',
+	            categories: clients
+	        }
 	    }
 	});
 }
-*/
 
 function drawPieChart() {
 	// uses globals: pieChartData, pieChartQuestionsAndOptions
@@ -80,12 +158,11 @@ function drawPieChart() {
 		let anchor = div("", `chart${i}`).css({"float":"left"});
  	    $("#piechart").append(anchor);
  	    let data = pieChartData[i];
- 	    let number = pieChartQuestionsAndOptions[i][0];
- 	    let title = pieChartQuestionsAndOptions[i][1];
+ 	    let number = pieChartQuestionsAndOptions[i][NUMBER];
+ 	    let title = pieChartQuestionsAndOptions[i][QUESTION];
  	    title = `${number}. ${title}`;
  	    title = truncate(title, maxTitleLength);
- 	    console.log(title);
- 	    legend = pieChartQuestionsAndOptions[i][4];
+ 	    let legend = pieChartQuestionsAndOptions[i][OPTIONS];
 
  		// make sure no more than n pie charts are drawn per line
  	    let chartsPerLine = 1;
@@ -97,6 +174,8 @@ function drawPieChart() {
  	    for(let k = 1; k < data.length; k++) {
  	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
  	    }
+ 	    //title = escape(title);
+ 	    title = title.replace(/\"/g,'\\"');		// escape all " quotes
  	    o = `{
  	    	"title": {"text":"${title}"},
  	    	"size": {"width":"${width}"},

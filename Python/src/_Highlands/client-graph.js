@@ -187,6 +187,11 @@ function displayGraph(text, n, questionType) {
 	    	let rowFactor = row / (ROWS-1);
 	    	let colFactor = col / (COLS-1);
 		    results[n] = keyValuePair(questionType, `${rowFactor}:${colFactor}`);
+		    questionAnswered(`#border${n}`);
+
+	    	let section = questions[n][1];
+	    	let optionCount = options.length;
+			results[n] = keyValuePair(questionType, {"section":section, "rowFactor":rowFactor, "colFactor":colFactor});
 			console.log(results[n]);
 			repaint();
 			$(cell).css({"background-color":"black"});

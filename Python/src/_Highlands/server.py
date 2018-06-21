@@ -4,9 +4,7 @@
 #
 ############################################################
 
-#import pandas as pd
 import http.server
-#import cgi, random, sys
 import cgitb
 import urllib.parse
 import json
@@ -65,10 +63,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(jsonAsBytes)
         elif(fileName == "chart-data"):
             sendHeaders()
+            jsonString = sql.getChartData()
+            jsonString = json.dumps(sql.getChartData())
+            jsonAsBytes = jsonString.encode("UTF-8")
+            self.wfile.write(jsonAsBytes)
+        elif(fileName == "piechart-data"):
+            sendHeaders()
             jsonString = json.dumps(sql.getPieChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
-        elif(fileName == "chart-questions-options"):
+        elif(fileName == "piechart-questions-options"):
             sendHeaders()
             jsonString = json.dumps(sql.getPieChartQuestionsAndOptions())
             jsonAsBytes = jsonString.encode("UTF-8")
@@ -87,17 +91,4 @@ print("port:", PORT)
 print("database:", sql.database)
 print("table:", sql.table)
 httpd.serve_forever()
-# z = sql.getPieChartData()
-# jsonString = json.dumps(z)
-# jsonAsBytes = jsonString.encode("UTF-8")
 
-
-# selections = sql.getPieChartData()
-# pieChartQuestionsAndOptions = sql.getPieChartQuestionsAndOptions()
-# z = pieChartQuestionsAndOptions
-# print(z)
-# zz = json.dumps(z)
-# print(zz)
-#print(selections)
-#print(pieChartQuestionsAndOptions)
-#print(xl.questions)
