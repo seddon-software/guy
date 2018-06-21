@@ -5,6 +5,7 @@
 ############################################################
 
 import http.server
+#import cgi, random, sys
 import cgitb
 import urllib.parse
 import json
@@ -35,6 +36,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             extension = fileName.split(".")[-1]
             if(extension == "ico"): return "image/x-icon"
             if(extension == "css"): return "text/css"
+            if(extension == "css"): return "image/png"
             return "text/html"
             
         def sendHeaders():
@@ -79,9 +81,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(jsonAsBytes)
         else:
             sendHeaders()
-            f = open(fileName, "r", encoding="UTF-8")
-            data = f.read()
-            self.wfile.write(data.encode())
+            extension = fileName.split(".")[-1]
+            if(extension == "png"):
+                f = open(fileName, "rb")
+                data = f.read()
+                self.wfile.write(data)
+            else:
+                f = open(fileName, "r", encoding="UTF-8")
+                data = f.read()
+                self.wfile.write(data.encode())
 
 PORT = sql.port
 SERVER = sql.server

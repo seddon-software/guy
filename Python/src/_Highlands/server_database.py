@@ -98,6 +98,10 @@ def printResults():
         connection.close()
 
 def getChartData():
+    try:
+        client
+    except NameError:
+        client = ""
     connection = connect()
     try:
         with connection.cursor() as cursor:
@@ -106,6 +110,7 @@ def getChartData():
             results = cursor.fetchall()
             
             chartData = pd.DataFrame(columns=['client','section','marks'])
+            
             for row in results:
                 arr = []
                 

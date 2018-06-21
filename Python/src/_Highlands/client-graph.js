@@ -1,12 +1,12 @@
 class Grid {
 	// constructor takes the id of the container
-	constructor(selector, questionNumber) {
+	constructor(selector, questionNumber, spacing) {
 	    this.selector = selector;
 	    this.questionNumber = questionNumber;
 	    $(`#${this.selector}`).css({
 	    	"display":"grid",
-            "grid-gap":"1px",
-            "grid-template-columns":"10% 10% 25% 25% 25% 5%",
+            "grid-gap":"0px",
+            "grid-template-columns":spacing,
             "background-color":"#2196F3",
             "padding":"0px"});
 	}
@@ -135,7 +135,9 @@ function displayGraph(text, n, questionType) {
 		let frame = div("", "frame", {"margin-top":"5vh"});
 		$(`#graph${n}`).append(frame);
 		let frameWidth = frame.width();
-	    g = new Grid("frame", n);
+		let main = 25;
+		let spacing = `10% 10% ${main}% ${main}% ${main}% 5%`;
+		g = new Grid("frame", n, spacing);
 		g.addArea("header", "Header");
 		g.addArea("left-1", "Left1");
 		g.addArea("left-2");
@@ -148,14 +150,12 @@ function displayGraph(text, n, questionType) {
 		g.flex("left-2", "column");
 		g.flex("footer", "row");
 
-
-		g.childCss({"background-color":gridChildrenColor,
+		g.childCss({
+			   "background-color":GRID_CHILDREN_COLOR,
 			   "text-align":"center",
-//			   "margin-top":"1%",
-//			   "margin-bottom":"1%",
-		  	   "font-size":gridChildrenFontSize});	
+		  	   "font-size":GRID_CHILDREN_FONT_SIZE});	
 
-	    let headerText = text[1];
+	    let headerText = div(text[1]).css({"font-size":"xx-large", "margin":"1vw 1vw 1vw 1vw"});
 		let sidebarTextArray = text[2];
 	    let footerTextArray = text[3];
 
@@ -167,8 +167,8 @@ function displayGraph(text, n, questionType) {
 		$(`#grid-${n}-header`).html(headerText);
 		addTextToGridPanel("left-2", sidebarTextArray);
 		addTextToGridPanel("footer", footerTextArray);
-// !!!!!!!!!!!!!!!!!!!!!!!!!! HACK 
-		fillOutTheBoxes(`#grid-${n}-main`, frameWidth*0.75);  // 0.75 because template spacing is 75% 
+		let gridSpacing = frameWidth * 3 * parseInt(main)/100;
+		fillOutTheBoxes(`#grid-${n}-main`, gridSpacing);  // 0.75 because template spacing is 75% 
     }
     
 	tabulateGraph();
@@ -187,7 +187,7 @@ function displayGraph(text, n, questionType) {
 	    	let rowFactor = row / (ROWS-1);
 	    	let colFactor = col / (COLS-1);
 		    results[n] = keyValuePair(questionType, `${rowFactor}:${colFactor}`);
-		    questionAnswered(`#border${n}`);
+		    questionAnswered(`#border${n}`, n);
 
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;

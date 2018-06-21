@@ -12,19 +12,21 @@ function span(item, id, css) {
 	return html;
 }
 
-function questionAnswered(selector) {
-    $(selector).css("background-color", 'rgb(100, 150, 200)');	
+function questionAnswered(selector, n) {
+    $(selector).css("background-color", QUESTION_ANSWERED_COLOR);
+    $(`#title-${n}`).css("color", "black");
+	$(`#asterisk-${n}`).text("");
 }
 
-function questionAnswerInvalid(selector) {
-    $(selector).css("background-color", 'rgb(255, 150, 200)');	
+function questionAnswerInvalid(selector, n) {
+    $(selector).css("background-color", QUESTION_ANSWER_INVALID_COLOR);	
 }
 
 function useCookiesToSetFields(selector, textbox, n, questionType) {
     let cookieValue = $.cookie(`cookie${n}`);
     if(cookieValue) {
     	$(textbox).val(cookieValue);
-    	questionAnswered(selector);
+    	questionAnswered(selector, n);
 		results[n] = keyValuePair(questionType, cookieValue);
     }
 }
@@ -37,11 +39,15 @@ function keyValuePair(key, value) {
 
 function displayQuestion(questionNumber, questionText, i, questionType) {
 	let selector = `#border${i}`;
-	if(questionNumber === "0") 
-		questionNumber = "";	// titles don't have question numbers  
-	else
-		questionNumber = `${questionNumber}. `;  
-	let title = div(`<br/><b>${questionNumber}${questionText}</b>`);
+	let period = ". ";
+	let asterisk = `<span id="asterisk-${i}" style="color:red;font-size:x-large"></span>`;
+	
+	if(questionNumber === "0") { 
+		questionNumber = "";	// titles don't have question numbers
+		period = "";			// don't put a period in front of title
+	}
+	let title = div(`<br/><b>${asterisk}${questionNumber}${period}${questionText}</b>`, `title-${i}`);
+	title.addClass("titles");
 	$(selector).append(title);
 	if(questionType === "title") {
 		let css = {"background-color":"aquamarine", 
@@ -64,7 +70,7 @@ function displayCheckboxes(options, marks, n, questionType) {
 	
 	// change the color when checkbox selected
 	$(`input[type=checkbox][name=checkbox${n}]`).change(function(event) {
-    	questionAnswered(selector);
+    	questionAnswered(selector, n);
 	    let checkedValues = "";
 	    let checkedMarks = "";
 	    $(`input[name="checkbox${n}"]:checked`).each(function() {
@@ -74,7 +80,7 @@ function displayCheckboxes(options, marks, n, questionType) {
     	let section = questions[n][1];
     	let optionCount = options.length;
 		results[n] = keyValuePair(questionType, {"section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
-		console.log(results[n]);
+		console.log(n, results[n], results);
 	});
 }
 
@@ -90,7 +96,7 @@ function displayRadioButtons(options, marks, n, questionType) {
 
 	// change the color when radio button selected
 	$(`input[type=radio][name=radioButton${n}]`).change(function(event) {
-    	questionAnswered(selector);
+    	questionAnswered(selector, n);
     	let section = questions[n][1];
     	let optionCount = options.length;
     	let value = $(`input[name=radioButton${n}]:checked`).val();
@@ -114,12 +120,12 @@ function displayEmail(text, n, questionType, autoFill) {
     	}
     	let value = $(this).val();
     	if(isEmail(value)) {
-    		questionAnswered(selector);
+    		questionAnswered(selector, n);
 	    	let key = event.data.type;
     		results[n] = keyValuePair(key, value)
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
-    		questionAnswerInvalid(selector);
+    		questionAnswerInvalid(selector, n);
     	}
 	});	
 }
@@ -135,7 +141,7 @@ function displayClient(text, n, questionType, autoFill) {
     // change the color when text changed
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
-		questionAnswered(selector);
+		questionAnswered(selector, n);
 		results[n] = keyValuePair(questionType, value)
 	    if(autoFill) $.cookie(`cookie${n}`, value);
 	});	
@@ -153,13 +159,13 @@ function displayText(text, n, questionType, autoFill) {
     $(`#text-${n}`).change({type:questionType}, function(event) {
     	let value = $(this).val();
     	if(value !== "") {
-	    	questionAnswered(selector);
+	    	questionAnswered(selector, n);
 	    	let key = event.data.type;
     		results[n] = keyValuePair(key, value)
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		results[n] = undefined
-    		questionAnswerInvalid(selector);
+    		questionAnswerInvalid(selector, n);
     	}
 	});
 }
@@ -249,7 +255,7 @@ function displayTable(entry, n, questionType) {
 		values[buttonRow] = button;
 		
 		if(!values.includes(undefined)) {
-			questionAnswered(selector);
+			questionAnswered(selector, n);
 			let marks = [];
 			for(let i = 0; i < values.length; i++) {
 				let mark = options[i+1][values[i]];
@@ -361,31 +367,6 @@ function getOptions() {
     });
 }
 
-function z() {
-
-	$( "#modal_dialog" ).dialog({
-	    resizable: false,
-	    height:"auto",
-	    title: "Dialog Title",
-	    modal: true,
-//	    open: function(){
-//	       //var note_text = $('#note_content').attr('note_text');
-//	       $("#contentholder").val("hello");
-//	    },
-	    buttons: {
-	                "No": function() {
-	                    $( this ).dialog( "close" );
-		   	        	setInterval(function() {location.assign("https://www.w3schools.com")}, 500);
-	                },
-	                 "Yes": function() {
-	                    $( this ).dialog( "close" );
-		   	        	setInterval(function() {location.reload()}, 500);
-	                 }
-	             }
-	});	
-	$( "#modal_dialog" ).html("do you want to complete another client profile?").css({"font-size":"xx-large", "background-color":"red"});
-}
-
 function addClickHandlers() {
 	function allQuestionsAnswered() {
 		let all = true;
@@ -397,9 +378,40 @@ function addClickHandlers() {
 		return all;
 	}
 
+	function continueOrExit() {
+		$("#modal_dialog").dialog({
+		    resizable: false,
+		    height:"auto",
+		    title: "Highlands Assessment",
+		    modal: true,
+		    buttons: {
+		                "No": function() {
+		                    $(this).dialog("close");
+			   	        	setInterval(function() {location.assign(`${HIGHLANDS_NEGOTIATIONS}`)}, 500);
+		                },
+		                 "Yes": function() {
+				   	        results = [];
+		                    $(this).dialog("close");
+			   	        	setInterval(function() {location.reload()}, 500);
+		                 }
+		             }
+		});	
+		$("#modal_dialog").html("Do you want to complete another client profile?")
+		                  .css({"font-size":"large", "background-color":DIALOG_BACKGROUND_COLOR});
+	}
+
+	function highlightMissingAnswers() {
+		for(let n = 0; n < results.length; n++) {
+			console.log(n, results[n]);
+			if(!results[n]) {
+				$(`#asterisk-${n}`).text("* ");
+			}
+		}
+	}
+	
 	$("#showResults").mousedown(function(e) {
 		setTimeout(function() {
-			if(!allQuestionsAnswered()) {
+			if(allQuestionsAnswered()) {
 				$("#errorMessage").html("Results Submitted");				
 				let resultsAsText = JSON.stringify(results);
 				$.ajax(
@@ -411,15 +423,13 @@ function addClickHandlers() {
 			   	        data: resultsAsText,
 			   	        success: function(data) {
 			   	        	console.log("results sent OK");
-			   	        	z();
-//			   	        	results = [];
-//			   	        	setInterval(function() {location.reload()}, 500);
+			   	        	continueOrExit();
 			   	    }	
 			   	});
-//				displayCharts();
 			} else {
 				$("#errorMessage").html("Some questions still need valid answers");
 				$("#errorMessage").css({"margin-left":`${MARGIN_LEFT}`});
+   	        	setTimeout(function() {highlightMissingAnswers()}, 500);
 			}
 		}, 200);
     });    
