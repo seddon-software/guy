@@ -37,6 +37,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if(extension == "ico"): return "image/x-icon"
             if(extension == "css"): return "text/css"
             if(extension == "css"): return "image/png"
+            if(extension == "css"): return "image/svg+xml"    # svg svgz
             return "text/html"
             
         def sendHeaders():

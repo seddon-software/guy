@@ -19,6 +19,7 @@
 <script src="js/jquery.ui.touch-punch.min.js"></script>
 <script src="js/d3.min.js" charset="utf-8"></script>
 <script src="js/c3.min.js"></script>
+<script src="client-constants.js"></script>
 <script src="client.js"></script>
 <script src="client-graph.js"></script>
 <script src="client-chart.js"></script>
@@ -28,20 +29,12 @@ body {
     margin-left: 2vw;
     overscroll-behavior: none;
 }
-
-.ui-widget-content.ui-helper-clearfix {
-	margin-top: 0;
+/*
+svg {
+  width:50%;
+  height:50%;
 }
-
-.ui-dialog {
-    background-color: rgb(170, 170, 205);
-	margin-top: 0;
-}
-
-.ui-dialog-buttonpane {
-	margin-top: 0;
-}
-
+*/
 #tabs {
     background-color: rgb(170, 170, 205);
 }
@@ -96,7 +89,7 @@ div.newLine {
 }
 #errorMessage {
 	font-size: x-large;
-	color: yellow;
+	color: red;
 }
 .c3-title {
 	font-size: x-large;
@@ -104,7 +97,7 @@ div.newLine {
 }
 
 #copyright {
-	background-color: antiquewhite;
+	background-color: rgba(255, 255, 255, 0.4);
 }
 
 #charts-title, #piecharts-title {
@@ -114,38 +107,32 @@ div.newLine {
     color: darkmagenta;
 }
 
+.ui-widget-content.ui-helper-clearfix {
+	margin-top: 0;
+}
+
+.ui-dialog, .ui-dialog-titlebar {
+    background-color: rgb(170, 170, 205);
+	margin-top: 0;
+}
+
+.ui-dialog-buttonpane {
+	margin-top: 0;
+}
+
+.ui-dialog-titlebar {
+}
+
+.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+	text-shadow: 0 0 0 #f3f3f3
+}
 </style>
 
 <script>
-var results;
-var questions;
-var options;
-var chartData;
-var BACKGROUND = "#9fcaad";
-var MARGIN_LEFT = "5%";
-var MARGIN_RIGHT = "5%";
-var android = navigator.appVersion.indexOf("Android") !== -1;
-var touchMoveInProgress = false;
-var HIGHLANDS_NEGOTIATIONS = "http://www.highlandsnegotiations.com/";
-var QUESTION_ANSWERED_COLOR = 'rgb(100, 150, 200)';
-var QUESTION_ANSWER_INVALID_COLOR = 'rgb(255, 150, 200)';
-var GRID_CHILDREN_COLOR = "rgba(255, 255, 255, 0.8)";
-var DIALOG_BACKGROUND_COLOR = 'rgb(255, 150, 200)'; 
-var GRID_CHILDREN_FONT_SIZE = "16px";
-
-if(android) {
-    var ROWS = 11;
-    var COLS = 11;
-} else {
-    var ROWS = 21;
-    var COLS = 21;
-}
-/* gridChildrenColor = "rgba(255, 255, 255, 0.8)";
-gridChildrenFontSize = "16px";
- */
 
 //$(document).ready(function() {
 $(window).on('load', function () {
+	removeCookiesOnStartup();
 	getQuestions();
 	getOptions();
 	addClickHandlers();

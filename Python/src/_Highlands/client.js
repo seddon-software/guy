@@ -16,10 +16,18 @@ function questionAnswered(selector, n) {
     $(selector).css("background-color", QUESTION_ANSWERED_COLOR);
     $(`#title-${n}`).css("color", "black");
 	$(`#asterisk-${n}`).text("");
+	$("#errorMessage").html("");
 }
 
 function questionAnswerInvalid(selector, n) {
     $(selector).css("background-color", QUESTION_ANSWER_INVALID_COLOR);	
+}
+
+function removeCookiesOnStartup() {
+	var cookies = $.cookie();
+	for(let cookie in cookies) {
+	   $.removeCookie(cookie);
+	}
 }
 
 function useCookiesToSetFields(selector, textbox, n, questionType) {
@@ -70,17 +78,21 @@ function displayCheckboxes(options, marks, n, questionType) {
 	
 	// change the color when checkbox selected
 	$(`input[type=checkbox][name=checkbox${n}]`).change(function(event) {
-    	questionAnswered(selector, n);
-	    let checkedValues = "";
-	    let checkedMarks = "";
-	    $(`input[name="checkbox${n}"]:checked`).each(function() {
-	    	checkedValues += this.value + " ";
-	    	checkedMarks += marks[this.value] + " ";
-	    });
-    	let section = questions[n][1];
-    	let optionCount = options.length;
-		results[n] = keyValuePair(questionType, {"section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
-		console.log(n, results[n], results);
+		if($(`input[type=checkbox][name=checkbox${n}]`).length > 0) {
+			questionAnswered(selector, n);
+		    let checkedValues = "";
+		    let checkedMarks = "";
+		    $(`input[name="checkbox${n}"]:checked`).each(function() {
+		    	checkedValues += this.value + " ";
+		    	checkedMarks += marks[this.value] + " ";
+		    });
+	    	let section = questions[n][1];
+	    	let optionCount = options.length;
+			results[n] = keyValuePair(questionType, {"section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
+			console.log(n, results[n], results);
+		} else {
+			questionAnswerInvalid(selector, n);
+		}
 	});
 }
 
@@ -379,22 +391,31 @@ function addClickHandlers() {
 	}
 
 	function continueOrExit() {
+		function clearPage() {
+		    $("#questions").empty();
+		    
+			getQuestions();
+			getOptions();
+			addClickHandlers();
+			positionCopyright();
+		}
 		$("#modal_dialog").dialog({
 		    resizable: false,
 		    height:"auto",
 		    title: "Highlands Assessment",
 		    modal: true,
 		    buttons: {
-		                "No": function() {
-		                    $(this).dialog("close");
-			   	        	setInterval(function() {location.assign(`${HIGHLANDS_NEGOTIATIONS}`)}, 500);
-		                },
-		                 "Yes": function() {
-				   	        results = [];
-		                    $(this).dialog("close");
-			   	        	setInterval(function() {location.reload()}, 500);
-		                 }
-		             }
+		    	"No": function() {
+		    		$(this).dialog("close");
+		    		setInterval(function() {location.assign(`${HIGHLANDS_NEGOTIATIONS}`)}, 500);
+		    	},
+		    	"Yes": function() {
+		    		results = [];
+		    		$(this).dialog("close");
+		    		clearPage();
+		    		//setInterval(function() {location.reload()}, 500);
+		    	}
+		    }
 		});	
 		$("#modal_dialog").html("Do you want to complete another client profile?")
 		                  .css({"font-size":"large", "background-color":DIALOG_BACKGROUND_COLOR});

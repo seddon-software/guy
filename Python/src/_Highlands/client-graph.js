@@ -138,15 +138,16 @@ function displayGraph(text, n, questionType) {
 		let main = 25;
 		let spacing = `10% 10% ${main}% ${main}% ${main}% 5%`;
 		g = new Grid("frame", n, spacing);
-		g.addArea("header", "Header");
-		g.addArea("left-1", "Left1");
+		g.addArea("header");
+		g.addArea("left-1");
 		g.addArea("left-2");
 		g.addArea("main");
-		g.addArea("right", "Right");
+		g.addArea("right");
 		g.addArea("footer");
 		g.layout(`'header header header header header header' 
 		    	 'left-1 left-2 main main main right' 
 		    	 'left-1 left-2 footer footer footer right'`);
+		g.flex("left-1", "column");
 		g.flex("left-2", "column");
 		g.flex("footer", "row");
 
@@ -168,7 +169,27 @@ function displayGraph(text, n, questionType) {
 		addTextToGridPanel("left-2", sidebarTextArray);
 		addTextToGridPanel("footer", footerTextArray);
 		let gridSpacing = frameWidth * 3 * parseInt(main)/100;
-		fillOutTheBoxes(`#grid-${n}-main`, gridSpacing);  // 0.75 because template spacing is 75% 
+		fillOutTheBoxes(`#grid-${n}-main`, gridSpacing);
+		
+        var svg = `<div><svg visibility='visible' style='width: 100%; height=600px'
+            viewBox='0 0 100 600'>
+            <defs>
+            	<marker id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6" orient="auto">
+        			<path d="M2,2 L2,11 L10,6 L2,2" style="fill: #000000;" />
+        		</marker>
+        	</defs>
+        	<rect visibility='visible' x='0' y='0' width='100' height='600' 
+		                   rx='10' ry='15' style='stroke:#660000; fill: white'/>
+        	<path d="M30,0 L30,100"
+        					style="stroke:#660000; fill:none;marker-start:url(#markerArrow);"/>
+        	<text x="40" y="40" transform="rotate(90 30,30)">Example SVG text 1</text>
+		  </svg></div>`;
+        svg = $(svg);
+
+//		let arrows = div(`<img src="images/arrows.svg"></img>`,"arrows");
+        $(`#grid-${n}-left-1`).append(svg);
+//        arrows.css({"width":"60px", "height":"600px"});
+//        $("#arrows").html($("#arrows").html());
     }
     
 	tabulateGraph();
