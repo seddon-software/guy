@@ -144,12 +144,15 @@ function displayGraph(text, n, questionType) {
 		g.addArea("main");
 		g.addArea("right");
 		g.addArea("footer");
+		g.addArea("base");
 		g.layout(`'header header header header header header' 
 		    	 'left-1 left-2 main main main right' 
-		    	 'left-1 left-2 footer footer footer right'`);
+		    	 'left-1 left-2 footer footer footer right'
+		    	 'base base base base base base `);
 		g.flex("left-1", "column");
 		g.flex("left-2", "column");
 		g.flex("footer", "row");
+		g.flex("base", "row");
 
 		g.childCss({
 			   "background-color":GRID_CHILDREN_COLOR,
@@ -170,27 +173,42 @@ function displayGraph(text, n, questionType) {
 		addTextToGridPanel("footer", footerTextArray);
 		let gridSpacing = frameWidth * 3 * parseInt(main)/100;
 		fillOutTheBoxes(`#grid-${n}-main`, gridSpacing);
-		
-        var svg = `<div><svg visibility='visible' style='width: 100%; height=600px'
-            viewBox='0 0 100 600'>
-            <defs>
-            	<marker id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6" orient="auto">
-        			<path d="M2,2 L2,11 L10,6 L2,2" style="fill: #000000;" />
-        		</marker>
-        	</defs>
-        	<rect visibility='visible' x='0' y='0' width='100' height='600' 
-		                   rx='10' ry='15' style='stroke:#660000; fill: white'/>
-        	<path d="M30,0 L30,100"
-        					style="stroke:#660000; fill:none;marker-start:url(#markerArrow);"/>
-        	<text x="40" y="40" transform="rotate(90 30,30)">Example SVG text 1</text>
-		  </svg></div>`;
-        svg = $(svg);
 
-//		let arrows = div(`<img src="images/arrows.svg"></img>`,"arrows");
-        $(`#grid-${n}-left-1`).append(svg);
-//        arrows.css({"width":"60px", "height":"600px"});
-//        $("#arrows").html($("#arrows").html());
+		let fn, svgAspectRatio;
+		fn = $(`#grid-${n}-left-1`);
+		svgAspectRatio = fn.width()/fn.height();
+		console.log("left-1", svgAspectRatio)
+		
+        // stoke-width is affected by aspectRatio and angle, but I'm ignoring this for now
+        let arrowsVertical = $(`<svg height="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
+        	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:4;" 
+                transform="translate(50,0) scale(8,1) translate(1,50) rotate(-90 0,0)  ">Client Revenue Growth</text>
+        	<path d="M25,80 L25,20 M75,80 L75,20"
+        					style="stroke:#660000; stroke-width:8;fill:none;"/>
+        	<path d="M28,20 L13,20 L50,13 L90,20 L72,20"
+        					style="stroke:#660000; stroke-width:1;fill:none;"/>
+        	<path d="M72,80 L87,80 L50,87 L10,80 L28,80"
+        					style="stroke:#660000; stroke-width:1;fill:none;"/>
+   		    </svg>`);
+        $(`#grid-${n}-left-1`).append(arrowsVertical);
+
+        var arrowsHorizontal = $(`<svg width="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
+        	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:3.5;" 
+                transform="translate(50,0) scale(1,5) translate(1,10) rotate(0 0,0)  ">Client Revenue Growth</text>
+	    	<path d="M80,25 L20,25 M80,65 L20,65"
+        		style="stroke:#660000; stroke-width:5;fill:none;" transform="translate(0,-10)"/>
+			<path d="M20,18 L20,3 L13,40 L20,80 L20,62"
+					style="stroke:#660000; stroke-width:1;fill:none;" transform="translate(0,0)"/>
+			<path d="M80,62 L80,77 L87,40 L80,0 L80,18"
+					style="stroke:#660000; stroke-width:1;fill:none;" transform="translate(0,0)"/>
+		  </svg>`);
+        $(`#grid-${n}-base`).append(arrowsHorizontal);
     }
+	fn = $(`#grid-${n}-base`);
+	console.log("base h", $(`#grid-8-base`).height());
+	console.log("base w", $(`#grid-8-base`).width());
+	svgAspectRatio = fn.width()/fn.height();
+	console.log("base", svgAspectRatio)
     
 	tabulateGraph();
 	graphClickHandler();
