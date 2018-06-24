@@ -190,20 +190,53 @@ function displayGraph(text, n, questionType) {
         	<path d="M72,80 L87,80 L50,87 L10,80 L28,80"
         					style="stroke:#660000; stroke-width:1;fill:none;"/>
    		    </svg>`);
-        $(`#grid-${n}-left-1`).append(arrowsVertical);
-
-        var arrowsHorizontal = $(`<svg width="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
+		/*
+		    <svg width="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
         	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:3.5;" 
-                transform="translate(50,0) scale(1,5) translate(1,10) rotate(0 0,0)  ">Client Revenue Growth</text>
-	    	<path d="M80,25 L20,25 M80,65 L20,65"
-        		style="stroke:#660000; stroke-width:5;fill:none;" transform="translate(0,-10)"/>
-			<path d="M20,18 L20,3 L13,40 L20,80 L20,62"
-					style="stroke:#660000; stroke-width:1;fill:none;" transform="translate(0,0)"/>
-			<path d="M80,62 L80,77 L87,40 L80,0 L80,18"
-					style="stroke:#660000; stroke-width:1;fill:none;" transform="translate(0,0)"/>
-		  </svg>`);
+                transform="translate(50,0) scale(1,5) translate(1,10) rotate(0 0,0)">Client Revenue Growth</text>
+        	<path d="M50,60 L50,60" style="stroke:#660000; stroke-width:5;fill:none;"/>);
+		  </svg>
+		 */
+		
+        $(`#grid-${n}-left-1`).append(arrowsVertical);
+        function horizontalArrow(cx, cy, width1, width2, height1, height2) {
+        	let w1 = width1;
+        	let w2 = width2;
+        	let h1 = height1;
+        	let h2 = height2;
+        	let adjustment = 2;
+        	let a = adjustment;
+        	let p1 =  `${cx-w1},${cy+h1}`;
+        	let p1a = `${cx-w1},${cy+h1-a}`;
+        	let p2 =  `${cx+w1},${cy+h1}`;
+        	let p2a = `${cx+w1},${cy+h1-a}`;
+        	let p3 =  `${cx+w1},${cy+h2}`;
+        	let p4 =  `${cx+w2},${cy}`;
+        	let p5 =  `${cx+w1},${cy-h2}`;
+        	let p6 =  `${cx+w1},${cy-h1}`;
+        	let p6a = `${cx+w1},${cy-h1+a}`;
+        	let p7 =  `${cx-w1},${cy-h1}`;
+        	let p7a = `${cx-w1},${cy-h1+a}`;
+        	let p8 =  `${cx-w1},${cy-h2}`;
+        	let p9 =  `${cx-w2},${cy}`;
+        	let p10 = `${cx-w1},${cy+h2}`;
+			let path1 = `<path d = "M${p7a} L${p8} L${p9} L${p10} L${p1a}" style="stroke:#660000; stroke-width:1;fill:none;"/>`;
+			let path2 = `<path d = "M${p2a} L${p3} L${p4} L${p5} L${p6a}" style="stroke:#660000; stroke-width:1;fill:none;"/>`;
+			let path3 = `<path d = "M${p1} L${p2} M${p6} L${p7}" style="stroke:#660000; stroke-width:5;fill:none;"/>`;
+        	return `${path1} ${path2} ${path3}`;
+        }
+        console.log(`${horizontalArrow(50,50,20,25,10,15)}`)
+        console.log(horizontalArrow(50,50,20,25,10,15));
+        var arrowsHorizontal = `<svg width="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
+        	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:3.5;" 
+                transform="translate(50,0) scale(1,5) translate(1,10) rotate(0 0,0)">Market Growth</text>
+                ${horizontalArrow(50,45,25,30,15,20)}
+		  </svg>`;
+        console.log(arrowsHorizontal);
         $(`#grid-${n}-base`).append(arrowsHorizontal);
     }
+//        	<path ${horizontalArrow(50,45,20,25,15,20)} style="stroke:#660000; stroke-width:5;fill:none;"/>);
+	//<path d="M30,60 L70,60" style="stroke:#660000; stroke-width:5;fill:none;" transform="translate(0,0)"/>);
 	fn = $(`#grid-${n}-base`);
 	console.log("base h", $(`#grid-8-base`).height());
 	console.log("base w", $(`#grid-8-base`).width());
