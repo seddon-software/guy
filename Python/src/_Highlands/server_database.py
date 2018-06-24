@@ -68,7 +68,8 @@ def saveResults(results):
         email = ""
         for keyValuePair in resultsAsTuple:
             if "email" in keyValuePair: 
-                email = keyValuePair["email"]
+                d = keyValuePair["email"]
+                email = d["name"]
                 break
             
         with connection.cursor() as cursor:
@@ -118,7 +119,8 @@ def getChartData():
 
                 for pair in keyValuePairs:
                     if "client" in pair: 
-                        client = pair["client"]
+                        d = pair["client"]
+                        client = d["name"]
                         break
                 
                 for pair in keyValuePairs:

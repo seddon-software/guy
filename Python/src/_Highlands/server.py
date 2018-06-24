@@ -66,7 +66,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(jsonAsBytes)
         elif(fileName == "chart-data"):
             sendHeaders()
-            jsonString = sql.getChartData()
             jsonString = json.dumps(sql.getChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)

@@ -88,7 +88,7 @@ function displayCheckboxes(options, marks, n, questionType) {
 		    });
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;
-			results[n] = keyValuePair(questionType, {"section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
+			results[n] = keyValuePair(questionType, {"question":n, "section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
 			console.log(n, results[n], results);
 		} else {
 			questionAnswerInvalid(selector, n);
@@ -112,7 +112,7 @@ function displayRadioButtons(options, marks, n, questionType) {
     	let section = questions[n][1];
     	let optionCount = options.length;
     	let value = $(`input[name=radioButton${n}]:checked`).val();
-		results[n] = keyValuePair(questionType, {"section":section, "selection":value, "marks":marks[value], "optionCount":optionCount});
+		results[n] = keyValuePair(questionType, {"question":n, "section":section, "selection":value, "marks":marks[value], "optionCount":optionCount});
 	});
 }
 
@@ -125,7 +125,7 @@ function displayEmail(text, n, questionType, autoFill) {
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change({type:questionType}, function(event) {
+    $(`#text-${n}`).change(function(event) {
     	function isEmail(email) {
     		let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     		return regex.test(email);
@@ -133,8 +133,7 @@ function displayEmail(text, n, questionType, autoFill) {
     	let value = $(this).val();
     	if(isEmail(value)) {
     		questionAnswered(selector, n);
-	    	let key = event.data.type;
-    		results[n] = keyValuePair(key, value)
+    		results[n] = keyValuePair(questionType, {"question":n, "name":value});
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		questionAnswerInvalid(selector, n);
@@ -154,7 +153,7 @@ function displayClient(text, n, questionType, autoFill) {
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
 		questionAnswered(selector, n);
-		results[n] = keyValuePair(questionType, value)
+		results[n] = keyValuePair(questionType, {"question":n, "name":value});
 	    if(autoFill) $.cookie(`cookie${n}`, value);
 	});	
 }
@@ -168,12 +167,11 @@ function displayTextArea(text, n, questionType, autoFill) {
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change({type:questionType}, function(event) {
+    $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
     	if(value !== "") {
 	    	questionAnswered(selector, n);
-	    	let key = event.data.type;
-    		results[n] = keyValuePair(key, value)
+			results[n] = keyValuePair(questionType, {"question":n, "name":value});
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		results[n] = undefined
@@ -191,12 +189,11 @@ function displayText(text, n, questionType, autoFill) {
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change({type:questionType}, function(event) {
+    $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
     	if(value !== "") {
 	    	questionAnswered(selector, n);
-	    	let key = event.data.type;
-    		results[n] = keyValuePair(key, value)
+			results[n] = keyValuePair(questionType, {"question":n, "name":value});
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		results[n] = undefined
@@ -211,7 +208,7 @@ function displayTitle(text, n) {
 			   "font-size":"large"};
  	let html = div(text, `title${n}`, css);
     $(selector).append(html);
-    results[n] = {"title":"blank"};
+    results[n] = {"title":{"question":n}};
 }
 
 function drawTable(selector, options, n) {
@@ -296,13 +293,11 @@ function displayTable(entry, n, questionType) {
 				let mark = options[i+1][values[i]];
 				marks.push(mark);
 			};
-//			console.log("marks:", marks);
 	    	let section = questions[n][1];
 	    	let optionCount = options[0].length - 1;  // -1 for the sidebar text
 	    	let value = $(`input[name=radioButton${n}]:checked`).val();
-			results[n] = keyValuePair(questionType, {"section":section, "selection":values, 
+			results[n] = keyValuePair(questionType, {"question":n, "section":section, "selection":values, 
 				"marks":marks, "optionCount":optionCount});
-			console.log(results[n]);
 		}
 	});
 }
@@ -459,8 +454,8 @@ function addClickHandlers() {
 	
 	$("#showResults").mousedown(function(e) {
 		setTimeout(function() {
-			if(!allQuestionsAnswered()) {
-				$("#errorMessage").html("Results Submitted");				
+			if(allQuestionsAnswered()) {
+				$("#errorMessage").html("Results Submitted");
 				let resultsAsText = JSON.stringify(results);
 				$.ajax(
 			   	    {
@@ -471,6 +466,7 @@ function addClickHandlers() {
 			   	        data: resultsAsText,
 			   	        success: function(data) {
 			   	        	console.log("results sent OK");
+			   	        	console.log(results);
 			   	        	continueOrExit();
 			   	    }	
 			   	});

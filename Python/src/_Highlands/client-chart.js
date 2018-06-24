@@ -158,7 +158,6 @@ function drawPieChart() {
 		let anchor = div("", `chart${i}`).css({"float":"left"});
  	    $("#piechart").append(anchor);
  	    let data = pieChartData[i];
-// 	    console.log(data);
  	    let number = pieChartQuestionsAndOptions[i][NUMBER];
  	    let title = pieChartQuestionsAndOptions[i][QUESTION];
  	    title = `${number}. ${title}`;
@@ -183,28 +182,12 @@ function drawPieChart() {
  	    	"padding": {"bottom":"40"},
  	    	"legend": {"position":"right"},
  	    	"bindto": "${selector}",
- 	    	
- 	    	"tooltip": { "format": {"value": "function (value, ratio, id) {var commaFormat = d3.format(',');var dotFormat = function(num){return commaFormat(num).replace(/,/g, '.');};return dotFormat(value);"}},
+ 	    	"tooltip": {"format": "function (d) { return 'Data ' + d;}" }, 
  	    	"data": {
  	    	    "columns": [${pie}],
 		        "type" : "pie"
 		    }
 		}`;
- 	    
-/*
-tooltip: {
-            format: {
-                value: function (value, ratio, id) {
-                    var commaFormat = d3.format(",");
-                    var dotFormat = function(num){
-                        // The expression /,/g is a regular expression that matches all commas.
-                        return commaFormat(num).replace(/,/g, ".");
-                    };
-                    return dotFormat(value);
-                }
-            }
-        }
- */
  	    o = JSON.parse(o);
  		c3.generate(o);
  		// this is a hack, because charts are always centered, even though we need left justified
