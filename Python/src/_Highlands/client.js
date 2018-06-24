@@ -159,6 +159,29 @@ function displayClient(text, n, questionType, autoFill) {
 	});	
 }
 
+function displayTextArea(text, n, questionType, autoFill) {
+	let selector = `#border${n}`;
+	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
+	let textbox = div(`<textarea rows="5" cols="100%" name="text${n}" id="text-${n}"`);
+    $(selector).append(textbox);
+    textbox.css({"padding":"5%"});
+    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
+
+    // change the color when text changed
+    $(`#text-${n}`).change({type:questionType}, function(event) {
+    	let value = $(this).val();
+    	if(value !== "") {
+	    	questionAnswered(selector, n);
+	    	let key = event.data.type;
+    		results[n] = keyValuePair(key, value)
+		    if(autoFill) $.cookie(`cookie${n}`, value);
+    	} else {
+    		results[n] = undefined
+    		questionAnswerInvalid(selector, n);
+    	}
+	});
+}
+
 function displayText(text, n, questionType, autoFill) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
@@ -322,6 +345,10 @@ function displayQuestionsAndOptions() {
 			text = entry[1][0];
 			displayText(text[0], i, questionType, autoFill);
 		}
+		if(questionType === "textarea") {
+			text = entry[1][0];
+			displayTextArea(text[0], i, questionType, autoFill);
+		}
 		if(questionType === "email") {
 			text = entry[1][0];
 			displayEmail(text[0], i, questionType, autoFill);
@@ -432,7 +459,7 @@ function addClickHandlers() {
 	
 	$("#showResults").mousedown(function(e) {
 		setTimeout(function() {
-			if(allQuestionsAnswered()) {
+			if(!allQuestionsAnswered()) {
 				$("#errorMessage").html("Results Submitted");				
 				let resultsAsText = JSON.stringify(results);
 				$.ajax(

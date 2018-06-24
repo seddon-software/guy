@@ -157,7 +157,8 @@ function displayGraph(text, n, questionType) {
 		g.childCss({
 			   "background-color":GRID_CHILDREN_COLOR,
 			   "text-align":"center",
-		  	   "font-size":GRID_CHILDREN_FONT_SIZE});	
+		  	   "font-size":GRID_CHILDREN_FONT_SIZE,
+			   "padding-bottom":"5px"});	
 
 	    let headerText = div(text[1]).css({"font-size":"xx-large", "margin":"1vw 1vw 1vw 1vw"});
 		let sidebarTextArray = text[2];
@@ -174,11 +175,6 @@ function displayGraph(text, n, questionType) {
 		let gridSpacing = frameWidth * 3 * parseInt(main)/100;
 		fillOutTheBoxes(`#grid-${n}-main`, gridSpacing);
 
-		let fn, svgAspectRatio;
-		fn = $(`#grid-${n}-left-1`);
-		svgAspectRatio = fn.width()/fn.height();
-		console.log("left-1", svgAspectRatio)
-		
         // stoke-width is affected by aspectRatio and angle, but I'm ignoring this for now
         let arrowsVertical = $(`<svg height="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
         	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:4;" 
@@ -190,21 +186,13 @@ function displayGraph(text, n, questionType) {
         	<path d="M72,80 L87,80 L50,87 L10,80 L28,80"
         					style="stroke:#660000; stroke-width:1;fill:none;"/>
    		    </svg>`);
-		/*
-		    <svg width="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
-        	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:3.5;" 
-                transform="translate(50,0) scale(1,5) translate(1,10) rotate(0 0,0)">Client Revenue Growth</text>
-        	<path d="M50,60 L50,60" style="stroke:#660000; stroke-width:5;fill:none;"/>);
-		  </svg>
-		 */
 		
         $(`#grid-${n}-left-1`).append(arrowsVertical);
-        function horizontalArrow(cx, cy, width1, width2, height1, height2) {
+        function horizontalArrow(cx, cy, width1, width2, height1, height2, adjustment, strokeWidth) {
         	let w1 = width1;
         	let w2 = width2;
         	let h1 = height1;
         	let h2 = height2;
-        	let adjustment = 2;
         	let a = adjustment;
         	let p1 =  `${cx-w1},${cy+h1}`;
         	let p1a = `${cx-w1},${cy+h1-a}`;
@@ -222,26 +210,16 @@ function displayGraph(text, n, questionType) {
         	let p10 = `${cx-w1},${cy+h2}`;
 			let path1 = `<path d = "M${p7a} L${p8} L${p9} L${p10} L${p1a}" style="stroke:#660000; stroke-width:1;fill:none;"/>`;
 			let path2 = `<path d = "M${p2a} L${p3} L${p4} L${p5} L${p6a}" style="stroke:#660000; stroke-width:1;fill:none;"/>`;
-			let path3 = `<path d = "M${p1} L${p2} M${p6} L${p7}" style="stroke:#660000; stroke-width:5;fill:none;"/>`;
+			let path3 = `<path d = "M${p1} L${p2} M${p6} L${p7}" style="stroke:#660000; stroke-width:${strokeWidth};fill:none;"/>`;
         	return `${path1} ${path2} ${path3}`;
         }
-        console.log(`${horizontalArrow(50,50,20,25,10,15)}`)
-        console.log(horizontalArrow(50,50,20,25,10,15));
         var arrowsHorizontal = `<svg width="100%"; preserveAspectRatio="none" viewBox="0 0 100 100">
         	<text text-anchor="middle" x="0" y="0" style="font-family:Arial; font-size:3.5;" 
                 transform="translate(50,0) scale(1,5) translate(1,10) rotate(0 0,0)">Market Growth</text>
-                ${horizontalArrow(50,45,25,30,15,20)}
+                ${horizontalArrow(50,45,30,35,15,20,2.5,5)}
 		  </svg>`;
-        console.log(arrowsHorizontal);
         $(`#grid-${n}-base`).append(arrowsHorizontal);
     }
-//        	<path ${horizontalArrow(50,45,20,25,15,20)} style="stroke:#660000; stroke-width:5;fill:none;"/>);
-	//<path d="M30,60 L70,60" style="stroke:#660000; stroke-width:5;fill:none;" transform="translate(0,0)"/>);
-	fn = $(`#grid-${n}-base`);
-	console.log("base h", $(`#grid-8-base`).height());
-	console.log("base w", $(`#grid-8-base`).width());
-	svgAspectRatio = fn.width()/fn.height();
-	console.log("base", svgAspectRatio)
     
 	tabulateGraph();
 	graphClickHandler();
