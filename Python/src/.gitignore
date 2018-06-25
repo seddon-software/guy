@@ -31,3 +31,5 @@
 /_Resources/
 /backup.tar
 /old/
+*.xlsx
+
