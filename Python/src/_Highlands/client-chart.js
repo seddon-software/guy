@@ -29,7 +29,6 @@ function getChartData() {
         contentType:'application/json',
         dataType:'json',
         success: function(data) {
-        	console.log(data);
         	drawChart(data);
         }	
     });
@@ -164,7 +163,7 @@ function drawPieChart() {
  	    title = truncate(title, maxTitleLength);
  	    let legend = pieChartQuestionsAndOptions[i][OPTIONS];
 
- 		// make sure no more than n pie charts are drawn per line
+ 		// make sure no more than n (=1) pie charts are drawn per line
  	    let chartsPerLine = 1;
  		let w1 = $(window).width()/pieChartData.length;
  		let w2 = $(window).width()/chartsPerLine;
@@ -174,15 +173,9 @@ function drawPieChart() {
  	    for(let k = 1; k < data.length; k++) {
  	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
  	    }
- 	    //title = escape(title);
-	    //"onmouseover":"function(d,i){ console.log('onmouseover', d, i); }",
-    	//"value": "function(value, ratio, id) {console.log('tooltip');var format = id === 'data1' ? d3.format(',') : d3.format('$');return format(value);}"
-//	    	"tooltip": {
-// 	    		"format": {
-// 	    			"title": "function(d){console.log('tooltip2'); return '';}"
-// 	    		}
-// 	    	},
  	    title = title.replace(/\"/g,'\\"');		// escape all " quotes
+
+ 	    // build object to generate piechart
  	    o = `{
  	    	"title": {"text":"${title}"},
  	    	"size": {"width":"${width}"},
@@ -193,13 +186,20 @@ function drawPieChart() {
  	    	    "columns": [${pie}],
 		        "type" : "pie"
 		    },
- 	    	"pie": { 
- 	    	    "label": "{format:function(value, ratio, id) { console.log('x');return d3.format('$')(value);}}"
- 	    	}
-		}`;
-// 	    console.log(o.substring(300,330));
-// 	    console.log(o.substring(314,315));
+ 	    	"tooltip": {"contents":"this_will_be_replaced"}
+ 	    	}`;
  	    o = JSON.parse(o);
+ 	    // JSON parsing converts the function to a string so change it to a function:
+ 	    o["tooltip"]["contents"] = function(d, defaultTitleFormat, defaultValueFormat, color) {
+ 		    						   var sum = 0;
+ 		    						   d.forEach(function (e) {
+ 		    							   sum += e.value;
+ 		    						   });
+ 		    						   defaultTitleFormat = function() {
+ 		    							   return sum;
+ 		    						   };
+ 		    						   return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
+ 								   }
  		c3.generate(o);
  		// this is a hack, because charts are always centered, even though we need left justified
  		$("svg").css({"transform":"translateX(0vw)"});

@@ -1,13 +1,3 @@
-/*
- * checkboxes done
- * text done
- * email done
- * client done
- * textarea done
- * graph
- * table done
- * 
- */
 function div(item, id, css) {
 	let html = $(`<div>${item}</div>`);
 	if(id) html.attr("id", id);
