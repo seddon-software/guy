@@ -2,6 +2,8 @@
 #
 #    Highlands Server
 #
+#    © Highlands Negotiations, June 2018, v0.5
+#
 ############################################################
 
 import pymysql.cursors
@@ -43,25 +45,24 @@ def getNamesAndPasswords():
     port = hostFrame["OPTION"].tolist()[0]
     return [root, rootPassword, manager, managerPassword, database, table, server, port]
 
-def addSampleData(user, password, database):
-    connection = connect(user, password, database)
-    try:
-        with connection.cursor() as cursor:
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            # pymysql.cursors.Cursor._defer_warnings = True
-            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
-                               VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
-            for i in range(10):
-                guid = str(uuid.uuid4())
-                cursor.execute(sql, (guid, timestamp, "abc@def.com", "abc", "def"))
-        connection.commit()    
-    finally:
-        connection.close()
+# def addSampleData(user, password, database):
+#     connection = connect(user, password, database)
+#     try:
+#         with connection.cursor() as cursor:
+#             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#             # pymysql.cursors.Cursor._defer_warnings = True
+#             sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
+#                                VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
+#             for i in range(10):
+#                 guid = str(uuid.uuid4())
+#                 cursor.execute(sql, (guid, timestamp, "abc@def.com", "abc", "def"))
+#         connection.commit()    
+#     finally:
+#         connection.close()
 
 def saveResults(results):
     connection = connect()
     try:
-#        results = results["results"]
         resultsAsString = ','.join(str(e) for e in results)
         
         resultsAsTuple = literal_eval(resultsAsString)
@@ -99,6 +100,11 @@ def printResults():
         connection.close()
 
 def getChartData():
+    """
+    Summary of marks grouped by {section,client} pairs
+    xaxis: marks
+    yaxis: [section, client]
+    """
     try:
         client
     except NameError:
@@ -113,8 +119,6 @@ def getChartData():
             chartData = pd.DataFrame(columns=['client','section','marks'])
             
             for row in results:
-                arr = []
-                
                 keyValuePairs = literal_eval(row['result'])
 
                 for pair in keyValuePairs:
@@ -123,12 +127,20 @@ def getChartData():
                         client = d["name"]
                         break
                 
+                # not used at present
+                for pair in keyValuePairs:
+                    if "email" in pair: 
+                        d = pair["email"]
+                        email = d["name"]
+                        break
+                
                 for pair in keyValuePairs:
                     def addItem(section, marks): # last parameter must be a list
                         for mark in marks:
                             data = {
                                     'client' : client,
                                     'section': section,
+                                    'email': email,
                                     'marks'  : mark
                                    }
                             return chartData.append(data, ignore_index=True)
@@ -146,6 +158,69 @@ def getChartData():
         chartData = chartData.groupby(['section', 'client']).sum()
         chartData = chartData.to_dict()['marks']
         chartData = {"{},{}".format(compositeKey[0], compositeKey[1]):chartData[compositeKey] for compositeKey in chartData}
+    finally:
+        connection.close()
+    return chartData
+
+def getChartData2():
+    """
+    Summary of marks grouped by {section,client,email} triples
+    xaxis: marks
+    yaxis: [section, client, email]
+    """
+    try:
+        client
+    except NameError:
+        client = ""
+    connection = connect()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT `*` FROM `{}`".format(table)
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            
+            chartData = pd.DataFrame(columns=['client','section','email','marks'])
+            
+            for row in results:
+                keyValuePairs = literal_eval(row['result'])
+
+                for pair in keyValuePairs:
+                    if "client" in pair: 
+                        d = pair["client"]
+                        client = d["name"]
+                        break
+                
+                # not used at present
+                for pair in keyValuePairs:
+                    if "email" in pair: 
+                        d = pair["email"]
+                        email = d["name"]
+                        break
+                
+                for pair in keyValuePairs:
+                    def addItem(section, marks): # last parameter must be a list
+                        for mark in marks:
+                            data = {
+                                    'client' : client,
+                                    'section': section,
+                                    'email': email,
+                                    'marks'  : mark
+                                   }
+                            return chartData.append(data, ignore_index=True)
+                    # marks are presented differently in radio, checkbox and table entries:
+                    #   radio:    a single mark which needs to be put in a list
+                    #   checkbox: a string of marks which need to be split() into a list
+                    #   table:    marks are already a list
+                    if 'radio' in pair:
+                        chartData = addItem(pair["radio"]["section"], [pair["radio"]["marks"]])
+                    if 'checkbox' in pair:
+                        chartData = addItem(pair["checkbox"]["section"], pair["checkbox"]["marks"].split())
+                    if 'table' in pair:
+                        chartData = addItem(pair["table"]["section"], pair["table"]["marks"])
+        chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)  
+        chartData = chartData.groupby(['section', 'client', 'email']).sum()
+        chartData = chartData.to_dict()['marks']
+        chartData = {"{},{},{}".format(compositeKey[0], compositeKey[1], compositeKey[2]):chartData[compositeKey] for compositeKey in chartData}
     finally:
         connection.close()
     return chartData
@@ -214,7 +289,7 @@ def getPieChartData():
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 if __name__ == "__main__":
     import json
- 
-    data = getChartData()
+    data = getChartData2()
     jsonString = json.dumps(getChartData())
     jsonAsBytes = jsonString.encode("UTF-8")
+    print(data)

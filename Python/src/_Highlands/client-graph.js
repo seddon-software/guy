@@ -1,3 +1,13 @@
+/* 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+*/
+
 class Grid {
 	// constructor takes the id of the container
 	constructor(selector, questionNumber, spacing) {

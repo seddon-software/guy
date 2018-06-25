@@ -1,3 +1,13 @@
+/* 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+*/
+
 function div(item, id, css) {
 	let html = $(`<div>${item}</div>`);
 	if(id) html.attr("id", id);
@@ -58,10 +68,10 @@ function displayQuestion(questionNumber, questionText, i, questionType) {
 	title.addClass("titles");
 	$(selector).append(title);
 	if(questionType === "title") {
-		let css = {"background-color":"aquamarine", 
+		let css = {"background-color":QUESTION_HEADER_COLOR,
 				   "font-size":"xx-large",
 				   "text-align":"center",
-				   "margin-top":"10vh"};
+				   "margin-top":QUESTION_MARGIN_TOP};
 		$(title).css(css);		
 	}
 }
@@ -121,7 +131,7 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
-    textbox.css({"width":"100%", "transform":"translateX(20%)"});
+    textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
     // change the color when text changed
@@ -147,7 +157,7 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
-    textbox.css({"width":"100%", "transform":"translateX(20%)"});
+    textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
     // change the color when text changed
@@ -167,9 +177,10 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
 function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
-	let textbox = div(`<textarea rows="5" cols="80" style="min-width:95%;max-width:95%" name="text${n}" id="text-${n}"`);
+	let textbox = div(`<textarea rows="${TEXTAREA_ROWS}" cols="${TEXTAREA_COLS}" style="min-width:${TEXTAREA_MIN_WIDTH};max-width:${TEXTAREA_MAX_WIDTH}" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
     textbox.css({"padding":"5%"});
+    // "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
     // change the color when text changed
@@ -191,7 +202,7 @@ function displayText(text, n, questionType, autoFill, questionNumber) {
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
-    textbox.css({"width":"100%", "transform":"translateX(20%)"});
+    textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, questionNumber, questionType);
 
     // change the color when text changed
@@ -210,7 +221,7 @@ function displayText(text, n, questionType, autoFill, questionNumber) {
 
 function displayTitle(text, n, questionNumber) {
 	let selector = `#border${n}`;
- 	let css = {"background-color":"aquamarine", 
+ 	let css = {"background-color":QUESTION_HEADER_COLOR, 
 			   "font-size":"large"};
  	let html = div(text, `title${n}`, css);
     $(selector).append(html);
@@ -232,10 +243,10 @@ function drawTable(selector, options, n) {
 	
 	function getTemplateSpacing(hw) {
 		let n, space;
-		let extraSpaces = 2.5;
+		let extraSpaces = TABLE_COLUMN_SPACING;
 		if(hw === 'h') {
 			n = rowText.length + 1;
-			space = 5;
+			space = TABLE_SPACING_BETWEEN_ROWS;
 		}
 		if(hw === 'w') {
 			n = columnText.length + 1;
@@ -333,7 +344,7 @@ function displayQuestionsAndOptions() {
 		let marks;
 		let html = $(`<div id='border${i}'/>`);
 		$("#questions").append(html);
-		html.css({"margin-left":MARGIN_LEFT, "margin-right":MARGIN_RIGHT, "background-color":BACKGROUND});
+		html.css({"margin-left":MARGIN_LEFT, "margin-right":MARGIN_RIGHT, "background-color":QUESTION_BODY_COLOR});
 
 		displayQuestion(questionNumber, questionText, i, questionType);
 		if(questionType === "radio") {

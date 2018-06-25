@@ -2,6 +2,8 @@
 #
 #    Highlands Server
 #
+#    © Highlands Negotiations, June 2018, v0.5
+#
 ############################################################
 
 import pymysql.cursors

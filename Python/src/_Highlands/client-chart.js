@@ -1,3 +1,13 @@
+/* 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+*/
+
 var NUMBER = 0;
 var SECTION = 1;
 var QUESTION = 2;
@@ -17,7 +27,6 @@ function displayPieCharts() {
 }
 
 function displayCharts() {
-	console.log("displayCharts()");
 	getChartData();
 }
 
