@@ -236,13 +236,11 @@ function displayGraph(text, n, questionType, questionNumber) {
 	    	let col = $(cell).data("id").col;
 	    	let rowFactor = row / (ROWS-1);
 	    	let colFactor = col / (COLS-1);
-//			results[n] = keyValuePair(questionType, {"question":n, "value":`${rowFactor}:${colFactor}`});
 		    questionAnswered(`#border${n}`, n);
 
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;
 			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "rowFactor":rowFactor, "colFactor":colFactor});
-//			console.log(results[n]);
 			repaint();
 			$(cell).css({"background-color":"black"});
 		});

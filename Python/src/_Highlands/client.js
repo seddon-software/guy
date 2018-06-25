@@ -1,3 +1,13 @@
+/*
+ * checkboxes done
+ * text done
+ * email done
+ * client done
+ * textarea done
+ * graph
+ * table done
+ * 
+ */
 function div(item, id, css) {
 	let html = $(`<div>${item}</div>`);
 	if(id) html.attr("id", id);
@@ -78,21 +88,21 @@ function displayCheckboxes(options, marks, n, questionType, questionNumber) {
 	
 	// change the color when checkbox selected
 	$(`input[type=checkbox][name=checkbox${n}]`).change(function(event) {
-		if($(`input[type=checkbox][name=checkbox${n}]`).length > 0) {
+	    let checkedValues = "";
+	    let checkedMarks = "";
+	    $(`input[name="checkbox${n}"]:checked`).each(function() {
+	    	checkedValues += this.value + " ";
+	    	checkedMarks += marks[this.value] + " ";
+	    });
+	    if(checkedValues === "") {		// user has unchecked everything
+	    	questionAnswerInvalid(selector, n);
+	    	results[n] = undefined;
+	    } else {
 			questionAnswered(selector, n);
-		    let checkedValues = "";
-		    let checkedMarks = "";
-		    $(`input[name="checkbox${n}"]:checked`).each(function() {
-		    	checkedValues += this.value + " ";
-		    	checkedMarks += marks[this.value] + " ";
-		    });
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;
-			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
-			console.log(n, results[n], results);
-		} else {
-			questionAnswerInvalid(selector, n);
-		}
+			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});	    	
+	    }
 	});
 }
 
@@ -137,6 +147,7 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		questionAnswerInvalid(selector, n);
+	    	results[n] = undefined;
     	}
 	});	
 }
@@ -152,16 +163,21 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
     // change the color when text changed
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
-		questionAnswered(selector, n);
-		results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
-	    if(autoFill) $.cookie(`cookie${n}`, value);
+    	if(value === "") { // user has erased input
+    		questionAnswerInvalid(selector, n);
+	    	results[n] = undefined;
+    	} else {
+    		questionAnswered(selector, n);
+    		results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
+    	    if(autoFill) $.cookie(`cookie${n}`, value);    			
+    	}
 	});	
 }
 
 function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
-	let textbox = div(`<textarea rows="5" cols="100%" name="text${n}" id="text-${n}"`);
+	let textbox = div(`<textarea rows="5" cols="80" style="min-width:95%;max-width:95%" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
     textbox.css({"padding":"5%"});
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
@@ -169,7 +185,7 @@ function displayTextArea(text, n, questionType, autoFill, questionNumber) {
     // change the color when text changed
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
-    	if(value !== "") {
+    	if(value.trim() !== "") {
 	    	questionAnswered(selector, n);
 			results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
 		    if(autoFill) $.cookie(`cookie${n}`, value);
@@ -296,9 +312,13 @@ function displayTable(entry, n, questionType, questionNumber) {
 	    	let section = questions[n][1];
 	    	let optionCount = options[0].length - 1;  // -1 for the sidebar text
 	    	let value = $(`input[name=radioButton${n}]:checked`).val();
-			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":values, 
-				"marks":marks, "optionCount":optionCount});
-		}
+			results[n] = keyValuePair(questionType, {
+				"question"   : questionNumber, 
+				"section"    : section, 
+				"selection"  : values, 
+				"marks"      : marks, 
+				"optionCount": optionCount});
+		} 
 	});
 }
  

@@ -135,20 +135,6 @@ function drawChart(data) {
 	            type: 'category',
 	            categories: clients
 	        }
-	    },
-	    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-	    tooltip: {
-	        format: {
-	            title: function (d) { 
-	            	console.log("tooltip");
-	            	return 'Data ' + d; },
-	            value: function (value, ratio, id) {
-	            	console.log("tooltip");
-	                var format = id === 'data1' ? d3.format(',') : d3.format('$');
-	                return format(value);
-	            }
-//	            value: d3.format(',') // apply this format to both y and y2
-	        }
 	    }
 	});
 }
