@@ -91,7 +91,7 @@ function colorCell(selector) {
 	$(selector).css({"background-color":`rgb(${red},${green},${blue})`});
 }
 
-function displayGraph(text, n, questionType) {
+function displayGraph(text, n, questionType, questionNumber) {
     function fillOutTheBoxes(parentSelector, boxWidth) {
     	function setupBoxes() {
     	    let boxHeight =  boxWidth;
@@ -236,13 +236,13 @@ function displayGraph(text, n, questionType) {
 	    	let col = $(cell).data("id").col;
 	    	let rowFactor = row / (ROWS-1);
 	    	let colFactor = col / (COLS-1);
-		    results[n] = keyValuePair(questionType, `${rowFactor}:${colFactor}`);
+//			results[n] = keyValuePair(questionType, {"question":n, "value":`${rowFactor}:${colFactor}`});
 		    questionAnswered(`#border${n}`, n);
 
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;
-			results[n] = keyValuePair(questionType, {"section":section, "rowFactor":rowFactor, "colFactor":colFactor});
-			console.log(results[n]);
+			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "rowFactor":rowFactor, "colFactor":colFactor});
+//			console.log(results[n]);
 			repaint();
 			$(cell).css({"background-color":"black"});
 		});

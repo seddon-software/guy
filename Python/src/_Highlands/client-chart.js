@@ -45,7 +45,7 @@ function getPieChartData() {
         success: function(data) {
         	pieChartData = data;
         	if (pieChartData && pieChartQuestionsAndOptions) {
-	        	drawPieChart(data);
+        		drawPieChart(data);
         	}
         }	
     });
@@ -135,6 +135,20 @@ function drawChart(data) {
 	            type: 'category',
 	            categories: clients
 	        }
+	    },
+	    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+	    tooltip: {
+	        format: {
+	            title: function (d) { 
+	            	console.log("tooltip");
+	            	return 'Data ' + d; },
+	            value: function (value, ratio, id) {
+	            	console.log("tooltip");
+	                var format = id === 'data1' ? d3.format(',') : d3.format('$');
+	                return format(value);
+	            }
+//	            value: d3.format(',') // apply this format to both y and y2
+	        }
 	    }
 	});
 }
@@ -175,6 +189,13 @@ function drawPieChart() {
  	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
  	    }
  	    //title = escape(title);
+	    //"onmouseover":"function(d,i){ console.log('onmouseover', d, i); }",
+    	//"value": "function(value, ratio, id) {console.log('tooltip');var format = id === 'data1' ? d3.format(',') : d3.format('$');return format(value);}"
+//	    	"tooltip": {
+// 	    		"format": {
+// 	    			"title": "function(d){console.log('tooltip2'); return '';}"
+// 	    		}
+// 	    	},
  	    title = title.replace(/\"/g,'\\"');		// escape all " quotes
  	    o = `{
  	    	"title": {"text":"${title}"},
@@ -182,12 +203,16 @@ function drawPieChart() {
  	    	"padding": {"bottom":"40"},
  	    	"legend": {"position":"right"},
  	    	"bindto": "${selector}",
- 	    	"tooltip": {"format": "function (d) { return 'Data ' + d;}" }, 
  	    	"data": {
  	    	    "columns": [${pie}],
 		        "type" : "pie"
-		    }
+		    },
+ 	    	"pie": { 
+ 	    	    "label": "{format:function(value, ratio, id) { console.log('x');return d3.format('$')(value);}}"
+ 	    	}
 		}`;
+// 	    console.log(o.substring(300,330));
+// 	    console.log(o.substring(314,315));
  	    o = JSON.parse(o);
  		c3.generate(o);
  		// this is a hack, because charts are always centered, even though we need left justified

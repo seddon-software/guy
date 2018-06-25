@@ -66,7 +66,7 @@ function displayQuestion(questionNumber, questionText, i, questionType) {
 	}
 }
 
-function displayCheckboxes(options, marks, n, questionType) {
+function displayCheckboxes(options, marks, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	for(var i = 0; i < options.length; i++) {
     	let checkbox = span(`<input type="checkbox" name="checkbox${n}" id="check-${n}-${i}" value="${i}"`);
@@ -88,7 +88,7 @@ function displayCheckboxes(options, marks, n, questionType) {
 		    });
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;
-			results[n] = keyValuePair(questionType, {"question":n, "section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
+			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});
 			console.log(n, results[n], results);
 		} else {
 			questionAnswerInvalid(selector, n);
@@ -96,7 +96,7 @@ function displayCheckboxes(options, marks, n, questionType) {
 	});
 }
 
-function displayRadioButtons(options, marks, n, questionType) {
+function displayRadioButtons(options, marks, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	for(var i = 0; i < options.length; i++) {
 		let radioButton = $(`<input type="radio" name="radioButton${n}" value=` + `${i}` + ' />');
@@ -112,11 +112,11 @@ function displayRadioButtons(options, marks, n, questionType) {
     	let section = questions[n][1];
     	let optionCount = options.length;
     	let value = $(`input[name=radioButton${n}]:checked`).val();
-		results[n] = keyValuePair(questionType, {"question":n, "section":section, "selection":value, "marks":marks[value], "optionCount":optionCount});
+		results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":value, "marks":marks[value], "optionCount":optionCount});
 	});
 }
 
-function displayEmail(text, n, questionType, autoFill) {
+function displayEmail(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
@@ -133,7 +133,7 @@ function displayEmail(text, n, questionType, autoFill) {
     	let value = $(this).val();
     	if(isEmail(value)) {
     		questionAnswered(selector, n);
-    		results[n] = keyValuePair(questionType, {"question":n, "name":value});
+    		results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		questionAnswerInvalid(selector, n);
@@ -141,7 +141,7 @@ function displayEmail(text, n, questionType, autoFill) {
 	});	
 }
 
-function displayClient(text, n, questionType, autoFill) {
+function displayClient(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
@@ -153,12 +153,12 @@ function displayClient(text, n, questionType, autoFill) {
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
 		questionAnswered(selector, n);
-		results[n] = keyValuePair(questionType, {"question":n, "name":value});
+		results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
 	    if(autoFill) $.cookie(`cookie${n}`, value);
 	});	
 }
 
-function displayTextArea(text, n, questionType, autoFill) {
+function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<textarea rows="5" cols="100%" name="text${n}" id="text-${n}"`);
@@ -171,7 +171,7 @@ function displayTextArea(text, n, questionType, autoFill) {
     	let value = $(this).val();
     	if(value !== "") {
 	    	questionAnswered(selector, n);
-			results[n] = keyValuePair(questionType, {"question":n, "name":value});
+			results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
 		    if(autoFill) $.cookie(`cookie${n}`, value);
     	} else {
     		results[n] = undefined
@@ -180,13 +180,13 @@ function displayTextArea(text, n, questionType, autoFill) {
 	});
 }
 
-function displayText(text, n, questionType, autoFill) {
+function displayText(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
     textbox.css({"width":"100%", "transform":"translateX(20%)"});
-    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
+    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, questionNumber, questionType);
 
     // change the color when text changed
     $(`#text-${n}`).change(function(event) {
@@ -202,13 +202,13 @@ function displayText(text, n, questionType, autoFill) {
 	});
 }
 
-function displayTitle(text, n) {
+function displayTitle(text, n, questionNumber) {
 	let selector = `#border${n}`;
  	let css = {"background-color":"aquamarine", 
 			   "font-size":"large"};
  	let html = div(text, `title${n}`, css);
     $(selector).append(html);
-    results[n] = {"title":{"question":n}};
+    results[n] = {"title":{"question":questionNumber}};
 }
 
 function drawTable(selector, options, n) {
@@ -272,7 +272,7 @@ function drawTable(selector, options, n) {
 	return rows - 1;	// used to size array of results
 }
 
-function displayTable(entry, n, questionType) {
+function displayTable(entry, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	let options = entry[1];
 	let rows = drawTable(selector, options, n);	
@@ -296,7 +296,7 @@ function displayTable(entry, n, questionType) {
 	    	let section = questions[n][1];
 	    	let optionCount = options[0].length - 1;  // -1 for the sidebar text
 	    	let value = $(`input[name=radioButton${n}]:checked`).val();
-			results[n] = keyValuePair(questionType, {"question":n, "section":section, "selection":values, 
+			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":values, 
 				"marks":marks, "optionCount":optionCount});
 		}
 	});
@@ -329,39 +329,39 @@ function displayQuestionsAndOptions() {
 		if(questionType === "radio") {
 			options = entry[1][0];
 			marks = entry[1][1];
-			displayRadioButtons(options, marks, i, questionType);
+			displayRadioButtons(options, marks, i, questionType, questionNumber);
 		}
 		if(questionType === "checkbox") {
 			options = entry[1][0];
 			marks = entry[1][1];
-			displayCheckboxes(options, marks, i, questionType);
+			displayCheckboxes(options, marks, i, questionType, questionNumber);
 		}
 		if(questionType === "text") {
 			text = entry[1][0];
-			displayText(text[0], i, questionType, autoFill);
+			displayText(text[0], i, questionType, autoFill, questionNumber);
 		}
 		if(questionType === "textarea") {
 			text = entry[1][0];
-			displayTextArea(text[0], i, questionType, autoFill);
+			displayTextArea(text[0], i, questionType, autoFill, questionNumber);
 		}
 		if(questionType === "email") {
 			text = entry[1][0];
-			displayEmail(text[0], i, questionType, autoFill);
+			displayEmail(text[0], i, questionType, autoFill, questionNumber);
 		}
 		if(questionType === "client") {
 			text = entry[1][0];
-			displayClient(text[0], i, questionType, autoFill);
+			displayClient(text[0], i, questionType, autoFill, questionNumber);
 		}
 		if(questionType === "title") {
 			text = entry[1][0];
-			displayTitle(text[0], i, questionType);
+			displayTitle(text[0], i, questionType, questionNumber);
 		}
 		if(questionType === "graph") {
  			options = entry[1];
-			displayGraph(options, i, questionType);
+			displayGraph(options, i, questionType, questionNumber);
 		}
 		if(questionType === "table") {
-			displayTable(entry, i, questionType);
+			displayTable(entry, i, questionType, questionNumber);
 		}
     }
 }
@@ -435,7 +435,6 @@ function addClickHandlers() {
 		    		results = [];
 		    		$(this).dialog("close");
 		    		clearPage();
-		    		//setInterval(function() {location.reload()}, 500);
 		    	}
 		    }
 		});	
