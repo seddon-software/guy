@@ -141,28 +141,34 @@ div.newLine {
 
 <script>
 
-//$(document).ready(function() {
 $(window).on('load', function () {
 	removeCookiesOnStartup();
 	getQuestions();
 	getOptions();
 	addClickHandlers();
 	positionCopyright();
+    displayCharts();
+	displayPieCharts();
+	setupTabs();
 });
 
-$(function() {
-    $("#tabs").tabs({
-		activate: function(event, ui) { 
-			let activeTab = $('#tabs').tabs('option', 'active');
-			if (activeTab == 1) { 
-				displayCharts();
-			}
-			if (activeTab == 2) { 
-				displayPieCharts();
-			}
-		}
-	});
-});
+function setupTabs() {
+	function hideTab(selector) {
+		$(`[href="${selector}"]`).closest('li').hide();		
+	}
+	console.log( $(location).attr('pathname'));
+	console.log( $(location).attr('search'));
+	let tabObject = {};
+	if($(location).attr('search')==="?charts") {
+		tabObject["active"] = 1;
+		hideTab("#questions-tab");		
+	} else {
+		tabObject["active"] = 0;
+		hideTab("#charts-tab");
+		hideTab("#piecharts-tab");
+	}
+	$(function() {$("#tabs").tabs(tabObject);});
+}
 
 </script>
 
@@ -170,7 +176,7 @@ $(function() {
 <body>
     <div id="tabs">
 	  <ul>
-	    <li><a href="#questions-tab">Questions</a></li>
+	    <li><a href="#questions-tab">Assessment</a></li>
 	    <li><a href="#charts-tab">Charts</a></li>
 	    <li><a href="#piecharts-tab">Pie Charts</a></li>
 	  </ul>

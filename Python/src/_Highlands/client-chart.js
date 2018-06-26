@@ -76,7 +76,14 @@ function getPieChartQuestionsAndOptions() {
 }
 
 function drawChart(data) {
- 	function zip(a, b) {
+	// data is presented as an array of objects
+	// each entry has:
+	//		key = "<aspect>,<client>-<email>"
+	//		value = <sum of marks>
+    let ASPECT = 0;
+    let CLIENT = 1;
+    
+	function zip(a, b) {
 		var result = [];
 		for(var i = 0; i < a.length; i++){
 			result.push([a[i], b[i]]);
@@ -94,7 +101,7 @@ function drawChart(data) {
 	function determineClients() {
 		let clients = [];
 		keys.forEach(function(key) {
-			let client = key.split(",")[1];
+			let client = key.split(",")[CLIENT];
 			if($.inArray(client, clients) === -1) clients.push(client);
 		});
 		return clients;
@@ -102,7 +109,7 @@ function drawChart(data) {
 	function determineAspects() {
 		let aspects = [];
 		keys.forEach(function(key) {
-			let aspect = key.split(",")[0];
+			let aspect = key.split(",")[ASPECT];
 			if($.inArray(aspect, aspects) === -1) aspects.push(aspect);
 		});
 		return aspects;
@@ -113,8 +120,8 @@ function drawChart(data) {
 		return array;
 	}
 	function addAspectNamesToStartOfColumn() {
-		for(let i = 0; i < aspects.length; i++) {
-			values[i].unshift(aspects[i]);
+		for(let i = 0; i < values.length; i++) {
+				values[i].unshift(aspects[i]);
 		}
 	}	
 	let keys = Object.keys(data);
@@ -124,6 +131,13 @@ function drawChart(data) {
 	values = splitValues()
 	addAspectNamesToStartOfColumn();
 
+	let o = {};
+	o["data"] = { columns:[4,5,6], type:'bar'};
+	o["axis"] = { rotated:true, x:{ type:'category', categories:clients}};
+    o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
+	o["data"] = { columns: values, type: 'bar'};
+	var chart = c3.generate(o);
+	/*
 	var chart = c3.generate({
 		title: {
 		    text:'Strength of each Aspect'
@@ -145,6 +159,7 @@ function drawChart(data) {
 	        }
 	    }
 	});
+	*/
 }
 
 function drawPieChart() {
