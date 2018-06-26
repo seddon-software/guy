@@ -134,9 +134,8 @@ function displayGraph(text, n, questionType, questionNumber) {
         }
     }
     
-	let selector = `#border${n}`;    	
-	$(selector).append(div(text));
-	let subTitle = text[0];
+	let selector = `#border${n}`;
+	$(selector).append(div(text[0]));
 
 	let html = `<div id="graph${n}"></div>`;
     $(selector).append(html);
