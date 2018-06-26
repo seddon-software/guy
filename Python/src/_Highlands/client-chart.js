@@ -151,26 +151,33 @@ function drawPieChart() {
 	// uses globals: pieChartData, pieChartQuestionsAndOptions
 	// the server sends data values of -1 when there is no data
 	
-	function truncate(s, length) {
+    function truncate(s, length) {
 	    if (s.length > length) {
 	      s = s.substring(0, length - 3) + "...";
 	    }
 	    return s;
 	}
 	
-	let maxTitleLength = 100;
 	let maxLegendLength = 100;
 	
 	for(let i = 0; i < pieChartData.length; i++) {
+	    function appendTitle() {
+	 	    title = `${number}. ${title}`;
+	 	    title = title.replace(/\"/g,'\\"');		// escape all " quotes
+	 	    title = div(title,"",{"color":PIECHART_TITLES_COLOR})
+	 	    $("#piechart").append(title);
+	 	}
+
 		let selector = `#chart${i}`;
-		let anchor = div("", `chart${i}`).css({"float":"left"});
- 	    $("#piechart").append(anchor);
+		
  	    let data = pieChartData[i];
  	    let number = pieChartQuestionsAndOptions[i][NUMBER];
- 	    let title = pieChartQuestionsAndOptions[i][QUESTION];
- 	    title = `${number}. ${title}`;
- 	    title = truncate(title, maxTitleLength);
  	    let legend = pieChartQuestionsAndOptions[i][OPTIONS];
+ 	    let title = pieChartQuestionsAndOptions[i][QUESTION];
+ 	    
+ 	    appendTitle();	// workaround for title broken in C3 library
+ 	    let anchor = div("", `chart${i}`).css({"float":"left"});
+ 	    $("#piechart").append(anchor);
 
  		// make sure no more than n (=1) pie charts are drawn per line
  	    let chartsPerLine = 1;
@@ -182,7 +189,6 @@ function drawPieChart() {
  	    for(let k = 1; k < data.length; k++) {
  	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
  	    }
- 	    title = title.replace(/\"/g,'\\"');		// escape all " quotes
 
  	    // build object to generate piechart
  	    o = `{
@@ -205,15 +211,11 @@ function drawPieChart() {
  		    							   sum += e.value;
  		    						   });
  		    						   defaultTitleFormat = function() {
- 		    							   return sum;
+ 		    							   return `Total marks = ${sum}`;
  		    						   };
  		    						   return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
  								   }
  		c3.generate(o);
- 		// this is a hack, because charts are always centered, even though we need left justified
- 		$("svg").css({"transform":"translateX(0vw)"});
- 		// align title to the left
- 		$(`#chart${i} > svg > text`).attr("x", 0);
 	};
 }
 
