@@ -1,0 +1,166 @@
+updated 26/6  22:30
+
+1(FIXED). checkboxes must not be empty.  This can happen if we check a box and then uncheck.
+perhaps use: $('#txt').val($("input[type=checkbox]:checked").length)
+this can happen with text fields as well
+
+2(FIXED). The title line of some of the pie charts are chopped on the left  ( about 4 characters).
+
+
+3(FIXED). In Charts tab, similar to showing the numberic scores when the cursor is on the bar plots, can you 
+show the name of the person who did the response, when the cursor is on the name of the client (the Y axis) 
+or just add this to the info that is shown when hovering over the bar plots.
+
+4(FIXED).  Q35, Thinking like your client, can you make it 3 lines, that scroll, so that people can put quite a 
+bit ot text in there.  
+Maybe have a "large text" answer type, incase we want more like this.
+
+4ai(FIXED). On Android devices the textarea doesn't display properly in portrait mode, but it worls in landscape mode.  Seems to be an Android bug.  
+Maybe there is a workaround?
+
+5(NOT FIXED).  On the Pie charts, can you show the actual count if the cursor is hovered over that segment of the pie
+the c3.js library has a bug - the tooltips don't work for pie charts
+
+6(FIXED). On Charts, I had two companies before I submitted a new profile, and did another profile for one of these companies. 
+When I went to the Charts tab, it showed two company plots,  was expecting to see one of the companies to be plotted twice (one per submision).
+
+7(FIXED).  I got this error, but not been able to reproduce it just after talking with you today..
+192.168.1.170 - - [22/Jun/2018 14:58:12] "GET /options HTTP/1.1" 200 -
+192.168.1.170 - - [22/Jun/2018 14:58:12] "GET /images/arrows.svg HTTP/1.1" 200 -
+----------------------------------------
+Exception happened during processing of request from ('192.168.1.170', 49843)
+Traceback (most recent call last):
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 317, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 348, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 696, in __init__
+    self.handle()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File "server.py", line 90, in do_GET
+    f = open(fileName, "r", encoding="UTF-8")
+FileNotFoundError: [Errno 2] No such file or directory: 'images/arrows.svg'
+
+7(Can't reproduce).  I have intiailized the DB and before I filled in a profile I went to the Chart tab - nothing was displayed.  
+I did see this python error
+Exception happened during processing of request from ('192.168.1.170', 53615)
+Traceback (most recent call last):
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 317, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 348, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 696, in __init__
+    self.handle()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File ".\server.py", line 69, in do_GET
+    jsonString = json.dumps(sql.getChartData())
+  File "C:\Users\guyjl\Highlands from Chris\server_database.py", line 147, in getChartData
+    chartData = chartData.to_dict()['marks']
+KeyError: 'marks'
+
+8(FIXED).  Can you add a separate html client file that has the tabs for the Chart and Pie Charts and remove the tabs 
+from the Client.html file
+
+9(FIXED). Copyright text needs the final character a "  to be removed
+
+10(Can't reproduce).  I completed 3 assessments but only 1 shows on the charts view.  I did see this error
+Exception happened during processing of request from ('192.168.1.170', 53704)
+Traceback (most recent call last):
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 317, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 348, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 696, in __init__
+    self.handle()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File ".\server.py", line 29, in do_POST
+    sql.saveResults(results)
+  File "C:\Users\guyjl\Highlands from Chris\server_database.py", line 72, in saveResults
+    email = d["name"]
+TypeError: string indices must be integers
+
+26/6(Can't reproduce) More on the above.  I have just entered 2 assessment for the same company, with the same section1 details. The 2nd assessment is
+not stored in MySQL (spotted by looking at the charts). here is the error
+Exception happened during processing of request from ('192.168.1.170', 57446)
+Traceback (most recent call last):
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 317, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 348, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 696, in __init__
+    self.handle()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File ".\server.py", line 29, in do_POST
+    sql.saveResults(results)
+  File "C:\Users\guyjl\Highlands from Chris\server_database.py", line 72, in saveResults
+    email = d["name"]
+TypeError: string indices must be integers
+
+
+
+
+NEW
+11(FIXED).  Q33 Where is your client's business...  There is extra text after the question text.  
+ie 33. Where is your client's business dynamic vs the market dynamic?
+Please click the box that best shows the market position of your client. (X-axis = Market Growth, Y-axis = Client Revenue Growth),Where is your client?,Very Strong,Flat,Major Decline,0,Flat,Very Strong
+The question ends at the ")", the "," onwards has been added.
+
+(FIXED)Error 6 remains.  It appears to be when a 2nd entry is made using the same company name and same section 1 info.
+Looking at the value for the bars, it looks like the two entries for the same company are added together on the one bar.
+Also, if you have a blank section1 (after asking to submit a new profile), and enter the same section 1 and 2 as the previous
+submission, the Mqsql insert happens.  Maybe the GUID is not getting changed, when the section 1 is represented, filled in
+when asking to submit another assessment?
+
+
+12(FIXED) Can you add the name of the submitter when you hover over the plots (you see the values for the 3 bars
+plus the name of the company.
+
+13(FIXED)  On the "client master" form, when asking to submit another assessment, it takes you back to section 1 which is blank -
+it should retain the info from the first assessment.
+
+
+14(Can't reproduce).  I loaded some more assessments - one for Tesco and then one for Waitrose.  The Waitrose one did not show up on the charts
+but this error did.
+Exception happened during processing of request from ('192.168.1.170', 62232)
+Traceback (most recent call last):
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 317, in _handle_request_noblock
+    self.process_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 348, in process_request
+    self.finish_request(request, client_address)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\guyjl\Anaconda3\lib\socketserver.py", line 696, in __init__
+    self.handle()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 418, in handle
+    self.handle_one_request()
+  File "C:\Users\guyjl\Anaconda3\lib\http\server.py", line 406, in handle_one_request
+    method()
+  File ".\server.py", line 31, in do_POST
+    sql.saveResults(results)
+  File "C:\Users\guyjl\Highlands from Chris\server_database.py", line 58, in saveResults
+    email = d["name"]
+TypeError: string indices must be integers
+Could this be due to the GUID being resused as a result of pre-populating the section 1 when you ask to do another survey?
+
+15(FIXED).  On the pie charts the summ of responses using the tooltips is 10, but there are only 4 plots on the charts?
+
