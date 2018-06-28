@@ -17,7 +17,6 @@
   <meta http-equiv="Cache-Control" content="max-age=31536000">
 <link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">
 <link rel="stylesheet" href="css/jquery-ui-1.12.1.css">
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>  -->
 <link rel="stylesheet" href="c3-0.4.10/c3.min.css"/>
 <script src="js/jquery-3.2.1.js"></script>
 <script src="js/jquery-ui-1.12.1.js"></script>
@@ -27,10 +26,6 @@
 <script src="js/jquery_cookie.js"></script>
 <script src="js/jquery.mobile.custom.js"></script>
 <script src="js/jquery.ui.touch-punch.min.js"></script>
-<!--  
-<script src="js/d3.min.js" charset="utf-8"></script>
-<script src="js/c3.min.js"></script>
--->
 
 <script src="client-constants.js"></script>
 <script src="client.js"></script>
@@ -42,6 +37,23 @@ body {
     margin-left: 2vw;
     overscroll-behavior: none;
 }
+/*
+#tabs {
+    background-image: url("images/highlands.jpg") no-repeat;
+}
+*/
+/*
+.ui-mobile-viewport{
+    background: url("http://images1.wikia.nocookie.net/__cb20090704061234/harrypotter/images/6/61/Harry-Potter-the-Order-Phoenix-832.jpg") no-repeat;
+    background-size: 100% 100% !important;
+}
+.ui-page{
+    background:none;
+}
+.ui-overlay-a{
+    background:#222 !important;
+}
+*/
 #tabs {
     background-color: rgb(170, 170, 205);
 }
@@ -142,13 +154,18 @@ div.newLine {
 <script>
 
 $(window).on('load', function () {
-	removeCookiesOnStartup();
-	getQuestions();
-	getOptions();
-	addClickHandlers();
-	positionCopyright();
-    displayCharts();
-	displayPieCharts();
+	if($(location).attr('search')==="?charts") {
+		// charts
+		displayCharts();
+		displayPieCharts();
+	} else {
+		// assessments
+		removeCookiesOnStartup();
+		getQuestions();
+		getOptions();
+		addClickHandlers();
+		positionCopyright();
+	}
 	setupTabs();
 });
 

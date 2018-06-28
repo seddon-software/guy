@@ -1,7 +1,7 @@
 /* 
 ############################################################
 #
-#    Highlands Server
+#    Highlands Client
 #
 #    © Highlands Negotiations, June 2018, v0.5
 #

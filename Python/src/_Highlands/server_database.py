@@ -327,10 +327,12 @@ def getChartData():
                         chartData = addItem(pair["checkbox"]["section"], pair["checkbox"]["marks"].split())
                     if 'table' in pair:
                         chartData = addItem(pair["table"]["section"], pair["table"]["marks"])
-        chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)  
+        chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)
+        print(chartData)  
         chartData = chartData.groupby(['section', 'client','email','guid']).sum()
         chartData = chartData.to_dict()['marks']
-        chartData = {"{},{} <{}>".format(compositeKey[0], compositeKey[1], compositeKey[2]):chartData[compositeKey] for compositeKey in chartData}
+        print(len(chartData))  
+        chartData = {"{},{} <{}>,{}".format(compositeKey[0], compositeKey[1], compositeKey[2], compositeKey[3]):chartData[compositeKey] for compositeKey in chartData}
     finally:
         connection.close()
         print(chartData)
@@ -340,7 +342,9 @@ def getChartData():
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 if __name__ == "__main__":
     import json
-#    data = getChartData()
+    data = getChartData()
+    for key in data:
+        print(key, data[key])
     jsonString = json.dumps(getChartData())
     jsonAsBytes = jsonString.encode("UTF-8")
-    print(jsonAsBytes)
+    #print(jsonAsBytes)

@@ -1,12 +1,13 @@
 /* 
 ############################################################
 #
-#    Highlands Server
+#    Highlands Client
 #
 #    © Highlands Negotiations, June 2018, v0.5
 #
 ############################################################
 */
+// piecharts tooltip should show frequency not marks
 
 var NUMBER = 0;
 var SECTION = 1;
@@ -78,7 +79,7 @@ function getPieChartQuestionsAndOptions() {
 function drawChart(data) {
 	// data is presented as an array of objects
 	// each entry has:
-	//		key = "<aspect>,<client>-<email>"
+	//		key = "<aspect>,<client>-<email>,<guid>"
 	//		value = <sum of marks>
     let ASPECT = 0;
     let CLIENT = 1;
@@ -99,11 +100,21 @@ function drawChart(data) {
  		
  	} 	
 	function determineClients() {
+		// determine the categories shown on the y axis based on input "keys"
+		// keys = "<aspect>,<client> <email>,<guid>"
+		// remove aspect and then check for unique sets of "<client> <email>,<guid>" 
+		// then remove the <guid> as its not shown on the chart
 		let clients = [];
 		keys.forEach(function(key) {
-			let client = key.split(",")[CLIENT];
+			// remove <aspect> and check for unique sets
+			let client = key.replace(/^[^,]+,/,"");
 			if($.inArray(client, clients) === -1) clients.push(client);
 		});
+		// now remove <guid> from end of strings
+		for(let i = 0; i < clients.length; i++) {
+			clients[i] = clients[i].replace(/,[^,]+$/,"");
+		}
+		// return categories used as y axis
 		return clients;
 	}
 	function determineAspects() {
@@ -115,8 +126,9 @@ function drawChart(data) {
 		return aspects;
 	}
 	function splitValues() {
-		var array = [];
-		while(values.length) array.push(values.splice(0,clients.length));
+		let array = [];
+		let spliceLength = values.length / aspects.length;
+		while(values.length) array.push(values.splice(0, spliceLength));
 		return array;
 	}
 	function addAspectNamesToStartOfColumn() {
@@ -124,6 +136,7 @@ function drawChart(data) {
 				values[i].unshift(aspects[i]);
 		}
 	}	
+	console.log(data);
 	let keys = Object.keys(data);
 	let values = Object.values(data);
 	let clients = determineClients();
@@ -131,35 +144,11 @@ function drawChart(data) {
 	values = splitValues()
 	addAspectNamesToStartOfColumn();
 
-	let o = {};
-	o["data"] = { columns:[4,5,6], type:'bar'};
+	let o = {};  // used to generate chart
 	o["axis"] = { rotated:true, x:{ type:'category', categories:clients}};
     o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
 	o["data"] = { columns: values, type: 'bar'};
 	var chart = c3.generate(o);
-	/*
-	var chart = c3.generate({
-		title: {
-		    text:'Strength of each Aspect'
-		},
-		data: {
-	        columns: values,
-	        type: 'bar'
-	    },
-	    bar: {
-	        width: {
-	            ratio: 0.5 // this makes bar width 50% of length between ticks
-	        }
-	    },
-	    axis: {
-			rotated: true,
-		    x: {
-	            type: 'category',
-	            categories: clients
-	        }
-	    }
-	});
-	*/
 }
 
 function drawPieChart() {
@@ -178,7 +167,7 @@ function drawPieChart() {
 	for(let i = 0; i < pieChartData.length; i++) {
 	    function appendTitle() {
 	 	    title = `${number}. ${title}`;
-	 	    title = title.replace(/\"/g,'\\"');		// escape all " quotes
+	 	    //title = title.replace(/\"/g,'\\"');		// escape all " quotes
 	 	    title = div(title,"",{"color":PIECHART_TITLES_COLOR})
 	 	    $("#piechart").append(title);
 	 	}
@@ -226,7 +215,7 @@ function drawPieChart() {
  		    							   sum += e.value;
  		    						   });
  		    						   defaultTitleFormat = function() {
- 		    							   return `Total marks = ${sum}`;
+ 		    							   return `Frequency = ${sum}`;
  		    						   };
  		    						   return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
  								   }

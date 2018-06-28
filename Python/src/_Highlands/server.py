@@ -38,8 +38,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             extension = fileName.split(".")[-1]
             if(extension == "ico"): return "image/x-icon"
             if(extension == "css"): return "text/css"
-            if(extension == "css"): return "image/png"
-            if(extension == "css"): return "image/svg+xml"    # svg svgz
+            if(extension == "jpg"): return "image/jpeg"
+            if(extension == "png"): return "image/png"
+            if(extension == "svg"): return "image/svg+xml"    # svg svgz
             return "text/html"
             
         def sendHeaders():
@@ -84,7 +85,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         else:
             sendHeaders()
             extension = fileName.split(".")[-1]
-            if(extension == "png"):
+            if(extension == "png" or extension == "jpg" or extension == "gif" ):
                 f = open(fileName, "rb")
                 data = f.read()
                 self.wfile.write(data)

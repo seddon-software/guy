@@ -10,11 +10,11 @@ To initilize the system:
 To run the server:
 	python server.py
 	
-To start the client in a browser:
-	http://<server-ip>:<port>/client-master.html
+To start the client assessment in a browser:
+	http://<server-ip>:<port>/client.html
 
 To start the client with the charts in a browser:
-	http://<server-ip>:<port>/client.html
+	http://<server-ip>:<port>/client.html?charts
 
 
 

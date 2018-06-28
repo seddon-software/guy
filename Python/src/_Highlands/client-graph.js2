@@ -1,7 +1,7 @@
 /* 
 ############################################################
 #
-#    Highlands Server
+#    Highlands Client
 #
 #    © Highlands Negotiations, June 2018, v0.5
 #
@@ -145,7 +145,7 @@ function displayGraph(text, n, questionType, questionNumber) {
 		$(`#graph${n}`).append(frame);
 		let frameWidth = frame.width();
 		let main = 25;
-		let spacing = `10% 10% ${main}% ${main}% ${main}% 5%`;
+		let spacing = `10% 10% ${main}% ${main}% ${main}% 6%`;
 		g = new Grid("frame", n, spacing);
 		g.addArea("header");
 		g.addArea("left-1");
