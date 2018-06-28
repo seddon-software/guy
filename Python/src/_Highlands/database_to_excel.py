@@ -37,7 +37,7 @@ def getNamesAndPasswords():
     port = hostFrame["OPTION"].tolist()[0]
     return [root, rootPassword, manager, managerPassword, database, table, server, port]
 
-def getChartData():
+def getExcelData():
     connection = connect()
     try:
         with connection.cursor() as cursor:
@@ -59,6 +59,9 @@ def getChartData():
                                 for key in entry:
                                     theKey = "{}-{}".format(question, key)
                                     theValue = entry[key]
+                                    
+                                    if key == 'question': continue
+                                    if key == 'optionCount': continue
                                     orderedDict[theKey] = theValue
                                 pass
                     else:
@@ -72,5 +75,5 @@ def getChartData():
 
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 outFile = 'results.xlsx'
-getChartData().to_excel(outFile, index = False)
+getExcelData().to_excel(outFile, index = False)
 print("MySql database[{}],table[{}] exported to Excel[{}]".format(database, table, outFile))

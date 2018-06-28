@@ -43,12 +43,13 @@ function removeCookiesOnStartup() {
 function useCookiesToSetFields(selector, textbox, n, questionType) {
     let cookieValue = $.cookie(`cookie${n}`);
     if(cookieValue) {
-    	$(textbox).val(cookieValue);
+    	let cookieContents = JSON.parse($.cookie(`cookie${n}`));
+    	$(textbox).val(cookieContents.name);
     	questionAnswered(selector, n);
 		results[n] = keyValuePair(questionType, cookieValue);
     }
 }
-
+// $("#ArticlesHolder").data(JSON.parse($.cookie("basket-data")));
 function keyValuePair(key, value) {
 	let o = {}
 	o[`${key}`] = value;
@@ -142,9 +143,12 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
     	}
     	let value = $(this).val();
     	if(isEmail(value)) {
+    		let answer = {"question":questionNumber, "name":value}
     		questionAnswered(selector, n);
-    		results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
-		    if(autoFill) $.cookie(`cookie${n}`, value);
+    		results[n] = keyValuePair(questionType, answer);
+    		// CHECK FOR THIS ERROR ELSEWHERE
+    		//$.cookie("basket-data", JSON.stringify($("#ArticlesHolder").data()));
+		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		questionAnswerInvalid(selector, n);
 	    	results[n] = undefined;
@@ -153,6 +157,7 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
 }
 
 function displayClient(text, n, questionType, autoFill, questionNumber) {
+	// no autofill for client
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
@@ -187,9 +192,11 @@ function displayTextArea(text, n, questionType, autoFill, questionNumber) {
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
     	if(value.trim() !== "") {
+    		let answer = {"question":questionNumber, "name":value};
 	    	questionAnswered(selector, n);
-			results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
-		    if(autoFill) $.cookie(`cookie${n}`, value);
+			results[n] = keyValuePair(questionType, answer);
+//		    if(autoFill) $.cookie(`cookie${n}`, value);
+		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		results[n] = undefined
     		questionAnswerInvalid(selector, n);
@@ -209,9 +216,11 @@ function displayText(text, n, questionType, autoFill, questionNumber) {
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
     	if(value !== "") {
+    		let answer = {"question":n, "name":value}
 	    	questionAnswered(selector, n);
-			results[n] = keyValuePair(questionType, {"question":n, "name":value});
-		    if(autoFill) $.cookie(`cookie${n}`, value);
+			results[n] = keyValuePair(questionType, answer);
+//		    if(autoFill) $.cookie(`cookie${n}`, value);
+		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		results[n] = undefined
     		questionAnswerInvalid(selector, n);

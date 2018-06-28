@@ -148,6 +148,31 @@ function drawChart(data) {
 	o["axis"] = { rotated:true, x:{ type:'category', categories:clients}};
     o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
 	o["data"] = { columns: values, type: 'bar'};
+	o["tooltip"] = {
+		format: {
+			title: function (d) { return clients[d]; },
+			value: function (value, ratio, id) {
+				var format = id === 'data1' ? d3.format(',') : d3.format('$');
+				//return format(value);
+				return id;
+			}
+		}
+	}
+	/*
+	 * 
+	 * 
+	 format: {
+            title: function (d) { return 'Data ' + d; },
+            value: function (value, ratio, id) {
+                var format = id === 'data1' ? d3.format(',') : d3.format('$');
+                return format(value);
+            }
+//            value: d3.format(',') // apply this format to both y and y2
+        }
+	 */
+	
+	
+	
 	var chart = c3.generate(o);
 }
 
