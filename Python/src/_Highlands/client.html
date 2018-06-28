@@ -38,37 +38,16 @@
 <script src="client-chart.js"></script>
 <style type="text/css">
 
-body {
-    margin-left: 2vw;
-    overscroll-behavior: none;
-}
-#tabs {
-    background-color: rgb(170, 170, 205);
-}
-
-#charts-tab, #others-tab, .ui-page {
-    background-color: rgb(220, 220, 255);
-}
-#tabs, #piecharts-tab, #piechart > div {
-    background-color: rgb(220, 220, 255);
-}
-
-input[type=text] { 
-	width: 60%; 
-	box-sizing: border-box; 
-}
-
-.square {
-    float: left;
-    margin: 0;
-    padding: 0;
-}
 /*
 div.newLine {
     clear: right;
 	float:left;
 }
-*/
+.square {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
 .internal {
     height: 100%;
     width: 100%;
@@ -87,6 +66,51 @@ div.newLine {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 	background-color: blue;
 }
+.c3-title {
+	font-size: x-large;
+	fill: blue;
+}
+.ui-widget-content.ui-helper-clearfix {
+	margin-top: 0;
+}
+.ui-dialog, .ui-dialog-titlebar {
+    background-color: rgb(170, 170, 205);
+	margin-top: 0;
+}
+.ui-widget-header  {
+	border: 0;
+	background: gold;
+}
+.ui-dialog-buttonpane {
+	margin-top: 0;
+}
+.ui-dialog-titlebar {
+}
+.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+	text-shadow: 0 0 0 #f3f3f3
+}
+*/
+
+body {
+/*    margin-left: 2vw; */
+    overscroll-behavior: none;
+}
+#tabs {
+    background-color: rgb(170, 170, 205);
+}
+
+#charts-tab, #others-tab, .ui-page {
+    background-color: rgb(220, 220, 255);
+}
+#tabs, #piecharts-tab, #piechart > div {
+    background-color: rgb(220, 220, 255);
+}
+
+input[type=text] { 
+	width: 60%; 
+	box-sizing: border-box; 
+}
+
 #showResults {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 	background-color: gold;
@@ -97,23 +121,6 @@ div.newLine {
 	margin-bottom: 10vh;
 	font-size: xx-large;
 }
-#errorMessage {
-	font-size: x-large;
-	color: red;
-}
-.c3-title {
-	font-size: x-large;
-	fill: blue;
-}
-/*
-#piechart rect.c3-event-rect {
-  pointer-events: none;
-}
-*/
-#copyright {
-	background-color: rgba(255, 255, 255, 0.4);
-}
-
 #charts-title, #piecharts-title {
     text-align: center;
     font-size: xx-large;
@@ -121,36 +128,8 @@ div.newLine {
     color: darkmagenta;
 }
 
-.ui-widget-content.ui-helper-clearfix {
-	margin-top: 0;
-}
 
-.ui-dialog, .ui-dialog-titlebar {
-    background-color: rgb(170, 170, 205);
-	margin-top: 0;
-}
 
-.ui-dialog-buttonpane {
-	margin-top: 0;
-}
-
-.ui-dialog-titlebar {
-}
-
-.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
-	text-shadow: 0 0 0 #f3f3f3
-}
-/*
-#heading-1 img {
-	width: 15vw;
-	height: 15vw;
-	background-color: yellow;
-}
-*/
-.ui-widget-header  {
-	border: 0;
-	background: gold;
-}
 #headings {
   display: flex;
   align-items: center;
@@ -175,6 +154,7 @@ div.newLine {
 <script>
 
 $(window).on('load', function () {
+	setStyles();
 	setupHeadings();
 	if($(location).attr('search')==="?charts") {
 		// charts
@@ -245,6 +225,7 @@ function setupTabs() {
 	  </div>
 	  <div id="piecharts-tab">
 	    <div id="piecharts-title">Frequency of Answer:</div>
+		<div id="piecharts-message"></div>
 		<div id="piechart"></div>
 	  </div>
 	</div>    

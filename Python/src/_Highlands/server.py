@@ -24,13 +24,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-        print(jsonResponse)
         jsonAsString = jsonResponse.decode("UTF-8")
         results = json.loads(jsonAsString)
 
         sql.saveResults(results)
         sql.printResults()
-        #print("results:", results)       # this is a list
         return
 
     def do_GET(self):

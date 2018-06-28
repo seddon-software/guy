@@ -48,6 +48,7 @@ def getExcelData():
             resultsArray = []
             orderedDict = collections.OrderedDict()
             
+            section = ""
             for row in results:
                 for key in row:
                     if key == 'result':
@@ -62,6 +63,18 @@ def getExcelData():
                                     
                                     if key == 'question': continue
                                     if key == 'optionCount': continue
+                                    if key == 'section': 
+                                        if (theValue == section): 
+                                            continue
+                                        else:
+                                            section = theValue
+                                    if key == 'selection': 
+                                        if (isinstance(theValue, list)):
+                                            theValue = [v+1 for v in theValue]
+                                        elif (isinstance(theValue, str)):
+                                            theValue = int(theValue) + 1
+                                        else:
+                                            theValue += 1
                                     orderedDict[theKey] = theValue
                                 pass
                     else:

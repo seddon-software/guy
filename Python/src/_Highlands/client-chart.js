@@ -81,7 +81,13 @@ function drawChart(data) {
 	// each entry has:
 	//		key = "<aspect>,<client>-<email>,<guid>"
 	//		value = <sum of marks>
-    let ASPECT = 0;
+	if($.isEmptyObject(data)) {
+		$("#piecharts-message").text("no pie charts available");
+		return;
+	} else {
+		$("#piecharts-message").text("");		
+	}
+	let ASPECT = 0;
     let CLIENT = 1;
     
 	function zip(a, b) {
@@ -139,18 +145,27 @@ function drawChart(data) {
 	console.log(data);
 	let keys = Object.keys(data);
 	let values = Object.values(data);
-	let clients = determineClients();
+	let clientsAndEmails = determineClients();
+	let clients = [];
+	let emails = [];
+	for(let i = 0; i < clientsAndEmails.length; i++) {
+		clients.push(clientsAndEmails[i].replace(/^(.*)<.*/,"$1"));
+		emails.push(clientsAndEmails[i].replace(/^[^<]+[<](.*)>/,"$1"));
+	}
 	let aspects = determineAspects();
-	values = splitValues()
+	values = splitValues();
 	addAspectNamesToStartOfColumn();
-
+	let height = clients.length * screen.height / 10;
 	let o = {};  // used to generate chart
 	o["axis"] = { rotated:true, x:{ type:'category', categories:clients}};
     o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
 	o["data"] = { columns: values, type: 'bar'};
-	o["tooltip"] = {
+	o["size"] = {
+        height: height
+    },
+    o["tooltip"] = {
 		format: {
-			title: function (d) { return clients[d]; },
+			title: function(i) { return emails[i]; },
 			value: function (value, ratio, id) {
 				var format = id === 'data1' ? d3.format(',') : d3.format('$');
 				//return format(value);
@@ -158,21 +173,6 @@ function drawChart(data) {
 			}
 		}
 	}
-	/*
-	 * 
-	 * 
-	 format: {
-            title: function (d) { return 'Data ' + d; },
-            value: function (value, ratio, id) {
-                var format = id === 'data1' ? d3.format(',') : d3.format('$');
-                return format(value);
-            }
-//            value: d3.format(',') // apply this format to both y and y2
-        }
-	 */
-	
-	
-	
 	var chart = c3.generate(o);
 }
 

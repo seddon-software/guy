@@ -106,7 +106,6 @@ function displayGraph(text, n, questionType, questionNumber) {
     	function setupBoxes() {
     	    let boxHeight =  boxWidth;
     	    let squareSize = (boxWidth-1) / COLS;	// not sure why we need the -1, but it doesn't work without it
-    	    console.log(squareSize*COLS, squareSize);
     	    let squareRule = `.square { height:${squareSize}px; width:${squareSize}px; } `
     	    let sheet = window.document.styleSheets[0];
     	    sheet.insertRule(squareRule, sheet.cssRules.length);
@@ -114,7 +113,6 @@ function displayGraph(text, n, questionType, questionNumber) {
     	function getId(row, col) {
     		return row * COLS + col;
     	}
-    	console.log(boxWidth);
         setupBoxes();
         let newLine = "<div class='newLine'></div>";
         for(let row = 0; row < ROWS; row++) {
@@ -185,7 +183,6 @@ function displayGraph(text, n, questionType, questionNumber) {
 		addTextToGridPanel("left-2", sidebarTextArray);
 		addTextToGridPanel("footer", footerTextArray);
 		let frameWidth = frame.width();
-		console.log(frameWidth);
 		let gridSpacing = frameWidth * 3 * parseInt(main)/100;
 		fillOutTheBoxes(`#grid-${n}-main`, gridSpacing);
 

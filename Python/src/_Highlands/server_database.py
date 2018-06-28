@@ -60,17 +60,19 @@ def saveResults(results):
             
         with connection.cursor() as cursor:
             # Create a new record
-            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `section`, `result`) 
-                               VALUES (   %s,          %s,      %s,         %s,         %s,       %s)""".format(table)
+            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `result`) 
+                               VALUES (   %s,          %s,      %s,       %s)""".format(table)
             guid = str(uuid.uuid4())
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            questionsAsString = "-"
-            section = "-"
-            cursor.execute(sql, (guid, timestamp, email, questionsAsString, section, resultsAsString))
+            cursor.execute(sql, (guid, timestamp, email, resultsAsString))
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
-    finally:
+        print("1 record committed")
+    except Exception as e:
+        print("rollback")
+        print(e)
         connection.rollback()
+    finally:
         connection.close()
 
 def printResults():
@@ -291,6 +293,7 @@ def getChartData():
             results = cursor.fetchall()
             chartData = pd.DataFrame(columns=['guid', 'client','section','email','marks'])
             
+            if(len(results) == 0): return {}    # return empty dict if no records found
             for row in results:
                 guid = row['guid']
                 keyValuePairs = literal_eval(row['result'])
@@ -337,7 +340,7 @@ def getChartData():
     finally:
         connection.close()
         print(chartData)
-    return chartData
+    return chartData    # return a dict
 
 
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()

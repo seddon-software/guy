@@ -22,6 +22,66 @@ function span(item, id, css) {
 	return html;
 }
 
+function setStyles() {
+	function addClassRuleToStylesheet(rule) {
+		sheet.insertRule(rule, sheet.cssRules.length);		
+	}
+	let noOfStylesheets = window.document.styleSheets.length;
+    let sheet = window.document.styleSheets[noOfStylesheets-1];
+
+    addClassRuleToStylesheet(`
+	    .ui-widget-content.ui-helper-clearfix {
+	    	margin-top: 0;
+		}`);
+//    addClassRuleToStylesheet(`
+//    	.ui-dialog, .ui-dialog-titlebar {
+//		    background-color: ${TAB_HEADING_BACKGROUND_COLOR};
+//			margin-top: 0;
+//		}`);
+    addClassRuleToStylesheet(`
+		.ui-widget-header  {
+			border: 0;
+			background: ${TAB_HEADING_BACKGROUND_COLOR};
+		}`);
+    addClassRuleToStylesheet(`
+	    .ui-dialog-buttonpane {
+	    	margin-top: 0;
+	    }`);
+    addClassRuleToStylesheet(`
+		.button {
+		    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+			background-color: red;
+	    }`);
+
+    addClassRuleToStylesheet(`
+	    .internal {
+	        height: 100%;
+	        width: 100%;
+	        font-size: 150%;    
+	        line-height: 100%;
+	        border-width: 1px;
+	        border-style: solid;
+	        border-color: white;
+	        filter: drop-shadow(1px 1px 5px #808080);
+	        overscroll-behavior: contain;
+	    }`);
+    addClassRuleToStylesheet(`
+	    .square {
+	        float: left;
+	        margin: 0;
+	        padding: 0;
+	    }`);
+    addClassRuleToStylesheet(`
+	    .ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+	    	text-shadow: 0 0 0 #f3f3f3
+	    }`);
+
+	$("#errorMessage").css({
+		"font-size": "x-large",
+		"color": ERROR_MESSAGE_COLOR
+	});
+}
+
 function questionAnswered(selector, n) {
     $(selector).css("background-color", QUESTION_ANSWERED_COLOR);
     $(`#title-${n}`).css("color", "black");
@@ -46,10 +106,10 @@ function useCookiesToSetFields(selector, textbox, n, questionType) {
     	let cookieContents = JSON.parse($.cookie(`cookie${n}`));
     	$(textbox).val(cookieContents.name);
     	questionAnswered(selector, n);
-		results[n] = keyValuePair(questionType, cookieValue);
+		results[n] = keyValuePair(questionType, { "question":n, "name":cookieContents.name });
     }
 }
-// $("#ArticlesHolder").data(JSON.parse($.cookie("basket-data")));
+
 function keyValuePair(key, value) {
 	let o = {}
 	o[`${key}`] = value;
@@ -102,8 +162,13 @@ function displayCheckboxes(options, marks, n, questionType, questionNumber) {
 			questionAnswered(selector, n);
 	    	let section = questions[n][1];
 	    	let optionCount = options.length;
-			results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":checkedValues, "marks":checkedMarks, "optionCount":optionCount});	    	
-	    }
+			results[n] = keyValuePair(questionType, {
+					"question"    : questionNumber, 
+					"section"     : section, 
+					"selection"   : checkedValues, 
+					"marks"       : checkedMarks, 
+					"optionCount" : optionCount});	    	
+	    		}
 	});
 }
 
@@ -123,7 +188,13 @@ function displayRadioButtons(options, marks, n, questionType, questionNumber) {
     	let section = questions[n][1];
     	let optionCount = options.length;
     	let value = $(`input[name=radioButton${n}]:checked`).val();
-		results[n] = keyValuePair(questionType, {"question":questionNumber, "section":section, "selection":value, "marks":marks[value], "optionCount":optionCount});
+		results[n] = keyValuePair(questionType, {
+			"question"    : questionNumber, 
+			"section"     : section, 
+			"selection"   : value, 
+			"marks"       : marks[value], 
+			"optionCount" : optionCount
+		});
 	});
 }
 
@@ -142,12 +213,10 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
     		return regex.test(email);
     	}
     	let value = $(this).val();
-    	if(isEmail(value)) {
+    	if(isEmail(value.trim())) {
     		let answer = {"question":questionNumber, "name":value}
     		questionAnswered(selector, n);
     		results[n] = keyValuePair(questionType, answer);
-    		// CHECK FOR THIS ERROR ELSEWHERE
-    		//$.cookie("basket-data", JSON.stringify($("#ArticlesHolder").data()));
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		questionAnswerInvalid(selector, n);
@@ -168,7 +237,7 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
     // change the color when text changed
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
-    	if(value === "") { // user has erased input
+    	if(value.trim() === "") { // user has erased input
     		questionAnswerInvalid(selector, n);
 	    	results[n] = undefined;
     	} else {
@@ -184,7 +253,7 @@ function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
 	let textbox = div(`<textarea rows="${TEXTAREA_ROWS}" cols="${TEXTAREA_COLS}" style="min-width:${TEXTAREA_MIN_WIDTH};max-width:${TEXTAREA_MAX_WIDTH}" name="text${n}" id="text-${n}"`);
     $(selector).append(textbox);
-    textbox.css({"padding":"5%"});
+    textbox.css({"padding":TEXTAREA_PADDING});
     // "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`
     if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
 
@@ -195,7 +264,6 @@ function displayTextArea(text, n, questionType, autoFill, questionNumber) {
     		let answer = {"question":questionNumber, "name":value};
 	    	questionAnswered(selector, n);
 			results[n] = keyValuePair(questionType, answer);
-//		    if(autoFill) $.cookie(`cookie${n}`, value);
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		results[n] = undefined
@@ -215,11 +283,10 @@ function displayText(text, n, questionType, autoFill, questionNumber) {
     // change the color when text changed
     $(`#text-${n}`).change(function(event) {
     	let value = $(this).val();
-    	if(value !== "") {
+    	if(value.trim() !== "") {
     		let answer = {"question":n, "name":value}
 	    	questionAnswered(selector, n);
 			results[n] = keyValuePair(questionType, answer);
-//		    if(autoFill) $.cookie(`cookie${n}`, value);
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		results[n] = undefined
@@ -397,10 +464,11 @@ function displayQuestionsAndOptions() {
 }
 
 function positionCopyright() {
-    $("#copyright").css("color", "black")
+    $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
+    			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
                    .css("bottom", "0px")
                    .css("position", "fixed")
-                   .css("width", "50vw");
+                   .css("width", COPYRIGHT_WIDTH);
 }
     
 function getQuestions() {
@@ -448,7 +516,6 @@ function addClickHandlers() {
 		    
 			getQuestions();
 			getOptions();
-			addClickHandlers();
 			positionCopyright();
 		}
 		$("#modal_dialog").dialog({
@@ -462,7 +529,6 @@ function addClickHandlers() {
 		    		setInterval(function() {location.assign(`${HIGHLANDS_NEGOTIATIONS}`)}, 500);
 		    	},
 		    	"Yes": function() {
-		    		results = [];
 		    		$(this).dialog("close");
 		    		clearPage();
 		    	}
@@ -496,6 +562,7 @@ function addClickHandlers() {
 			   	        success: function(data) {
 			   	        	console.log("results sent OK");
 			   	        	console.log(results);
+				    		results = [];
 			   	        	continueOrExit();
 			   	    }	
 			   	});
