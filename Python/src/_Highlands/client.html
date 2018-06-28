@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+  <meta charset="utf-8" />
+    <meta name='viewport' 
+       content='width=device-width, height=device-height, user-scalable=no,
+              initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+  <meta http-equiv="Cache-Control" content="max-age=31536000">
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">
+<link rel="stylesheet" href="css/jquery-ui-1.12.1.css">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>  -->
+<link rel="stylesheet" href="c3-0.4.10/c3.min.css"/>
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/jquery-ui-1.12.1.js"></script>
+<script src="d3-3.5.17/d3.min.js" charset="utf-8"></script>
+<script src="c3-0.4.10/c3.min.js"></script>
+<script src="js/canvasjs.min.js"></script>
+<script src="js/jquery_cookie.js"></script>
+<script src="js/jquery.mobile.custom.js"></script>
+<script src="js/jquery.ui.touch-punch.min.js"></script>
+<!--  
+<script src="js/d3.min.js" charset="utf-8"></script>
+<script src="js/c3.min.js"></script>
+-->
+
+<script src="client-constants.js"></script>
+<script src="client.js"></script>
+<script src="client-graph.js"></script>
+<script src="client-chart.js"></script>
+<style type="text/css">
+
+body {
+    margin-left: 2vw;
+    overscroll-behavior: none;
+}
+#tabs {
+    background-color: rgb(170, 170, 205);
+}
+
+#charts-tab, #others-tab, .ui-page {
+    background-color: rgb(220, 220, 255);
+}
+#tabs, #piecharts-tab, #piechart > div {
+    background-color: rgb(220, 220, 255);
+}
+
+input[type=text] { 
+	width: 60%; 
+	box-sizing: border-box; 
+}
+
+.square {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+/*
+div.newLine {
+    clear: right;    
+	float:left;
+}
+*/
+.internal {
+    height: 100%;
+    width: 100%;
+    font-size: 150%;    
+    line-height: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: white;
+    filter: drop-shadow(1px 1px 5px #808080);
+    overscroll-behavior: contain;
+}
+.nl {
+	clear:left;
+}
+.button {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	background-color: blue;
+}
+#showResults {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	background-color: gold;
+	width: 50%;
+	height: 10vh;
+	transform: translateX(50%);
+	margin-top: 10vh;
+	margin-bottom: 10vh;
+	font-size: xx-large;
+}
+#errorMessage {
+	font-size: x-large;
+	color: red;
+}
+.c3-title {
+	font-size: x-large;
+	fill: blue;
+}
+/*
+#piechart rect.c3-event-rect {
+  pointer-events: none;
+}
+*/
+#copyright {
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+#charts-title, #piecharts-title {
+    text-align: center;
+    font-size: xx-large;
+    margin-bottom: 4vh;
+    color: darkmagenta;
+}
+
+.ui-widget-content.ui-helper-clearfix {
+	margin-top: 0;
+}
+
+.ui-dialog, .ui-dialog-titlebar {
+    background-color: rgb(170, 170, 205);
+	margin-top: 0;
+}
+
+.ui-dialog-buttonpane {
+	margin-top: 0;
+}
+
+.ui-dialog-titlebar {
+}
+
+.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+	text-shadow: 0 0 0 #f3f3f3
+}
+/*
+#heading-1 img {
+	width: 15vw;
+	height: 15vw;
+	background-color: yellow;
+}
+*/
+.ui-widget-header  {
+	border: 0;
+	background: gold;
+}
+#headings {
+  display: flex;
+  align-items: center;
+  align-content: space-between;
+}
+#headings img {
+	padding-right:10vw;
+}
+#heading-frame {
+	border-top: gold;
+	border-bottom: gold;
+    border-width: 5px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+	padding-right: 10vw;
+    font-size: xx-large;
+	color: gold;
+}
+
+</style>
+
+<script>
+
+$(window).on('load', function () {
+	setupHeadings();
+	if($(location).attr('search')==="?charts") {
+		// charts
+		displayCharts();
+		displayPieCharts();
+	} else {
+		// assessments
+		removeCookiesOnStartup();
+		getQuestions();
+		getOptions();
+		addClickHandlers();
+		positionCopyright();
+	}
+	setupTabs();
+});
+
+function setupHeadings() {
+	let image = div("<img src='images/highlands.jpg'/>", "highlands-image", {"float":"left"});
+	$("#highlands-image > img").css({"width":"10%", "height":"10%"});
+	$("#headings").append(image);
+	let frame = div("", "heading-frame");
+	$("#headings").append(frame);
+	let html = div("Highlands Negotiations LLC");
+	$("#heading-frame").append(html);
+	html.css({"width":"100%", "height":"100%"});
+}
+
+function setupTabs() {
+	function hideTab(selector) {
+		$(`[href="${selector}"]`).closest('li').hide();		
+	}
+	console.log( $(location).attr('pathname'));
+	console.log( $(location).attr('search'));
+	let tabObject = {};
+	if($(location).attr('search')==="?charts") {
+		tabObject["active"] = 1;
+		hideTab("#questions-tab");		
+	} else {
+		tabObject["active"] = 0;
+		hideTab("#charts-tab");
+		hideTab("#piecharts-tab");
+	}
+	$(function() {$("#tabs").tabs(tabObject);});
+}
+
+</script>
+
+</head>
+<body>
+	<div id="headings"></div>
+    <div id="tabs">
+	  <ul>
+	    <li><a href="#questions-tab">Assessment</a></li>
+	    <li><a href="#charts-tab">Charts</a></li>
+	    <li><a href="#piecharts-tab">Pie Charts</a></li>
+	  </ul>
+	  <div id="questions-tab">
+		<div id='canvas' style='float:left'>
+		    <div id='questions'></div>
+	    </div>
+	    <div id='results' style='float:left'></div>
+	    <div id='errorMessage'>&nbsp;</div>
+	    <button id="showResults" type="button">Submit Form</button>
+	  </div>
+	  <div id="charts-tab">
+		<div id="charts-title">Aspects:</div>
+		<div id="chart"></div>
+	  </div>
+	  <div id="piecharts-tab">
+	    <div id="piecharts-title">Frequency of Answer:</div>
+		<div id="piechart"></div>
+	  </div>
+	</div>    
+	<div id="modal_dialog"></div>
+    <div id="copyright">&nbsp;&nbsp;&nbsp;© Highlands Negotiations, June 2018, v0.5</div>
+</body>
+</html>
+
