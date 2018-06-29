@@ -89,21 +89,45 @@ div.newLine {
 .ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
 	text-shadow: 0 0 0 #f3f3f3
 }
-*/
-
-body {
-/*    margin-left: 2vw; */
-    overscroll-behavior: none;
+div#canvas {
+	background-color: white; /* SEMI_BACKGROUND_COLOR */
 }
-#tabs {
-    background-color: rgb(170, 170, 205);
+div#tabs {
+	background-color: white; /* BACKGROUND_COLOR */
 }
-
+div#headings {
+  display: flex;
+  align-items: center;
+  align-content: space-between;
+	background-color: white; /* TITLE_BAR_COLOR */
+}
+#assessment-button, #charts-button, #piecharts-button {
+	color: red;/* TAB_BUTTON_COLOR */
+    background-color: blue;  /* TAB_BUTTON_BACKGROUND_COLOR */
+}
+#charts-title, #piecharts-title {
+    text-align: center;
+    font-size: xx-large;
+    margin-bottom: 4vh;
+    color: darkmagenta;
+}
 #charts-tab, #others-tab, .ui-page {
     background-color: rgb(220, 220, 255);
 }
 #tabs, #piecharts-tab, #piechart > div {
     background-color: rgb(220, 220, 255);
+}
+#tabs {
+    background-color: rgb(170, 170, 205);
+}
+*/
+
+
+
+
+body {
+/*    margin-left: 2vw; */
+    overscroll-behavior: none;
 }
 
 input[type=text] { 
@@ -121,40 +145,18 @@ input[type=text] {
 	margin-bottom: 10vh;
 	font-size: xx-large;
 }
-#charts-title, #piecharts-title {
-    text-align: center;
-    font-size: xx-large;
-    margin-bottom: 4vh;
-    color: darkmagenta;
-}
 
-
-
-#headings {
-  display: flex;
-  align-items: center;
-  align-content: space-between;
-}
 #headings img {
 	padding-right:10vw;
 }
-#heading-frame {
-	border-top: gold;
-	border-bottom: gold;
-    border-width: 5px;
-    border-top-style: solid;
-    border-bottom-style: solid;
-	padding-right: 10vw;
-    font-size: xx-large;
-	color: gold;
+#zz5 {
+	background-color: red;
 }
-
 </style>
 
 <script>
 
 $(window).on('load', function () {
-	setStyles();
 	setupHeadings();
 	if($(location).attr('search')==="?charts") {
 		// charts
@@ -169,6 +171,7 @@ $(window).on('load', function () {
 		positionCopyright();
 	}
 	setupTabs();
+	setStyles();
 });
 
 function setupHeadings() {
@@ -207,9 +210,9 @@ function setupTabs() {
 	<div id="headings"></div>
     <div id="tabs">
 	  <ul>
-	    <li><a href="#questions-tab">Assessment</a></li>
-	    <li><a href="#charts-tab">Charts</a></li>
-	    <li><a href="#piecharts-tab">Pie Charts</a></li>
+	    <li><a href="#questions-tab" id="assessment-button">Assessment</a></li>
+	    <li><a href="#charts-tab" id="charts-button">Charts</a></li>
+	    <li><a href="#piecharts-tab" id="piecharts-button">Pie Charts</a></li>
 	  </ul>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>

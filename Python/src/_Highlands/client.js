@@ -33,11 +33,13 @@ function setStyles() {
 	    .ui-widget-content.ui-helper-clearfix {
 	    	margin-top: 0;
 		}`);
-//    addClassRuleToStylesheet(`
-//    	.ui-dialog, .ui-dialog-titlebar {
-//		    background-color: ${TAB_HEADING_BACKGROUND_COLOR};
-//			margin-top: 0;
-//		}`);
+
+    addClassRuleToStylesheet(`
+    	.ui-widget-header .ui-state-active { 
+    		border-color: ${ACTIVE_TAB_BUTTON_BORDER_COLOR};
+    		background-color: ${ACTIVE_TAB_BUTTON_BORDER_COLOR}; 
+	    }`);
+    		
     addClassRuleToStylesheet(`
 		.ui-widget-header  {
 			border: 0;
@@ -76,9 +78,56 @@ function setStyles() {
 	    	text-shadow: 0 0 0 #f3f3f3
 	    }`);
 
+    $("#assessment-button, #charts-button, #piecharts-button").css({
+    	"border":"red",
+    	"color":TAB_BUTTON_COLOR,
+    	"background-color":TAB_BUTTON_BACKGROUND_COLOR
+    });
+
 	$("#errorMessage").css({
 		"font-size": "x-large",
 		"color": ERROR_MESSAGE_COLOR
+	});
+
+	$("div#canvas").css({
+		"background-color": ASSESSMENT_BACKGROUND_COLOR
+	});
+
+	$("div#tabs").css({
+		"background-color": BACKGROUND_COLOR
+	});
+
+	$("div#headings").css({
+		"display": "flex",
+		"align-items": "center",
+		"align-content": "space-between",
+		"background-color": TITLE_BAR_COLOR
+	});
+
+	$("#charts-title, #piecharts-title").css({
+	    "text-align": "center",
+	    "font-size": "xx-large",
+	    "margin-bottom": "4vh",
+	    "color": CHARTS_TITLE_COLOR
+	});
+	
+	$("#charts-tab, #others-tab, .ui-page").css({
+	    "background-color": CHART_BACKGROUND_COLOR
+	});
+	
+	$("#tabs, #piecharts-tab, #piechart > div").css({
+	    "background-color": CHART_BORDER_COLOR
+	});
+
+	$("#heading-frame").css({
+		"border-top": BANNER_TITLE_COLOR,
+		"border-bottom": BANNER_TITLE_COLOR,
+	    "border-width": "5px",
+	    "border-top-style": "solid",
+	    "border-bottom-style": "solid",
+		"padding-right": "10vw",
+	    "font-size": "xx-large",
+		"color": BANNER_TITLE_COLOR
 	});
 }
 
