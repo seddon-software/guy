@@ -28,7 +28,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         results = json.loads(jsonAsString)
 
         sql.saveResults(results)
-        sql.printResults()
+#        sql.printResults()
         return
 
     def do_GET(self):

@@ -8,6 +8,23 @@
 ############################################################
 */
 
+// global variables: do not change
+var cookies;
+var results;
+var questions;
+var options;
+var chartData;
+
+//number of rows and columns in grid (not used in latest version)
+var android = navigator.appVersion.indexOf("Android") !== -1;
+if(android) {
+    var ROWS = 11;
+    var COLS = 11;
+} else {
+    var ROWS = 21;
+    var COLS = 21;
+}
+
 function div(item, id, css) {
 	let html = $(`<div>${item}</div>`);
 	if(id) html.attr("id", id);
@@ -189,7 +206,7 @@ function displayQuestion(questionNumber, questionText, i, questionType) {
 function displayCheckboxes(options, marks, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	for(var i = 0; i < options.length; i++) {
-    	let checkbox = span(`<input type="checkbox" name="checkbox${n}" id="check-${n}-${i}" value="${i}"`);
+    	let checkbox = span(`<input type="checkbox" name="checkbox${n}" id="check-${questionNumber}-${i}" value="${i}"`);
 	    $(selector).append("<span>");
 	    $(selector).append(checkbox);
 	    $(selector).append(options[i]);
@@ -224,7 +241,7 @@ function displayCheckboxes(options, marks, n, questionType, questionNumber) {
 function displayRadioButtons(options, marks, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	for(var i = 0; i < options.length; i++) {
-		let radioButton = $(`<input type="radio" name="radioButton${n}" value=` + `${i}` + ' />');
+		let radioButton = $(`<input type="radio" name="radioButton${n}" id="radio-${questionNumber}-${i}" value=` + `${i}` + ' />');
 	    $(selector).append("<span>");
 	    $(selector).append(radioButton.clone());
 	    $(selector).append(options[i]);
@@ -250,13 +267,13 @@ function displayRadioButtons(options, marks, n, questionType, questionNumber) {
 function displayEmail(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
-	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
+	let textbox = div(`<input type="text" name="text${n}" id="text-${questionNumber}"`);
     $(selector).append(textbox);
     textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
-    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
+    if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change(function(event) {
+    $(`#text-${questionNumber}`).change(function(event) {
     	function isEmail(email) {
     		let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     		return regex.test(email);
@@ -278,13 +295,13 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
 	// no autofill for client
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
-	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
+	let textbox = div(`<input type="text" name="text${n}" id="text-${questionNumber}"`);
     $(selector).append(textbox);
     textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
-    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
+    if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change(function(event) {
+    $(`#text-${questionNumber}`).change(function(event) {
     	let value = $(this).val();
     	if(value.trim() === "") { // user has erased input
     		questionAnswerInvalid(selector, n);
@@ -300,14 +317,14 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
 function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
-	let textbox = div(`<textarea rows="${TEXTAREA_ROWS}" cols="${TEXTAREA_COLS}" style="min-width:${TEXTAREA_MIN_WIDTH};max-width:${TEXTAREA_MAX_WIDTH}" name="text${n}" id="text-${n}"`);
+	let textbox = div(`<textarea rows="${TEXTAREA_ROWS}" cols="${TEXTAREA_COLS}" style="min-width:${TEXTAREA_MIN_WIDTH};max-width:${TEXTAREA_MAX_WIDTH}" name="text${n}" id="text-${questionNumber}"`);
     $(selector).append(textbox);
     textbox.css({"padding":TEXTAREA_PADDING});
     // "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`
-    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, n, questionType);
+    if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change(function(event) {
+    $(`#text-${questionNumber}`).change(function(event) {
     	let value = $(this).val();
     	if(value.trim() !== "") {
     		let answer = {"question":questionNumber, "name":value};
@@ -324,16 +341,16 @@ function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 function displayText(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
-	let textbox = div(`<input type="text" name="text${n}" id="text-${n}"`);
+	let textbox = div(`<input type="text" name="text${n}" id="text-${questionNumber}"`);
     $(selector).append(textbox);
     textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
-    if(autoFill) useCookiesToSetFields(selector, `#text-${n}`, questionNumber, questionType);
+    if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
 
     // change the color when text changed
-    $(`#text-${n}`).change(function(event) {
+    $(`#text-${questionNumber}`).change(function(event) {
     	let value = $(this).val();
     	if(value.trim() !== "") {
-    		let answer = {"question":n, "name":value}
+    		let answer = {"question":`${questionNumber}`, "name":value}
 	    	questionAnswered(selector, n);
 			results[n] = keyValuePair(questionType, answer);
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
@@ -353,7 +370,7 @@ function displayTitle(text, n, questionNumber) {
     results[n] = {"title":{"question":questionNumber}};
 }
 
-function drawTable(selector, options, n) {
+function drawTable(selector, options, n, questionNumber) {
 	let rows = options.length;
 	let cols = options[0].length;
 	
@@ -397,14 +414,14 @@ function drawTable(selector, options, n) {
 			if(row == 0 && col == 0) {
 				html = div("&nbsp;");
 			} else if(row == 0 && col >= 1) {
-				html = div(`${columnText[col-1]}`, `radio-${row}:${col}`);
+				html = div(`${columnText[col-1]}`, `radio-${questionNumber}-${row}-${col}`);
 				html.css({"text-align": "center", "transform":"translateX(-50%)"});
 			} else if (row >= 1 && col == 0) {
-				html = div(`${rowText[row-1]}`, `radio-${row}:${col}`);			
+				html = div(`${rowText[row-1]}`, `radio-${questionNumber}-${row}-${col}`);			
 				html.css({"text-align":"left", "margin-left":"5px", "margin-right":"5px", "transform":"translateX(0%)"});
 			} else {
 			    let css = "display: block; margin-right: auto; margin-left: auto;";
-				html = div(`<div style="${css}""><input style="${css}" type="radio" name="radio-${n}-${row}" id="radio-${n}-${row}:${col}" value="${row}:${col}"></div>`);
+				html = div(`<div style="${css}""><input style="${css}" type="radio" name="radio-${n}-${row}" id="radio-${questionNumber}-${row}-${col}" value="${row}:${col}"></div>`);
 				$(container).append(html);
 				html.css({"transform":`translateX(-50%)`});
 			}
@@ -417,7 +434,7 @@ function drawTable(selector, options, n) {
 function displayTable(entry, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	let options = entry[1];
-	let rows = drawTable(selector, options, n);	
+	let rows = drawTable(selector, options, n, questionNumber);	
 	let values = Array(rows);
 	
 	$(`#table${n} input:radio`).on('change', function(event){
@@ -513,11 +530,12 @@ function displayQuestionsAndOptions() {
 }
 
 function positionCopyright() {
+    $("#copyright").html(`&nbsp;&nbsp;&nbsp;${COPYRIGHT_MESSAGE}`);
+    console.log($("#copyright").width());
     $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
     			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
                    .css("bottom", "0px")
                    .css("position", "fixed")
-                   .css("width", COPYRIGHT_WIDTH);
 }
     
 function getQuestions() {
@@ -567,22 +585,66 @@ function addClickHandlers() {
 			getOptions();
 			positionCopyright();
 		}
+		/*
+		$('#dialog').dialog({
+		    resizable: false,
+		    height:"auto",
+		    title: "Highlands Assessment",
+		    modal: true,
+		    // properties ... 
+		    buttons: [
+		    	{
+		    		id: "btn-no",
+		    		text: "No",
+		    		click: function() {
+		        		$(this).dialog("close");
+		        		setInterval(function() {location.assign(`${WHERE_TO_GO_ON_EXIT}`)}, 500);
+		        	}
+		    	},
+		    	{
+		    		id:"btn-yes",
+		    		text: "Yes",
+		    		click: function() {
+		    			$(this).dialog("close");
+		    			clearPage();
+		    		}
+		    	}
+		    ]
+		});
+		*/
+		/*
+		 {
+         text: "OK",
+         id: "okbtnid",
+         click: function(){
+             var bValid = true;
+         }   
+		 */
 		$("#modal_dialog").dialog({
 		    resizable: false,
 		    height:"auto",
 		    title: "Highlands Assessment",
 		    modal: true,
 		    buttons: {
-		    	"No": function() {
-		    		$(this).dialog("close");
-		    		setInterval(function() {location.assign(`${HIGHLANDS_NEGOTIATIONS}`)}, 500);
+		    	"No": {
+		    		id: "continue-no", 
+		    		text: "No", 
+		    		click: function() {
+		    			$(this).dialog("close");
+		    			setInterval(function() {location.assign(`${WHERE_TO_GO_ON_EXIT}`)}, 500);
+		    		}
 		    	},
-		    	"Yes": function() {
-		    		$(this).dialog("close");
-		    		clearPage();
+		    	"Yes": {
+		    		id: "continue-yes", 
+		    		text: "Yes", 
+		    		click: function() {
+		    			$(this).dialog("close");
+		    			clearPage();
+		    		}
 		    	}
 		    }
-		});	
+		});
+			
 		$("#modal_dialog").html("Do you want to complete another client profile?")
 		                  .css({"font-size":"large", "background-color":DIALOG_BACKGROUND_COLOR});
 	}

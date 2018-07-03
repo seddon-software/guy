@@ -165,11 +165,10 @@ function drawChart(data) {
     },
     o["tooltip"] = {
 		format: {
-			title: function(i) { return emails[i]; },
+			title: function(i) { 
+				console.log(i, emails[i]); return emails[i]; },
 			value: function (value, ratio, id) {
-				var format = id === 'data1' ? d3.format(',') : d3.format('$');
-				//return format(value);
-				return id;
+				return value;
 			}
 		}
 	}
