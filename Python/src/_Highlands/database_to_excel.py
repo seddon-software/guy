@@ -46,10 +46,10 @@ def getExcelData():
             results = cursor.fetchall()
  
             resultsArray = []
-            orderedDict = collections.OrderedDict()
-            
-            section = ""
             for row in results:
+                orderedDict = collections.OrderedDict()
+                
+                section = ""
                 for key in row:
                     if key == 'result':
                         keyValuePairs = literal_eval(row['result'])
@@ -68,13 +68,11 @@ def getExcelData():
                                             continue
                                         else:
                                             section = theValue
-                                    if key == 'selection': 
-                                        if (isinstance(theValue, list)):
-                                            theValue = [v+1 for v in theValue]
-                                        elif (isinstance(theValue, str)):
-                                            theValue = int(theValue) + 1
-                                        else:
-                                            theValue += 1
+                                    if key == 'selection':
+                                        if k == 'radio': theValue = int(theValue) + 1
+                                        if k == 'table': pass # theValue is correct
+                                        if k == 'table2':  pass # theValue is correct
+                                        if k == 'checkbox':  pass # theValue is correct
                                     orderedDict[theKey] = theValue
                                 pass
                     else:
