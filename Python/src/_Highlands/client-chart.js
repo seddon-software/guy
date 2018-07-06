@@ -124,9 +124,13 @@ function drawChart(data) {
 		return clients;
 	}
 	function determineAspects() {
+		function capitalize(string) {
+		    return string.charAt(0).toUpperCase() + string.slice(1);
+		}
 		let aspects = [];
 		keys.forEach(function(key) {
 			let aspect = key.split(",")[ASPECT];
+			aspect = capitalize(aspect);
 			if($.inArray(aspect, aspects) === -1) aspects.push(aspect);
 		});
 		return aspects;
@@ -141,8 +145,7 @@ function drawChart(data) {
 		for(let i = 0; i < values.length; i++) {
 				values[i].unshift(aspects[i]);
 		}
-	}	
-	console.log(data);
+	}
 	let keys = Object.keys(data);
 	let values = Object.values(data);
 	let clientsAndEmails = determineClients();
@@ -187,12 +190,12 @@ function drawPieChart() {
 	}
 	
 	let maxLegendLength = 100;
-	
+
 	for(let i = 0; i < pieChartData.length; i++) {
 	    function appendTitle() {
 	 	    title = `${number}. ${title}`;
 	 	    //title = title.replace(/\"/g,'\\"');		// escape all " quotes
-	 	    title = div(title,"",{"color":PIECHART_TITLES_COLOR})
+	 	    title = div(title,"", {"width":"100%", "color":PIECHART_TITLES_COLOR, "background-color":PIECHART_BACKGROUND_COLOR})
 	 	    $("#piechart").append(title);
 	 	}
 
@@ -204,7 +207,7 @@ function drawPieChart() {
  	    let title = pieChartQuestionsAndOptions[i][QUESTION];
  	    
  	    appendTitle();	// workaround for title broken in C3 library
- 	    let anchor = div("", `chart${i}`).css({"float":"left"});
+ 	    let anchor = div("", `chart${i}`).css({"float":"left", "width":"100%", "background-color":PIECHART_BACKGROUND_COLOR});
  	    $("#piechart").append(anchor);
 
  		// make sure no more than n (=1) pie charts are drawn per line
@@ -245,5 +248,7 @@ function drawPieChart() {
  								   }
  		c3.generate(o);
 	};
+	let endOfPiecharts = div("", "", {"clear":"both"});
+	$("#piechart").append(endOfPiecharts);
 }
 

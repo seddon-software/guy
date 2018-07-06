@@ -115,9 +115,12 @@ function setStyles() {
 	});
 
 	$("div#headings").css({
-		"display": "flex",
+//		"display": "flex",
+		"width": "100%",
+		"flex-direction": "row",
+		"justify-content": "center",
 		"align-items": "center",
-		"align-content": "space-between",
+//		"align-content": "space-between",
 		"background-color": TITLE_BAR_COLOR
 	});
 
@@ -128,7 +131,7 @@ function setStyles() {
 	    "color": CHARTS_TITLE_COLOR
 	});
 	
-	$("#charts-tab, #others-tab, .ui-page").css({
+	$("#charts-tab, #piecharts-tab, .ui-page").css({
 	    "background-color": CHART_BACKGROUND_COLOR
 	});
 	
@@ -136,13 +139,21 @@ function setStyles() {
 	    "background-color": CHART_BORDER_COLOR
 	});
 
+	/*
+	 #heading-frame > div:nth-child(2)
+	 */
+			
 	$("#heading-frame").css({
-		"border-top": BANNER_TITLE_COLOR,
-		"border-bottom": BANNER_TITLE_COLOR,
-	    "border-width": "5px",
-	    "border-top-style": "solid",
-	    "border-bottom-style": "solid",
-		"padding-right": "10vw",
+		"display": "flex",
+		"flex-direction": "column",
+		"width": "100%",
+		"text-align": "center",
+//		"border-top": BANNER_TITLE_COLOR,
+//		"border-bottom": BANNER_TITLE_COLOR,
+//	    "border-width": "5px",
+//	    "border-top-style": "solid",
+//	    "border-bottom-style": "solid",
+//		"padding-right": "10vw",
 	    "font-size": "xx-large",
 		"color": BANNER_TITLE_COLOR
 	});
@@ -370,7 +381,7 @@ function displayTitle(text, n, questionNumber) {
     results[n] = {"title":{"question":questionNumber}};
 }
 
-function drawTable(selector, options, n, questionNumber) {
+function drawTable(selector, options, n, questionType, questionNumber) {
 	let rows = options.length;
 	let cols = options[0].length;
 	
@@ -421,7 +432,12 @@ function drawTable(selector, options, n, questionNumber) {
 				html.css({"text-align":"left", "margin-left":"5px", "margin-right":"5px", "transform":"translateX(0%)"});
 			} else {
 			    let css = "display: block; margin-right: auto; margin-left: auto;";
-				html = div(`<div style="${css}""><input style="${css}" type="radio" name="radio-${n}-${row}" id="radio-${questionNumber}-${row}-${col}" value="${row}:${col}"></div>`);
+			    let name;
+			    if(questionType === "table")
+			    	name = `radio-${n}-${row}`
+			    else
+			    	name = `radio-${n}`
+				html = div(`<div style="${css}""><input style="${css}" type="radio" name="${name}" id="radio-${questionNumber}-${row}-${col}" value="${row}:${col}"></div>`);
 				$(container).append(html);
 				html.css({"transform":`translateX(-50%)`});
 			}
@@ -434,34 +450,55 @@ function drawTable(selector, options, n, questionNumber) {
 function displayTable(entry, n, questionType, questionNumber) {
 	let selector = `#border${n}`;
 	let options = entry[1];
-	let rows = drawTable(selector, options, n, questionNumber);	
+	let rows = drawTable(selector, options, n, questionType, questionNumber);	
 	let values = Array(rows);
 	
 	$(`#table${n} input:radio`).on('change', function(event){
-		let name = event.currentTarget.name;
-		let value = event.currentTarget.value;
-		pair = value.split(':').map(Number);
-		let buttonRow = pair[0] - 1;	// row of radio buttons
-		let button = pair[1];		// which button
-		values[buttonRow] = button;
-		
-		if(!values.includes(undefined)) {
+		function handleTable() {
+			let pair = value.split(':').map(Number);
+			let buttonRow = pair[0] - 1;	// row of radio buttons
+			let button = pair[1];		// which button
+			values[buttonRow] = button;
+			
+			if(!values.includes(undefined)) {
+				questionAnswered(selector, n);
+				let marks = [];
+				for(let i = 0; i < values.length; i++) {
+					let mark = options[i+1][values[i]];
+					marks.push(mark);
+				};
+		    	let section = questions[n][1];
+		    	let optionCount = options[0].length - 1;  // -1 for the sidebar text
+				results[n] = keyValuePair(questionType, {
+					"question"   : questionNumber, 
+					"section"    : section, 
+					"selection"  : values, 
+					"marks"      : marks, 
+					"optionCount": optionCount});
+			}
+		}
+		function handleTable2() {
+			let pair = value.split(':').map(Number);
+			let buttonRow = pair[0];
+			let buttonCol = pair[1];
+			let mark = options[buttonRow][buttonCol];
+
 			questionAnswered(selector, n);
-			let marks = [];
-			for(let i = 0; i < values.length; i++) {
-				let mark = options[i+1][values[i]];
-				marks.push(mark);
-			};
 	    	let section = questions[n][1];
-	    	let optionCount = options[0].length - 1;  // -1 for the sidebar text
-	    	let value = $(`input[name=radioButton${n}]:checked`).val();
+	    	let cols = options[0].length - 1;
+	    	let rows = options.length - 1;
+	    	let optionCount = rows * cols;
 			results[n] = keyValuePair(questionType, {
 				"question"   : questionNumber, 
 				"section"    : section, 
-				"selection"  : values, 
-				"marks"      : marks, 
+				"selection"  : value, 
+				"marks"      : mark, 
 				"optionCount": optionCount});
-		} 
+			}
+		let name = event.currentTarget.name;
+		let value = event.currentTarget.value;
+		if(questionType === "table") handleTable();
+		if(questionType === "table2") handleTable2();
 	});
 }
  
@@ -524,6 +561,9 @@ function displayQuestionsAndOptions() {
 			displayGraph(options, i, questionType, questionNumber);
 		}
 		if(questionType === "table") {
+			displayTable(entry, i, questionType, questionNumber);
+		}
+		if(questionType === "table2") {
 			displayTable(entry, i, questionType, questionNumber);
 		}
     }

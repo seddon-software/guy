@@ -38,95 +38,7 @@
 <script src="client-chart.js"></script>
 <style type="text/css">
 
-/*
-div.newLine {
-    clear: right;
-	float:left;
-}
-.square {
-    float: left;
-    margin: 0;
-    padding: 0;
-}
-.internal {
-    height: 100%;
-    width: 100%;
-    font-size: 150%;    
-    line-height: 100%;
-    border-width: 1px;
-    border-style: solid;
-    border-color: white;
-    filter: drop-shadow(1px 1px 5px #808080);
-    overscroll-behavior: contain;
-}
-.nl {
-	clear:left;
-}
-.button {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-	background-color: blue;
-}
-.c3-title {
-	font-size: x-large;
-	fill: blue;
-}
-.ui-widget-content.ui-helper-clearfix {
-	margin-top: 0;
-}
-.ui-dialog, .ui-dialog-titlebar {
-    background-color: rgb(170, 170, 205);
-	margin-top: 0;
-}
-.ui-widget-header  {
-	border: 0;
-	background: gold;
-}
-.ui-dialog-buttonpane {
-	margin-top: 0;
-}
-.ui-dialog-titlebar {
-}
-.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
-	text-shadow: 0 0 0 #f3f3f3
-}
-div#canvas {
-	background-color: white; /* SEMI_BACKGROUND_COLOR */
-}
-div#tabs {
-	background-color: white; /* BACKGROUND_COLOR */
-}
-div#headings {
-  display: flex;
-  align-items: center;
-  align-content: space-between;
-	background-color: white; /* TITLE_BAR_COLOR */
-}
-#assessment-button, #charts-button, #piecharts-button {
-	color: red;/* TAB_BUTTON_COLOR */
-    background-color: blue;  /* TAB_BUTTON_BACKGROUND_COLOR */
-}
-#charts-title, #piecharts-title {
-    text-align: center;
-    font-size: xx-large;
-    margin-bottom: 4vh;
-    color: darkmagenta;
-}
-#charts-tab, #others-tab, .ui-page {
-    background-color: rgb(220, 220, 255);
-}
-#tabs, #piecharts-tab, #piechart > div {
-    background-color: rgb(220, 220, 255);
-}
-#tabs {
-    background-color: rgb(170, 170, 205);
-}
-*/
-
-
-
-
 body {
-/*    margin-left: 2vw; */
     overscroll-behavior: none;
 }
 
@@ -144,13 +56,6 @@ input[type=text] {
 	margin-top: 10vh;
 	margin-bottom: 10vh;
 	font-size: xx-large;
-}
-
-#headings img {
-	padding-right:10vw;
-}
-#zz5 {
-	background-color: red;
 }
 </style>
 
@@ -174,23 +79,34 @@ $(window).on('load', function () {
 	setStyles();
 });
 
-function setupHeadings() {
-	let image = div("<img src='images/highlands.jpg'/>", "highlands-image", {"float":"left"});
-	$("#highlands-image > img").css({"width":"10%", "height":"10%"});
+function setupHeadings() {	
+	let image = div("<img src='images/highlands.png'/>", "highlands-image", {"float":"left"});
+	let headingFrame = div("", "heading-frame", {"width":BANNER_WIDTH, "background-color":TITLE_BAR_COLOR});
+	let headingTopFrame = div("", "heading-top-frame", {"width":BANNER_WIDTH, "border-style": "solid"});
+	let headingText = div(`${BANNER_TEXT}`, "heading-text", {"width":BANNER_WIDTH, "display":"inline-block", "text-align":"center"});
+	let headingBottomFrame = div("", "heading-top-frame", {"width":"60%", "border-style": "solid"});
 	$("#headings").append(image);
-	let frame = div("", "heading-frame");
-	$("#headings").append(frame);
-	let html = div("Highlands Negotiations LLC");
-	$("#heading-frame").append(html);
-	html.css({"width":"100%", "height":"100%"});
+	$("#headings").append(headingFrame);
+	$("#heading-frame").append(headingTopFrame);
+	$("#heading-frame").append(headingText);
+	$("#heading-frame").append(headingBottomFrame);
+	
+/* 	 display:inline-block;
+	  text-align:center;
+ *///	$("#highlands-image > img").css({"width":"10%", "height":"10%"});
+
+// 	let html = div("Highlands Negotiations LLC");
+//	$("#heading-frame").append(html);
+//	html.css({"width":"100%", "height":"100%"});
+//  let spacer = div("&nbsp;");
+//	$("#headings").append(spacer);
+// 	$("#heading-frame").children().css({"flex":"1"});
 }
 
 function setupTabs() {
 	function hideTab(selector) {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
-	console.log( $(location).attr('pathname'));
-	console.log( $(location).attr('search'));
 	let tabObject = {};
 	if($(location).attr('search')==="?charts") {
 		tabObject["active"] = 1;
