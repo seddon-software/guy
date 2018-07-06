@@ -115,12 +115,12 @@ function setStyles() {
 	});
 
 	$("div#headings").css({
-//		"display": "flex",
+		"display": "flex",
 		"width": "100%",
 		"flex-direction": "row",
 		"justify-content": "center",
 		"align-items": "center",
-//		"align-content": "space-between",
+		"align-content": "space-between",
 		"background-color": TITLE_BAR_COLOR
 	});
 
@@ -139,21 +139,17 @@ function setStyles() {
 	    "background-color": CHART_BORDER_COLOR
 	});
 
-	/*
-	 #heading-frame > div:nth-child(2)
-	 */
-			
 	$("#heading-frame").css({
 		"display": "flex",
 		"flex-direction": "column",
-		"width": "100%",
+//		"width": "100%",
 		"text-align": "center",
 //		"border-top": BANNER_TITLE_COLOR,
 //		"border-bottom": BANNER_TITLE_COLOR,
 //	    "border-width": "5px",
 //	    "border-top-style": "solid",
 //	    "border-bottom-style": "solid",
-//		"padding-right": "10vw",
+		"padding-left": "15vw",
 	    "font-size": "xx-large",
 		"color": BANNER_TITLE_COLOR
 	});
