@@ -10,12 +10,6 @@ import pandas as pd
 import math
 import json
 
-pd.set_option('display.width', 1000)
-table = pd.read_excel('questions.xlsx', 'Sheet1')
-table[['Number']] = table[['Number']].fillna(value=0)
-table['Number'] = table.Number.astype(int)
-table[['Section']] = table[['Section']].fillna(value="")
-
 def isAutoFill(field):
     if(isinstance(field, str)): 
         return field.strip() == "autofill"
@@ -58,6 +52,12 @@ def filterOptions(questionType):
         if(question[3] == questionType): listOptions.append(option)
     return pd.DataFrame(listOptions)
 
+pd.set_option('display.width', 1000)
+table = pd.read_excel('highlands.xlsx', 'questions')
+print(table)
+table[['Number']] = table[['Number']].fillna(value=0)
+table['Number'] = table.Number.astype(int)
+table[['Section']] = table[['Section']].fillna(value="")
 questions = extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
 options = extractOptions(table)
 

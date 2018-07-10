@@ -567,7 +567,6 @@ function displayQuestionsAndOptions() {
 
 function positionCopyright() {
     $("#copyright").html(`&nbsp;&nbsp;&nbsp;${COPYRIGHT_MESSAGE}`);
-    console.log($("#copyright").width());
     $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
     			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
                    .css("bottom", "0px")

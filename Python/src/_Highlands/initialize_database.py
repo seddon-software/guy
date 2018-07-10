@@ -48,7 +48,7 @@ def printTable(manager, managerPassword, database, table):
 
 def getNamesAndPasswords():
     pd.set_option('display.width', 1000)
-    table = pd.read_excel('setup.xlsx', 'Sheet1')
+    table = pd.read_excel('highlands.xlsx', 'setup')
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
@@ -116,45 +116,6 @@ def showUsers(user, password, database):
     finally:
         connection.close()
 
-def addSampleData(user, password, database):
-    def form_sql(r1, r2, r3, r4, r5, c1, c2, c3, c4, c5):
-        sql = """{'title': 'blank'},{'email': 'bbb@def.co.uk'},{'text': 'chris'},{'text': 'ibm'},{'text': 'guy'},{'text': 'finance'}, \
-{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
-{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
-{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
-{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}},\
-{'radio': {'selection': '%d', 'marks': 7, 'optionCount': '%d'}}""" % (r1, c1, r2, c2, r3, c3, r4, c4, r5, c5)
-        return sql
-
-    
-    connection = connect(user, password, database)
-    try:
-        with connection.cursor() as cursor:
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            # pymysql.cursors.Cursor._defer_warnings = True
-            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `question`, `result`) 
-                               VALUES (   %s,          %s,      %s,         %s,       %s)""".format(table)
-            
-            samples = []
-#                        optionCounts =            3  5  3  2  3
-            samples.append(form_sql(1, 2, 2, 0, 0, 3, 5, 3, 2, 3))
-            samples.append(form_sql(1, 4, 0, 0, 2, 3, 5, 3, 2, 3))
-            samples.append(form_sql(0, 2, 0, 1, 2, 3, 5, 3, 2, 3))
-            samples.append(form_sql(2, 1, 1, 0, 0, 3, 5, 3, 2, 3))
-            samples.append(form_sql(2, 3, 2, 1, 1, 3, 5, 3, 2, 3))
-            samples.append(form_sql(1, 3, 1, 0, 0, 3, 5, 3, 2, 3))
-            samples.append(form_sql(0, 3, 1, 1, 0, 3, 5, 3, 2, 3))
-            samples.append(form_sql(1, 2, 1, 0, 2, 3, 5, 3, 2, 3))
-
-            for sample in samples:
-                guid = str(uuid.uuid4())
-                cursor.execute(sql, (guid, timestamp, "abc@def.com", "question", sample))
-        connection.commit()    
-    finally:
-        connection.close()
-#{'id': 5, 'guid': 'a27ba0d1-44d7-41bc-97d3-2f273db8e991', 'timestamp': datetime.datetime(2018, 6, 14, 16, 53, 11), 'email': 'bbb@def.co.uk', 'question': 'This is the question', 'result': "{'title': 'blank'},{'email': 'bbb@def.co.uk'},{'text': 'chris'},{'text': 'ibm'},{'text': 'guy'},{'text': 'finance'},{'radio': 3},{'radio': 7},{'radio': 1},{'radio': 5},{'radio': 5}"}
-
-
 if __name__ == "__main__":
     root, rootPassword, manager, managerPassword, database, table = getNamesAndPasswords()
     createDatabase(root, rootPassword, database)
@@ -164,5 +125,4 @@ if __name__ == "__main__":
     createTable(table, manager, managerPassword, database)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
-#    addSampleData(manager, managerPassword, database)
     printTable(manager, managerPassword, database, table)
