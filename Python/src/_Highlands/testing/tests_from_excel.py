@@ -15,6 +15,28 @@ from test_library import (startBrowser, stopBrowser, enterText, enterTextArea,
 
 startServer()
 
+def getNamesAndPasswords():
+    cwd = os.getcwd()
+    os.chdir("..")
+    pd.set_option('display.width', 1000)
+    table = pd.read_excel('setup.xlsx', 'Sheet1')
+    os.chdir(cwd)
+    rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
+    managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
+    databaseFrame = table[table.TYPE == "database"]
+    hostFrame = table[table.TYPE == "host"]
+
+    root = rootFrame["NAME"].tolist()[0]
+    rootPassword = rootFrame["OPTION"].tolist()[0]
+    manager = managerFrame["NAME"].tolist()[0]
+    managerPassword = managerFrame["OPTION"].tolist()[0]
+    database = databaseFrame["NAME"].tolist()[0]
+    table = databaseFrame["OPTION"].tolist()[0]
+    server = hostFrame["NAME"].tolist()[0]
+    port = hostFrame["OPTION"].tolist()[0]
+    return [root, rootPassword, manager, managerPassword, database, table, server, port]
+
+root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 pd.set_option('display.width', 1000)
 table = pd.read_excel('test_data.xlsx', 'Sheet1')
 table = table[np.isfinite(table['Question'])]
@@ -27,7 +49,7 @@ try:
     rows, cols = table.shape
     
     for testNo in range(1, cols-1):
-        startBrowser("http://127.0.0.1:9097/client.html")
+        startBrowser("http://{}:{}/client.html".format(server, port))
         print("Starting Test {}".format(testNo))
         data = "Test{}".format(testNo)
         df = table[["Question", "Category", data]]
