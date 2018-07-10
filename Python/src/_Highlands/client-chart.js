@@ -7,7 +7,6 @@
 #
 ############################################################
 */
-// piecharts tooltip should show frequency not marks
 
 var NUMBER = 0;
 var SECTION = 1;
@@ -81,12 +80,12 @@ function drawChart(data) {
 	// each entry has:
 	//		key = "<aspect>,<client>-<email>,<guid>"
 	//		value = <sum of marks>
-	if($.isEmptyObject(data)) {
-		$("#piecharts-message").text("no pie charts available");
-		return;
-	} else {
-		$("#piecharts-message").text("");		
-	}
+	
+	// work with copies of important arrays
+	var filteredClients;
+	var filteredEmails;
+	var filteredColumnData;
+
 	let ASPECT = 0;
     let CLIENT = 1;
     
@@ -142,10 +141,115 @@ function drawChart(data) {
 		return array;
 	}
 	function addAspectNamesToStartOfColumn() {
-		for(let i = 0; i < values.length; i++) {
-				values[i].unshift(aspects[i]);
+		for(let i = 0; i < columnData.length; i++) {
+			columnData[i].unshift(aspects[i]);
 		}
 	}
+	
+	function filter(filter, item) {
+		// filter = "client" | "email"
+		// item = "-" for no filter or the name to filter
+		function takeCopiesOfImportantArrays() {
+			filteredClients = clients.slice();
+			filteredEmails = emails.slice();
+			filteredColumnData = [];
+			columnData.forEach(function(array) {	// need a deep copy
+				filteredColumnData.push(array.slice())
+			});
+		}
+		function removeItemsFromFilteredArrays(i) {
+			filteredClients.splice(i, 1);
+			filteredEmails.splice(i, 1);
+			filteredColumnData.forEach(function(value) {
+				value.splice(i+1, 1);  	// +1 to allow for aspect name at start of column
+			});			
+		}
+		takeCopiesOfImportantArrays();
+		if(item === "-") return;
+		// must work backwards through array when splicing
+		for(let i = clients.length - 1; i >= 0; i--) {
+			let key;
+			if(filter === "client") key = filteredClients[i].trim();
+			if(filter === "email") key = filteredEmails[i].trim();
+			
+			if(key !== item.trim()) { // remove items from relevant arrays
+				removeItemsFromFilteredArrays(i);
+			}
+		}
+	}
+	
+	function generateChart() {
+		// x-axis: <Aspect>, <values array>
+		// y-axis: <client array>
+		// axes are swapped
+		let height = filteredClients.length * screen.height / 10;
+		let o = {};  // used to generate chart
+		o["bindto"] = '#chart';
+		o["axis"] = { rotated:true, x:{ type:'category', categories:filteredClients}};
+	    o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
+		o["data"] = { columns: filteredColumnData, type: 'bar'};
+		o["size"] = {
+	        height: height
+	    },
+	    o["tooltip"] = {
+			format: {
+				title: function(i) { return filteredEmails[i]; },
+				value: function(value, ratio, id) { return value; }
+			}
+		}
+		c3.generate(o);
+	}
+
+	function addDropDown(selector) {
+		function removeDuplicates(array) {
+			let set = new Set(array);
+			let it = set.values();
+			return Array.from(it);
+		}
+		function buildMenu() {
+			let menu = `		
+				<select name="filter" id="filter">
+				<optgroup label="filter">
+				<option value="-">show all</option>
+				</optgroup>
+				<optgroup label="by client">`;
+			uniqueClients.forEach(function(client) {
+				menu += `<option value="client">${client.trim()}</option>`;
+				});
+			menu += `
+				</optgroup>
+				<optgroup label="by email">`;
+			uniqueEmails.forEach(function(email) {
+				menu += `<option value="email">${email.trim()}</option>`;
+			});
+			menu += `</optgroup></select>`;
+			return menu;
+		}
+		let uniqueClients = removeDuplicates(clients);
+		let uniqueEmails = removeDuplicates(emails);		
+		let html = $(`${buildMenu()}`);
+		html.css({'width':'auto'});
+		$(selector).prepend(html);
+		
+		$("#filter").selectmenu({
+			   change: function( event, ui ) {
+				   // id === "-" means no filter
+				   var id = $(this).val(); 
+				   var text = $("option:selected").text();
+				   if(id === "-")
+					   filter("client", "-");
+				   else
+					   filter(id, text);
+				   generateChart();
+			   },
+			});
+		$(".ui-selectmenu-button, .ui-selectmenu-text, .ui-selectmenu-icon, .ui-selectmenu-menu, .ui-selectmenu-optgroup").css({
+			'font-size': 'small',
+			'width':     'auto',
+			'height':    'auto',
+		});		
+	}
+
 	let keys = Object.keys(data);
 	let values = Object.values(data);
 	let clientsAndEmails = determineClients();
@@ -156,26 +260,11 @@ function drawChart(data) {
 		emails.push(clientsAndEmails[i].replace(/^[^<]+[<](.*)>/,"$1"));
 	}
 	let aspects = determineAspects();
-	values = splitValues();
+	columnData = splitValues();
 	addAspectNamesToStartOfColumn();
-	let height = clients.length * screen.height / 10;
-	let o = {};  // used to generate chart
-	o["axis"] = { rotated:true, x:{ type:'category', categories:clients}};
-    o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
-	o["data"] = { columns: values, type: 'bar'};
-	o["size"] = {
-        height: height
-    },
-    o["tooltip"] = {
-		format: {
-			title: function(i) { 
-				console.log(i, emails[i]); return emails[i]; },
-			value: function (value, ratio, id) {
-				return value;
-			}
-		}
-	}
-	var chart = c3.generate(o);
+	filter("client", "-");
+	generateChart();
+	addDropDown("#filter-drop-down");
 }
 
 function drawPieChart() {
@@ -189,6 +278,13 @@ function drawPieChart() {
 	    return s;
 	}
 	
+	if($.isEmptyObject(pieChartData)) {
+		$("#piecharts-message").text("no pie charts available");
+		return;
+	} else {
+		$("#piecharts-message").text("");		
+	}
+
 	let maxLegendLength = 100;
 
 	for(let i = 0; i < pieChartData.length; i++) {

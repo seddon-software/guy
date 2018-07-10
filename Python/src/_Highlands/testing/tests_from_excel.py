@@ -27,7 +27,7 @@ try:
     rows, cols = table.shape
     
     for testNo in range(1, cols-1):
-        startBrowser("http://192.168.0.89:9097/client.html")
+        startBrowser("http://127.0.0.1:9097/client.html")
         print("Starting Test {}".format(testNo))
         data = "Test{}".format(testNo)
         df = table[["Question", "Category", data]]
