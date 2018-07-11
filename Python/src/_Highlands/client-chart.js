@@ -263,8 +263,8 @@ function drawChart(data) {
 	columnData = splitValues();
 	addAspectNamesToStartOfColumn();
 	filter("client", "-");
-	generateChart();
 	addDropDown("#filter-drop-down");
+	generateChart();
 }
 
 function drawPieChart() {
@@ -277,7 +277,6 @@ function drawPieChart() {
 	    }
 	    return s;
 	}
-	
 	if($.isEmptyObject(pieChartData)) {
 		$("#piecharts-message").text("no pie charts available");
 		return;

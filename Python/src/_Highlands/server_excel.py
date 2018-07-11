@@ -54,7 +54,6 @@ def filterOptions(questionType):
 
 pd.set_option('display.width', 1000)
 table = pd.read_excel('highlands.xlsx', 'questions')
-print(table)
 table[['Number']] = table[['Number']].fillna(value=0)
 table['Number'] = table.Number.astype(int)
 table[['Section']] = table[['Section']].fillna(value="")
