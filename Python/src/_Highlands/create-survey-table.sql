@@ -1,7 +1,0 @@
-use games;
-
-CREATE TABLE survey (
-id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-question VARCHAR(30) NOT NULL,
-result VARCHAR(500) NOT NULL
-);
