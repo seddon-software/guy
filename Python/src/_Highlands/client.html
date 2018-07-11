@@ -142,22 +142,23 @@ function setupTabs() {
 	    <div id='errorMessage'>&nbsp;</div>
 	    <button id="showResults" type="button">Submit Form</button>
 	  </div>
+	  <!--  
+	  	The charts tab uses a selectmenu widget attached to "#filter-drop-down".  
+	  	I've had to wrap this in an extra div, because otherwise it interferes with 
+	  	other tabs (it blanks out the next tab), but I don't know why.
+	   -->
+	  <div id="charts-tab">
+		<div id="charts-title">Aspects:</div>
+		<div><div id="filter-drop-down"></div></div>  <!-- don't remove the extra div -->
+		<div id="chart"></div>
+	  </div>
 	  <div id="piecharts-tab">
 	    <div id="piecharts-title">Frequency of Answer:</div>
 		<div id="piecharts-message"></div>
 		<div id="piechart"></div>
 	  </div>
-	  <div id="extras-tab">
+	  <div id="extras-tab" style="background-color:gainsboro">
 	  	<h1>Extras</h1>
-	  </div>
-	  <!--  
-	  	This tab must be last.  If it is moved it interferes with other tabs, but I don't know why.
-	  	It might be related to using the selectmenu widget.
-	   -->
-	  <div id="charts-tab">
-		<div id="charts-title">Aspects:</div>
-		<div id="filter-drop-down"></</div>
-		<div id="chart"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>

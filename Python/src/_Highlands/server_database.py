@@ -29,7 +29,7 @@ def connect():
 
 def getNamesAndPasswords():
     pd.set_option('display.width', 1000)
-    table = pd.read_excel('setup.xlsx', 'Sheet1')
+    table = pd.read_excel('highlands.xlsx', 'setup')
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
@@ -332,14 +332,11 @@ def getChartData():
                     if 'table' in pair:
                         chartData = addItem(pair["table"]["section"], pair["table"]["marks"])
         chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)
-        print(chartData)  
         chartData = chartData.groupby(['section', 'client','email','guid']).sum()
         chartData = chartData.to_dict()['marks']
-        print(len(chartData))  
         chartData = {"{},{} <{}>,{}".format(compositeKey[0], compositeKey[1], compositeKey[2], compositeKey[3]):chartData[compositeKey] for compositeKey in chartData}
     finally:
         connection.close()
-        print(chartData)
     return chartData    # return a dict
 
 
@@ -351,4 +348,3 @@ if __name__ == "__main__":
         print(key, data[key])
     jsonString = json.dumps(getChartData())
     jsonAsBytes = jsonString.encode("UTF-8")
-    #print(jsonAsBytes)

@@ -95,7 +95,7 @@ function setStyles() {
 	    	text-shadow: 0 0 0 #f3f3f3
 	    }`);
 
-    $("#assessment-button, #charts-button, #piecharts-button").css({
+    $("#assessment-button, #charts-button, #piecharts-button, #extras-button").css({
     	"border":"red",
     	"color":TAB_BUTTON_COLOR,
     	"background-color":TAB_BUTTON_BACKGROUND_COLOR

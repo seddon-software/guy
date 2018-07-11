@@ -232,6 +232,7 @@ function drawChart(data) {
 		$(selector).prepend(html);
 		
 		$("#filter").selectmenu({
+			   appendTo: "#filter-drop-down",
 			   change: function( event, ui ) {
 				   // id === "-" means no filter
 				   var id = $(this).val(); 
@@ -243,6 +244,7 @@ function drawChart(data) {
 				   generateChart();
 			   },
 			});
+		
 		$(".ui-selectmenu-button, .ui-selectmenu-text, .ui-selectmenu-icon, .ui-selectmenu-menu, .ui-selectmenu-optgroup").css({
 			'font-size': 'small',
 			'width':     'auto',
