@@ -130,8 +130,9 @@ function setupTabs() {
     <div id="tabs">
 	  <ul>
 	    <li><a href="#questions-tab" id="assessment-button">Assessment</a></li>
-	    <li><a href="#piecharts-tab" id="piecharts-button">Pie Charts</a></li>
 	    <li><a href="#charts-tab" id="charts-button">Responses</a></li>
+	    <li><a href="#piecharts-tab" id="piecharts-button">Pie Charts</a></li>
+	    <li><a href="#extras-tab" id="extras-button">Extras</a></li>
 	  </ul>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
@@ -146,6 +147,13 @@ function setupTabs() {
 		<div id="piecharts-message"></div>
 		<div id="piechart"></div>
 	  </div>
+	  <div id="extras-tab">
+	  	<h1>Extras</h1>
+	  </div>
+	  <!--  
+	  	This tab must be last.  If it is moved it interferes with other tabs, but I don't know why.
+	  	It might be related to using the selectmenu widget.
+	   -->
 	  <div id="charts-tab">
 		<div id="charts-title">Aspects:</div>
 		<div id="filter-drop-down"></</div>
