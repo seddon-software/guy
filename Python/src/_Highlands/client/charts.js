@@ -20,6 +20,7 @@ var pieChartData;
 var pieChartQuestionsAndOptions;
 
 function displayPieCharts() {
+	positionCopyright();
 	pieChartData = undefined;
 	pieChartQuestionsAndOptions = undefined;
 	getPieChartData();
@@ -27,6 +28,7 @@ function displayPieCharts() {
 }
 
 function displayCharts() {
+	positionCopyright();
 	getChartData();
 }
 

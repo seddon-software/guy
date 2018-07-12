@@ -7,14 +7,12 @@
 ############################################################
 
 import http.server
-#import cgi, random, sys
-import cgitb
-import urllib.parse
-import json
-import server_excel as xl
-import server_database as sql
+#import cgitb
+import sys, urllib.parse, json
+import os.path
 
-cgitb.enable()
+
+#cgitb.enable()
 
 class Handler(http.server.BaseHTTPRequestHandler):
 
@@ -28,7 +26,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         results = json.loads(jsonAsString)
 
         sql.saveResults(results)
-#        sql.printResults()
         return
 
     def do_GET(self):
@@ -92,6 +89,28 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 data = f.read()
                 self.wfile.write(data.encode())
 
+def parseCommandLine():
+    # default excel file is "highlands.xlsx", but can be changed on command line:
+    #    python server.py [excel-file]
+    if len(sys.argv) > 2:
+        print("Useage: python server.py [excel-file]")
+        sys.exit()
+    if len(sys.argv) == 1:
+        excelFile = "highlands.xlsx"
+    else:
+        excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
+    
+    if not os.path.isfile(excelFile):
+        print("{} does not exist".format(excelFile))
+        sys.exit()
+
+    return excelFile
+    
+excelFile = parseCommandLine()
+import server_excel as xl
+import server_database as sql
+xl.main(excelFile)
+sql.main(excelFile)
 PORT = sql.port
 SERVER = sql.server
 httpd = http.server.HTTPServer((SERVER, PORT), Handler)
@@ -99,5 +118,8 @@ print("server:", SERVER)
 print("port:", PORT)
 print("database:", sql.database)
 print("table:", sql.table)
-httpd.serve_forever()
 
+try:
+    httpd.serve_forever()
+except:
+    pass

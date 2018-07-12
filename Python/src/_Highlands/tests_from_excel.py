@@ -7,13 +7,103 @@
 ############################################################
 
 import pandas as pd
-import numpy as np
-import os, sys, re
+import subprocess, os, sys, re, time
+from threading import Thread
+from selenium import webdriver
 
-from test_library import (startBrowser, stopBrowser, enterText, enterTextArea, 
-                          clickTable, clickTable2, clickRadio, clickCheckbox, submit, startServer)
 
-#startServer()
+browser = None
+def startBrowser(url):
+    global browser
+    os.environ["PATH"] = "testing" + os.pathsep + os.environ["PATH"]
+
+    try:
+        browser = webdriver.Chrome(executable_path=r"chromedriver.exe")
+    except: pass
+    try:
+        browser = webdriver.Chrome(executable_path=r"chromedriver")
+    except: pass
+    try:
+        browser.get(url)
+    except Exception as e:
+        print(e)
+        print("aborting ...")
+        sys.exit()
+
+def stopBrowser():
+    global browser
+    browser.close()
+
+def scrollTo(element):
+    global browser
+    browser.execute_script("arguments[0].scrollIntoView();", element)
+    
+def enterText(question, text):
+    global browser
+    selector = "input#text-{}".format(question)
+    element = browser.find_element_by_css_selector(selector)
+    scrollTo(element)
+    element.send_keys(text);   
+
+def enterTextArea(question, text):
+    global browser
+    selector = "textarea#text-{}".format(question)
+    element = browser.find_element_by_css_selector(selector)
+    scrollTo(element)
+    element.send_keys(text);   
+
+def clickTable(question, row, col):
+    selector = "input#radio-{}-{}-{}".format(question, row, col)
+    clickIt(selector)
+    
+def clickTable2(question, row, col):
+    selector = "input#radio-{}-{}-{}".format(question, row, col)
+    clickIt(selector)
+    
+def clickRadio(question, col):
+    selector = "input#radio-{}-{}".format(question, col-1)
+    clickIt(selector)
+
+def clickCheckbox(question, col):
+    selector = "input#check-{}-{}".format(question, col-1)
+    clickIt(selector)
+
+def submit(choice):
+    global browser
+    clickIt("#showResults")
+    browser.implicitly_wait(10) # seconds
+    if choice == "Yes": clickIt("#continue-yes")
+    if choice == "No": clickIt("#continue-no")
+
+
+def clickIt(selector):
+    global browser
+    element = browser.find_element_by_css_selector(selector)
+    scrollTo(element)
+    element.click();   
+
+def startServer():
+    # start the server in a background thread
+    try:
+        serverThread = Thread(target=startServerInBackground)
+        serverThread.start()
+        time.sleep(5)
+    except OSError as e:
+        pass    # ignore this error (server already started)
+        
+def startServerInBackground():
+    try:
+        subprocess.check_output("python server.py".split(), stderr=subprocess.STDOUT, shell=True)
+    except OSError as e:
+        pass    # server has already started
+    except Exception as e:
+        print(e)
+
+def readExcelFile(page):
+    table = pd.read_excel(excelFile, page)
+    return table
+    
+    
 def doValidation(table):
     validation = table[pd.notnull(table["OptionCount"])]
     validation = validation.dropna(axis="columns")
@@ -59,11 +149,8 @@ def doValidation(table):
                     sys.exit()
     
 def getNamesAndPasswords():
-    cwd = os.getcwd()
-    os.chdir("..")
     pd.set_option('display.width', 1000)
-    table = pd.read_excel('highlands.xlsx', 'setup')
-    os.chdir(cwd)
+    table = readExcelFile('setup')
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
@@ -79,10 +166,27 @@ def getNamesAndPasswords():
     port = hostFrame["OPTION"].tolist()[0]
     return [root, rootPassword, manager, managerPassword, database, table, server, port]
 
+def parseCommandLine():
+    # default excel file is "highlands.xlsx", but can be changed on command line:
+    #    python server.py [excel-file]
+    if len(sys.argv) > 2:
+        print("Useage: python server.py [excel-file]")
+        sys.exit()
+    if len(sys.argv) == 1:
+        excelFile = "highlands.xlsx"
+    else:
+        excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
+    
+    if not os.path.isfile(excelFile):
+        print("{} does not exist".format(excelFile))
+        sys.exit()
+
+    return excelFile
+    
+excelFile = parseCommandLine()
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 pd.set_option('display.width', 1000)
-table = pd.read_excel('test_data.xlsx', 'Sheet1')
-# table = table[np.isfinite(table['Question'])]
+table = readExcelFile('tests')
 table = table[pd.notnull(table['Question'])]
 table['Question'] = table['Question'].astype(int)
 doValidation(table)

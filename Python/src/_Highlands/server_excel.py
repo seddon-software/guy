@@ -52,13 +52,17 @@ def filterOptions(questionType):
         if(question[3] == questionType): listOptions.append(option)
     return pd.DataFrame(listOptions)
 
-pd.set_option('display.width', 1000)
-table = pd.read_excel('highlands.xlsx', 'questions')
-table[['Number']] = table[['Number']].fillna(value=0)
-table['Number'] = table.Number.astype(int)
-table[['Section']] = table[['Section']].fillna(value="")
-questions = extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
-options = extractOptions(table)
+def main(file):
+    global excelFile, questions, options
+    excelFile = file
+    pd.set_option('display.width', 1000)
+    table = pd.read_excel(excelFile, 'questions')
+    table = table.drop(['Comments'], axis=1)
+    table[['Number']] = table[['Number']].fillna(value=0)
+    table['Number'] = table.Number.astype(int)
+    table[['Section']] = table[['Section']].fillna(value="")
+    questions = extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
+    options = extractOptions(table)
 
 if __name__ == "__main__":
     for q in questions:

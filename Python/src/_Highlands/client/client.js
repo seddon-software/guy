@@ -131,11 +131,11 @@ function setStyles() {
 	    "color": CHARTS_TITLE_COLOR
 	});
 	
-	$("#charts-tab, #piecharts-tab, .ui-page").css({
+	$("#overview-tab, #responses-tab, .ui-page").css({
 	    "background-color": CHART_BACKGROUND_COLOR
 	});
 	
-	$("#tabs, #piecharts-tab, #piechart > div").css({
+	$("#tabs, #responses-tab, #piechart > div").css({
 	    "background-color": CHART_BORDER_COLOR
 	});
 
@@ -571,7 +571,8 @@ function positionCopyright() {
     			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
                    .css("bottom", "0px")
                    .css("position", "fixed")
-}
+    $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
+        		   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)}
     
 function getQuestions() {
     $.ajax(

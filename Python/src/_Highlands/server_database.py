@@ -7,7 +7,7 @@
 ############################################################
 
 import pymysql.cursors
-import cgitb
+#import cgitb
 import numpy as np
 import pandas as pd
 import uuid
@@ -15,7 +15,10 @@ import datetime
 from ast import literal_eval
 import server_excel as xl
 
-cgitb.enable()
+def __init__(file):
+    global excelFile
+    excelFile = file
+#cgitb.enable()
 pd.set_option('display.max_rows', 1000)
 
 def connect():
@@ -29,7 +32,7 @@ def connect():
 
 def getNamesAndPasswords():
     pd.set_option('display.width', 1000)
-    table = pd.read_excel('highlands.xlsx', 'setup')
+    table = pd.read_excel(excelFile, 'setup')
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
@@ -339,12 +342,11 @@ def getChartData():
         connection.close()
     return chartData    # return a dict
 
+def main(file):
+    global root, rootPassword, manager, managerPassword, database, table, server, port
+    global excelFile
+    excelFile = file
+    root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 
-root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
 if __name__ == "__main__":
-    import json
-    data = getChartData()
-    for key in data:
-        print(key, data[key])
-    jsonString = json.dumps(getChartData())
-    jsonAsBytes = jsonString.encode("UTF-8")
+    print(getPieChartData())
