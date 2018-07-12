@@ -1,17 +1,18 @@
-To setup users and tables (you must have a root and manager user):
-	setup tab of highlands.xlsx
+Excel File defaults to highlands.xlsx, but can be called anything as long as it has an .xlsx extension
 
-To edit questions:
-	questions tab of highlands.xlsx
+The Excel File has 2 or 3 tabs:
+	setup tab:				defines users, table, host, port	
+	questions tab:			defines questions	
+	tests tab (optional):	defines automatic tests
 	
-To change answers in automatic testing, edit:
-	test_data.xlsx
+To initilize the system:
+	python initialize_database.py [excelFile] 
 
-To initilize the system (requires "highlands.xlsx"):
-	python initialize_database.py
-
-To run the server (requires "highlands.xlsx"):
-	python server.py
+To run the server:
+	python server.py [excelFile]
+	
+To run the automatic tests:
+	python run_tests.py [excelFile]
 	
 To start the client assessment in a browser:
 	http://<server-ip>:<port>/client.html
@@ -19,9 +20,7 @@ To start the client assessment in a browser:
 To start the client with the charts in a browser:
 	http://<server-ip>:<port>/client.html?charts
 
-To run automatic tests (requires "test_data.xlsx"), you need to install selenium:
-	pip install selenium  (if required)
-	cd testing
-	python tests_from_excel.py
+To run automatic tests you will need to install selenium:
+	pip install selenium
 	
 
