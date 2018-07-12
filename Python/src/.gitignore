@@ -34,3 +34,5 @@
 *.xlsx
 
 /_DLS/
+/gender.json
+/highlands_backup.tar
