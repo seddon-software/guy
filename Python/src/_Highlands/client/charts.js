@@ -48,7 +48,7 @@ function getChartData() {
 function getPieChartData() {
     $.ajax(
     {
-        url: '/piechart-data',
+        url: '/piechart-data2',
         type: 'GET',
         contentType:'application/json',
         dataType:'json',
@@ -281,6 +281,45 @@ function drawPieChart() {
 	    }
 	    return s;
 	}
+	function buildMenu() {
+		// pieChartData
+		function getClients() {
+			clients = [];
+			Object.keys(pieChartData).forEach(function(key) {
+				if(key.indexOf('@') === -1 && key !== 'all') clients.push(key);
+			});
+			return clients;
+		}
+		function getEmails() {
+			emails = [];
+			Object.keys(pieChartData).forEach(function(key) {
+				if(key.indexOf('@') !== -1) emails.push(key);
+			});
+			return emails;
+		}
+		clients = getClients();
+		emails = getEmails();
+		let menu = `		
+			<select name="filter" id="filter">
+			<optgroup label="filter">
+			<option value="-">show all</option>
+			</optgroup>
+			<optgroup label="by client">`;
+		clients.forEach(function(client) {
+			menu += `<option value="client">${client.trim()}</option>`;
+			});
+		menu += `
+			</optgroup>
+			<optgroup label="by email">`;
+		emails.forEach(function(email) {
+			menu += `<option value="email">${email.trim()}</option>`;
+		});
+		menu += `</optgroup></select>`;
+		console.log(menu);
+		return menu;
+	}
+	
+    
 	if($.isEmptyObject(pieChartData)) {
 		$("#piecharts-message").text("no pie charts available");
 		return;
@@ -289,7 +328,14 @@ function drawPieChart() {
 	}
 
 	let maxLegendLength = 100;
+	let html = $(`${buildMenu()}`);
+	html.css({'width':'auto'});
+	$("#pie-filter-drop-down").html(html);
 
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	pieChartData = pieChartData['BT'];
+	
+	
 	for(let i = 0; i < pieChartData.length; i++) {
 	    function appendTitle() {
 	 	    title = `${number}. ${title}`;

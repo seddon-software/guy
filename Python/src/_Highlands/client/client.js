@@ -399,7 +399,7 @@ function drawTable(selector, options, n, questionType, questionNumber) {
 		}
 		if(hw === 'w') {
 			n = columnText.length + 1;
-			space = 95/(n+extraSpaces);
+			space = 90/(n+extraSpaces);
 		}
 		let spacing = "";
 		for(let i = 0; i < n; i++) {

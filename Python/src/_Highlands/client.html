@@ -18,14 +18,14 @@
 <link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">
 <link rel="stylesheet" href="css/jquery-ui-1.12.1.css">
 <link rel="stylesheet" href="c3-0.4.10/c3.min.css"/>
-<script src="js/canvasjs.min.js"></script>
+<!--  <script src="js/canvasjs.min.js"></script> -->
 <script src="js/jquery-3.2.1.js"></script>
 <script src="d3-3.5.17/d3.min.js" charset="utf-8"></script>
 <script src="c3-0.4.10/c3.min.js"></script>
 <script src="js/jquery_cookie.js"></script>
-<script src="js/jquery.mobile.custom.js"></script>
+<!--  <script src="js/jquery.mobile.custom.js"></script> -->
 <script src="js/jquery-ui-1.12.1.js"></script>
-<script src="js/jquery.ui.touch-punch.min.js"></script>
+<!--  <script src="js/jquery.ui.touch-punch.min.js"></script> -->
 <script src="client/constants.js"></script>
 <script src="client/client.js"></script>
 <script src="client/graph.js"></script>
@@ -68,10 +68,12 @@ $(window).on('load', function () {
 		getQuestions();
 		getOptions();
 		addClickHandlers();
-		positionCopyright();
 	}
 	setupTabs();
 	setStyles();
+	setTimeout(function() {
+		positionCopyright();
+	}, 100);
 });
 
 function setupHeadings() {	
@@ -104,8 +106,8 @@ function setupTabs() {
 		hideTab("#responses-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
+	$("a#piecharts-button.ui-tabs-anchor").mouseover(function() {console.log("mouseover")});
 }
-
 </script>
 
 </head>
@@ -113,10 +115,10 @@ function setupTabs() {
 	<div id="headings"></div>
     <div id="tabs">
 	  <ul>
-	    <li><a href="#questions-tab" id="assessment-button">Assessment</a></li>
-	    <li><a href="#overview-tab" id="charts-button">Overview</a></li>
-	    <li><a href="#responses-tab" id="piecharts-button">Responses</a></li>
-	    <li><a href="#extras-tab" id="extras-button">Extras</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#questions-tab" id="assessment-button">Assessment</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#overview-tab" id="charts-button">Overview</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#responses-tab" id="piecharts-button">Responses</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#extras-tab" id="extras-button">Extras</a></li>
 	  </ul>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
@@ -138,6 +140,7 @@ function setupTabs() {
 	  </div>
 	  <div id="responses-tab">
 	    <div id="piecharts-title"></div>
+		<div><div id="pie-filter-drop-down"></div></div>  <!-- don't remove the extra div -->
 		<div id="piecharts-message"></div>
 		<div id="piechart"></div>
 	  </div>

@@ -72,6 +72,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             jsonString = json.dumps(sql.getPieChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
+        elif(fileName == "piechart-data2"):
+            sendHeaders()
+            jsonString = json.dumps(sql.getPieChartData2())
+            jsonAsBytes = jsonString.encode("UTF-8")
+            self.wfile.write(jsonAsBytes)
         elif(fileName == "piechart-questions-options"):
             sendHeaders()
             jsonString = json.dumps(sql.getPieChartQuestionsAndOptions())
