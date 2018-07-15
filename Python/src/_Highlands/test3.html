@@ -1,0 +1,47 @@
+<head>
+	<script src="js/jquery-3.2.1.js"></script>
+    <link href="css/select2-stable-3.5/select2.css" rel="stylesheet"/>
+    <script src="css/select2-stable-3.5/select2.js"></script>
+    <script>
+        $(document).ready(function() { 
+        	$("#e1").select2(); 
+        	$("#e2").select2(); 
+        	
+        	$("#e1").click(function () { console.log("Selected value is: "+$("#e1").select2("val"));});
+        	$("#e2").click(function () { console.log("Selected value is: "+$("#e2").select2("val"));});
+        	$("#e1").css({'width':'40vw'});
+        });
+    </script>
+</head>
+<style>
+div {
+	width: 25vw;
+}
+
+
+</style>
+<body>
+	1st drop down
+	<div>
+	    <select id="e1">
+			<optgroup label="filter-all">
+				<option value="-">show all</option>
+			</optgroup>
+			<optgroup label="part A">
+		        <option value="AL">Alabama</option>
+		        <option value="WY">Wyoming</option>
+			</optgroup>
+			<optgroup label="part B">
+		        <option value="NY">New York</option>
+		        <option value="CA">Calfornia</option>
+			</optgroup>
+	    </select>
+	</div>
+	<div>
+		2nd drop down
+	    <select id="e2">
+	        <option value="Windor">Windsor</option>
+	        <option value="Slough">Slough</option>
+	    </select>
+	</div>
+</body>

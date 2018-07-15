@@ -17,6 +17,7 @@ var OPTIONS = 5;
 var VALUES = 6;
 
 var pieChartData;
+var filteredPieChartData;
 var pieChartQuestionsAndOptions;
 
 function displayPieCharts() {
@@ -75,6 +76,11 @@ function getPieChartQuestionsAndOptions() {
         	}
         }	
     });
+}
+
+function cleanupSelectText(text) {
+	text = text.trim();
+	return text.replace(/ /g,"&nbsp;");
 }
 
 function drawChart(data) {
@@ -210,21 +216,22 @@ function drawChart(data) {
 		}
 		function buildMenu() {
 			let menu = `		
-				<select name="filter" id="filter">
+				<div><label>Filter:</label>
+				<select id="filter">
 				<optgroup label="filter">
-				<option value="-">show all</option>
+					<option value="-">none</option>
 				</optgroup>
-				<optgroup label="by client">`;
+				<optgroup label="by&nbsp;client">`;
 			uniqueClients.forEach(function(client) {
-				menu += `<option value="client">${client.trim()}</option>`;
+				menu += `<option value="client,${client.trim()}">${cleanupSelectText(client)}</option>`;
 				});
 			menu += `
 				</optgroup>
-				<optgroup label="by email">`;
+				<optgroup label="by&nbsp;email">`;
 			uniqueEmails.forEach(function(email) {
-				menu += `<option value="email">${email.trim()}</option>`;
+				menu += `<option value="email,${email.trim()}">${email.trim()}</option>`;
 			});
-			menu += `</optgroup></select>`;
+			menu += `</optgroup></select></div>`;
 			return menu;
 		}
 		let uniqueClients = removeDuplicates(clients);
@@ -232,26 +239,19 @@ function drawChart(data) {
 		let html = $(`${buildMenu()}`);
 		html.css({'width':'auto'});
 		$(selector).prepend(html);
-		
-		$("#filter").selectmenu({
-			   appendTo: "#filter-drop-down",
-			   change: function( event, ui ) {
-				   // id === "-" means no filter
-				   var id = $(this).val(); 
-				   var text = $("option:selected").text();
-				   if(id === "-")
-					   filter("client", "-");
-				   else
-					   filter(id, text);
-				   generateChart();
-			   },
-			});
-		
-		$(".ui-selectmenu-button, .ui-selectmenu-text, .ui-selectmenu-icon, .ui-selectmenu-menu, .ui-selectmenu-optgroup").css({
-			'font-size': 'small',
-			'width':     'auto',
-			'height':    'auto',
-		});		
+
+		$("#filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+    	$("#filter").on("change", function(e) { 
+			if(e.val === "-")
+				filter("client", "-");
+			else {
+				let parts = e.val.split(',');
+				let group = parts[0];
+				let text = parts[1];
+				filter(group, text);
+			}
+			generateChart();
+    	});
 	}
 
 	let keys = Object.keys(data);
@@ -299,23 +299,23 @@ function drawPieChart() {
 		}
 		clients = getClients();
 		emails = getEmails();
-		let menu = `		
-			<select name="filter" id="filter">
+		let menu = `
+			<div><label>Filter:</label>
+			<select id="pie-filter">
 			<optgroup label="filter">
-			<option value="-">show all</option>
+			<option value="-">none</option>
 			</optgroup>
-			<optgroup label="by client">`;
+			<optgroup label="by&nbsp;client">`;
 		clients.forEach(function(client) {
-			menu += `<option value="client">${client.trim()}</option>`;
+			menu += `<option value="client,${client.trim()}">${cleanupSelectText(client)}</option>`;
 			});
 		menu += `
 			</optgroup>
-			<optgroup label="by email">`;
+			<optgroup label="by&nbsp;email">`;
 		emails.forEach(function(email) {
-			menu += `<option value="email">${email.trim()}</option>`;
+			menu += `<option value="email,${email.trim()}">${email.trim()}</option>`;
 		});
-		menu += `</optgroup></select>`;
-		console.log(menu);
+		menu += `</optgroup></select></div>`;
 		return menu;
 	}
 	
@@ -332,68 +332,86 @@ function drawPieChart() {
 	html.css({'width':'auto'});
 	$("#pie-filter-drop-down").html(html);
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	pieChartData = pieChartData['BT'];
+	$("#pie-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	$("#pie-filter").on("change", function(e) { 
+		if(e.val === "-") {
+			filteredPieChartData = pieChartData['all'];
+		} else {
+			let parts = e.val.split(',');
+			let group = parts[0];
+			let text = parts[1];
+			filteredPieChartData = pieChartData[text];
+		}
+		clearAllPies();
+		drawAllPies();
+	});
+
+	filteredPieChartData = pieChartData['all'];
+	drawAllPies();
 	
+	function clearAllPies() {
+ 	    $("#piechart").empty;
+	}
 	
-	for(let i = 0; i < pieChartData.length; i++) {
-	    function appendTitle() {
-	 	    title = `${number}. ${title}`;
-	 	    //title = title.replace(/\"/g,'\\"');		// escape all " quotes
-	 	    title = div(title,"", {"width":"100%", "color":PIECHART_TITLES_COLOR, "background-color":PIECHART_BACKGROUND_COLOR})
-	 	    $("#piechart").append(title);
-	 	}
-
-		let selector = `#chart${i}`;
-		
- 	    let data = pieChartData[i];
- 	    let number = pieChartQuestionsAndOptions[i][NUMBER];
- 	    let legend = pieChartQuestionsAndOptions[i][OPTIONS];
- 	    let title = pieChartQuestionsAndOptions[i][QUESTION];
- 	    
- 	    appendTitle();	// workaround for title broken in C3 library
- 	    let anchor = div("", `chart${i}`).css({"float":"left", "width":"100%", "background-color":PIECHART_BACKGROUND_COLOR});
- 	    $("#piechart").append(anchor);
-
- 		// make sure no more than n (=1) pie charts are drawn per line
- 	    let chartsPerLine = 1;
- 		let w1 = $(window).width()/pieChartData.length;
- 		let w2 = $(window).width()/chartsPerLine;
- 		let width = Math.max(w1, w2);
-
- 	    pie = `["${truncate(legend[0],maxLegendLength)}", ${data[0]}]`;
- 	    for(let k = 1; k < data.length; k++) {
- 	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
- 	    }
-
- 	    // build object to generate piechart
- 	    o = `{
- 	    	"title": {"text":"${title}"},
- 	    	"size": {"width":"${width}"},
- 	    	"padding": {"bottom":"40"},
- 	    	"legend": {"position":"right"},
- 	    	"bindto": "${selector}",
- 	    	"data": {
- 	    	    "columns": [${pie}],
-		        "type" : "pie"
-		    },
- 	    	"tooltip": {"contents":"this_will_be_replaced"}
- 	    	}`;
- 	    o = JSON.parse(o);
- 	    // JSON parsing converts the function to a string so change it to a function:
- 	    o["tooltip"]["contents"] = function(d, defaultTitleFormat, defaultValueFormat, color) {
- 		    						   var sum = 0;
- 		    						   d.forEach(function (e) {
- 		    							   sum += e.value;
- 		    						   });
- 		    						   defaultTitleFormat = function() {
- 		    							   return `Frequency = ${sum}`;
- 		    						   };
- 		    						   return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
- 								   }
- 		c3.generate(o);
-	};
-	let endOfPiecharts = div("", "", {"clear":"both"});
-	$("#piechart").append(endOfPiecharts);
+	function drawAllPies() {
+		for(let i = 0; i < filteredPieChartData.length; i++) {
+		    function appendTitle() {
+		 	    title = `${number}. ${title}`;
+		 	    title = div(title,"", {"width":"100%", "color":PIECHART_TITLES_COLOR, "background-color":PIECHART_BACKGROUND_COLOR})
+		 	    $("#piechart").append(title);
+		 	}
+	
+			let selector = `#chart${i}`;
+			
+	 	    let data = filteredPieChartData[i];
+	 	    let number = pieChartQuestionsAndOptions[i][NUMBER];
+	 	    let legend = pieChartQuestionsAndOptions[i][OPTIONS];
+	 	    let title = pieChartQuestionsAndOptions[i][QUESTION];
+	 	    
+	 	    appendTitle();	// workaround for title broken in C3 library
+	 	    let anchor = div("", `chart${i}`).css({"float":"left", "width":"100%", "background-color":PIECHART_BACKGROUND_COLOR});
+	 	    $("#piechart").append(anchor);
+	
+	 		// make sure no more than n (=1) pie charts are drawn per line
+	 	    let chartsPerLine = 1;
+	 		let w1 = $(window).width()/filteredPieChartData.length;
+	 		let w2 = $(window).width()/chartsPerLine;
+	 		let width = Math.max(w1, w2);
+	
+	 	    pie = `["${truncate(legend[0],maxLegendLength)}", ${data[0]}]`;
+	 	    for(let k = 1; k < data.length; k++) {
+	 	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
+	 	    }
+	
+	 	    // build object to generate piechart
+	 	    o = `{
+	 	    	"title": {"text":"${title}"},
+	 	    	"size": {"width":"${width}"},
+	 	    	"padding": {"bottom":"40"},
+	 	    	"legend": {"position":"right"},
+	 	    	"bindto": "${selector}",
+	 	    	"data": {
+	 	    	    "columns": [${pie}],
+			        "type" : "pie"
+			    },
+	 	    	"tooltip": {"contents":"this_will_be_replaced"}
+	 	    	}`;
+	 	    o = JSON.parse(o);
+	 	    // JSON parsing converts the function to a string so change it to a function:
+	 	    o["tooltip"]["contents"] = function(d, defaultTitleFormat, defaultValueFormat, color) {
+	 		    						   var sum = 0;
+	 		    						   d.forEach(function (e) {
+	 		    							   sum += e.value;
+	 		    						   });
+	 		    						   defaultTitleFormat = function() {
+	 		    							   return `Frequency = ${sum}`;
+	 		    						   };
+	 		    						   return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
+	 								   }
+	 		c3.generate(o);
+		};
+		let endOfPiecharts = div("", "", {"clear":"both"});
+		$("#piechart").append(endOfPiecharts);
+	}
 }
 
