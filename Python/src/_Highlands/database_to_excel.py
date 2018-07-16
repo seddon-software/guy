@@ -21,7 +21,7 @@ def connect():
 
 def getNamesAndPasswords():
     pd.set_option('display.width', 1000)
-    table = pd.read_excel('setup.xlsx', 'Sheet1')
+    table = pd.read_excel('highlands.xlsx', 'setup')
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
