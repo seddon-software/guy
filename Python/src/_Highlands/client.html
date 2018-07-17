@@ -32,6 +32,7 @@
 <script src="client/client.js"></script>
 <script src="client/graph.js"></script>
 <script src="client/charts.js"></script>
+<script src="client/scatter.js"></script>
 
 <style type="text/css">
 
@@ -69,6 +70,7 @@ $(window).on('load', function () {
 		// charts
 		displayCharts();
 		displayPieCharts();
+		displayScatterChart();
 	} else {
 		// assessments
 		removeCookiesOnStartup();
@@ -107,15 +109,14 @@ function setupTabs() {
 	if($(location).attr('search')==="?charts") {
 		tabObject["active"] = 1;
 		hideTab("#questions-tab");		
-		hideTab("#extras-tab");
+//		hideTab("#extras-tab");
 	} else {
 		tabObject["active"] = 0;
 		hideTab("#overview-tab");
 		hideTab("#responses-tab");
-		hideTab("#extras-tab");
+//		hideTab("#extras-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
-//	$("a#piecharts-button.ui-tabs-anchor").mouseover(function() {console.log("mouseover")});
 }
 </script>
 
@@ -155,6 +156,7 @@ function setupTabs() {
 	  </div>
 	  <div id="extras-tab" style="background-color:gainsboro">
 	  	<h1>Extras</h1>
+		<div id="scatter"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>

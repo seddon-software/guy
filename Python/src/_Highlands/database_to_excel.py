@@ -6,6 +6,7 @@
 
 import pymysql.cursors
 import pandas as pd
+import sys, os
 from ast import literal_eval
 import collections
 
@@ -21,7 +22,7 @@ def connect():
 
 def getNamesAndPasswords():
     pd.set_option('display.width', 1000)
-    table = pd.read_excel('highlands.xlsx', 'setup')
+    table = pd.read_excel(excelFile, 'setup')
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
@@ -82,6 +83,25 @@ def getExcelData():
     finally:
         connection.close()
     return chartData
+
+def parseCommandLine():
+    # default excel file is "highlands.xlsx", but can be changed on command line:
+    #    python server.py [excel-file]
+    if len(sys.argv) > 2:
+        print("Useage: python server.py [excel-file]")
+        sys.exit()
+    if len(sys.argv) == 1:
+        excelFile = "highlands.xlsx"
+    else:
+        excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
+    
+    if not os.path.isfile(excelFile):
+        print("{} does not exist".format(excelFile))
+        sys.exit()
+
+    return excelFile
+    
+excelFile = parseCommandLine()
 
 
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()

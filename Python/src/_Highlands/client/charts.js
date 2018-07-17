@@ -190,7 +190,7 @@ function drawChart(data) {
 		// x-axis: <Aspect>, <values array>
 		// y-axis: <client array>
 		// axes are swapped
-		let height = filteredClients.length * screen.height / 10;
+		let height = (filteredClients.length + 1) * screen.height / 10;
 		let o = {};  // used to generate chart
 		o["bindto"] = '#chart';
 		o["axis"] = { rotated:true, x:{ type:'category', categories:filteredClients}};
