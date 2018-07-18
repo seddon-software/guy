@@ -95,7 +95,7 @@ function setStyles() {
 	    	text-shadow: 0 0 0 #f3f3f3
 	    }`);
 
-    $("#assessment-button, #charts-button, #piecharts-button, #extras-button").css({
+    $("#assessment-button, #charts-button, #piecharts-button, #growth-button").css({
     	"border":"red",
     	"color":TAB_BUTTON_COLOR,
     	"background-color":TAB_BUTTON_BACKGROUND_COLOR
@@ -131,7 +131,7 @@ function setStyles() {
 	    "color": CHARTS_TITLE_COLOR
 	});
 	
-	$("#overview-tab, #responses-tab, .ui-page").css({
+	$("#overview-tab, #responses-tab, #growth-tab, .ui-page").css({
 	    "background-color": CHART_BACKGROUND_COLOR
 	});
 	
@@ -470,10 +470,20 @@ function displayTable(entry, n, questionType, questionNumber) {
 					"section"    : section, 
 					"selection"  : values, 
 					"marks"      : marks, 
-					"optionCount": optionCount});
+					"optionCount": optionCount
+		});
 			}
 		}
 		function handleTable2() {
+			function getLabels() {
+				let xLabels = [];
+				let yLabels = options[0].slice();
+				yLabels.splice(0, 1);
+				for(let i = 1; i < options.length; i++) {
+					xLabels.push(options[i][0])
+				}
+				return [xLabels, yLabels]
+			}
 			let pair = value.split(':').map(Number);
 			let buttonRow = pair[0];
 			let buttonCol = pair[1];
@@ -483,12 +493,16 @@ function displayTable(entry, n, questionType, questionNumber) {
 	    	let section = questions[n][1];
 	    	let cols = options[0].length - 1;
 	    	let rows = options.length - 1;
-	    	let optionCount = rows * cols;
+	    	let optionCount = `${rows}:${cols}`;
 			results[n] = keyValuePair(questionType, {
 				"question"   : questionNumber, 
 				"section"    : section, 
 				"selection"  : value, 
 				"marks"      : mark, 
+				"xTitle"     : 'Client Revenue Growth',
+				"yTitle"     : 'Market Growth',
+				"xLabels"    : getLabels()[0],
+				"yLabels"	 : getLabels()[1],
 				"optionCount": optionCount});
 			}
 		let name = event.currentTarget.name;

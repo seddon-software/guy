@@ -77,6 +77,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             jsonString = json.dumps(sql.getPieChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
+        elif(fileName == "scatter-data"):
+            sendHeaders()
+            jsonString = json.dumps(sql.getScatterChartData())
+            jsonAsBytes = jsonString.encode("UTF-8")
+            self.wfile.write(jsonAsBytes)
         elif(fileName == "piechart-data2"):
             sendHeaders()
             jsonString = json.dumps(sql.getPieChartData2())

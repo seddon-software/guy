@@ -61,7 +61,9 @@ var TABLE_SPACING_BETWEEN_ROWS = 5;
 
 //miscellaneous
 var BANNER_TEXT = "Highlands Negotiations LLC";
+var COPYRIGHT_MESSAGE = "© Highlands Negotiations, June-July 2018, v0.7";
 var OVERVIEW_TAB_TEXT = "Aspects:";
 var RESPONSES_TAB_TEXT = "Frequency of Answer:";
-var COPYRIGHT_MESSAGE = "© Highlands Negotiations, June-July 2018, v0.7";
+var SCATTER_X_TITLE = 'Client Revenue Growth';
+var SCATTER_Y_TITLE = 'Market Growth';
 var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";

@@ -21,8 +21,12 @@
 <link rel="stylesheet" href="css/select2-stable-3.5/select2.css"/>
 <!--  <script src="js/canvasjs.min.js"></script> -->
 <script src="js/jquery-3.2.1.js"></script>
+<!-- 
 <script src="d3-3.5.17/d3.min.js" charset="utf-8"></script>
 <script src="c3-0.4.10/c3.min.js"></script>
+ -->
+<script src="d3-5.5.0/d3.min.js" charset="utf-8"></script>
+<script src="c3-0.6.5/c3.min.js"></script>
 <script src="js/jquery_cookie.js"></script>
 <!--  <script src="js/jquery.mobile.custom.js"></script> -->
 <script src="js/jquery-ui-1.12.1.js"></script>
@@ -44,6 +48,12 @@ body {
 .select2-container, .select2-result-label {
 	width:20%;
 	font-size: small;
+}
+
+#scattercharts tspan{
+    fill: blue;
+    font-weight: bold;
+	font-size: x-small;
 }
 
 input[type=text] { 
@@ -110,12 +120,11 @@ function setupTabs() {
 	if($(location).attr('search')==="?charts") {
 		tabObject["active"] = 1;
 		hideTab("#questions-tab");		
-//		hideTab("#extras-tab");
 	} else {
 		tabObject["active"] = 0;
 		hideTab("#overview-tab");
 		hideTab("#responses-tab");
-//		hideTab("#extras-tab");
+		hideTab("#growth-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
 }
@@ -129,7 +138,7 @@ function setupTabs() {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#questions-tab" id="assessment-button">Assessment</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#overview-tab" id="charts-button">Overview</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#responses-tab" id="piecharts-button">Responses</a></li>
-	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#extras-tab" id="extras-button">Extras</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#growth-tab" id="growth-button">Growth</a></li>
 	  </ul>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
@@ -139,26 +148,21 @@ function setupTabs() {
 	    <div id='errorMessage'>&nbsp;</div>
 	    <button id="showResults" type="button">Submit Form</button>
 	  </div>
-	  <!--  
-	  	The charts tab uses a selectmenu widget attached to "#filter-drop-down".  
-	  	I've had to wrap this in an extra div, because otherwise it interferes with 
-	  	other tabs (it blanks out the next tab), but I don't know why.
-	   -->
 	  <div id="overview-tab">
 		<div id="charts-title"></div>
-		<div><div id="filter-drop-down"></div></div>  <!-- don't remove the extra div -->
+		<div id="filter-drop-down"></div>
 		<div id="chart"></div>
 	  </div>
 	  <div id="responses-tab">
 	    <div id="piecharts-title"></div>
-		<div><div id="pie-filter-drop-down"></div></div>  <!-- don't remove the extra div -->
+		<div id="pie-filter-drop-down"></div>
 		<div id="piecharts-message"></div>
 		<div id="piechart"></div>
 	  </div>
-	  <div id="extras-tab" style="background-color:gainsboro">
-	  	<h1>Extras</h1>
+	  <div id="growth-tab">
+	  	<h1>Growth</h1>
 	    <div id="scattercharts-title"></div>
-		<div><div id="scatter-filter-drop-down"></div></div>  <!-- don't remove the extra div -->
+		<div id="scatter-filter-drop-down"></div>
 		<div id="scattercharts"></div>
 	  </div>
 	</div>    

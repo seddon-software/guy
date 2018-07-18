@@ -7,13 +7,13 @@
 ############################################################
 
 import pymysql.cursors
-#import cgitb
-#import numpy as np
 import pandas as pd
+import numpy as np
 import uuid
 import datetime
 from ast import literal_eval
 import server_excel as xl
+#from openpyxl.utils.cell import rows_from_range
 
 def __init__(file):
     global excelFile
@@ -473,11 +473,47 @@ def getEmailsAndClients():
         connection.close()
     return emails, clients
 
+def getDatabaseResults():
+    connection = connect()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT `*` FROM `{}`".format(table)
+            cursor.execute(sql)
+            results = cursor.fetchall()
+    finally:
+        connection.close()
+    return results
+
+def getScatterChartData():
+    # this routine assumes the client always comes before othe results
+    scatterData = {}
+    frequencies = {}
+    results = getDatabaseResults()
+    for row in results:
+        email = row["email"]
+        keyValuePairs = literal_eval(row['result'])
+        for pair in keyValuePairs:
+            if 'client' in pair:
+                client = pair['client']['name']
+            if 'table2' in pair:
+                choiceRow, choiceCol = [int(x) for x in pair['table2']['selection'].split(':')]
+                table2Rows, table2Cols = [int(x) for x in pair['table2']['optionCount'].split(':')]
+                r = choiceRow-1
+                c = choiceCol-1
+                if 'xLabels' not in scatterData: scatterData['xLabels'] = pair['table2']['xLabels']
+                if 'yLabels' not in scatterData: scatterData['yLabels'] = pair['table2']['yLabels']
+                if 'all' not in frequencies:  frequencies['all'] = np.zeros((table2Rows, table2Cols), int).tolist()
+                if client not in frequencies: frequencies[client] = np.zeros((table2Rows, table2Cols), int).tolist()
+                if email not in frequencies:  frequencies[email] = np.zeros((table2Rows, table2Cols), int).tolist()
+                frequencies['all'][r][c] += 1
+                frequencies[client][r][c] += 1
+                frequencies[email][r][c] += 1
+    scatterData['frequencies'] = frequencies
+    return scatterData
+
 if __name__ == "__main__":
     main("highlands.xlsx")
-    print(getEmailsAndClients())
-    print(getPieChartData())
-#     print(getChartData())
-    allPies = getPieChartData2()
-    for key in allPies:
-        print(allPies[key], key)
+    scatterData = getScatterChartData()
+    print(scatterData)
+    for key in scatterData['frequencies']:
+        print(key, scatterData['frequencies'][key])

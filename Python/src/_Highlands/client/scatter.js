@@ -4,53 +4,14 @@
 // https://github.com/c3js/c3/issues/547#issuecomment-56292971
 
 var scatterFrequencies;
-var scatterData = {
-	xLabels: ["Very Low", "Low", "Neutral", "Moderate", "High"],
-	yLabels: ["Very Low", "Low", "Neutral", "Moderate", "High"],
-	xTitle: 'Client Revenue Growth',
-	yTitle: 'Market Growth',
-	frequencies: {
-		'all':
-		    [[0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4]],
-		'BT':
-		    [[0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4]],
-		'client2':
-		    [[0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4]],
-		'client3':
-		    [[0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4]],
-		'chris@def.com':
-		    [[0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4]],
-		'email2@def.com':
-		    [[0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4],
-			 [0, 1, 2, 3, 4]],
-		}
-	};
-
+var scatterData;
 
 function displayScatterChart() {
+	getAjaxData("/scatter-data", setScatterData);
+}
+
+function setScatterData(data) {
+	scatterData = data;
 	getAjaxData("/emails-and-clients", scatterChartCallback);
 }
 
@@ -92,6 +53,16 @@ function drawAllScatterCharts() {
 		return diff < 0.0001;
 	}
 	
+	function getScatterCount() {
+		let total = 0;
+		let data = scatterData.frequencies['all'];
+		for(let i = 0; i < data.length; i++) {
+			for(let k = 0; k < data[0].length; k++)
+				total += data[i][k];  
+		}
+		return total;
+	}
+
 	let frequencies = scatterFrequencies;
 	let rows = frequencies.length;
 	let cols = frequencies[0].length;
@@ -103,7 +74,22 @@ function drawAllScatterCharts() {
 		}
 	}
 	let o = {'bindto':"#scattercharts", 'legend':{hide:true} };
-	o['data'] = { xSort:false, xs:{' ': 'x'}, type:'scatter', columns:columnData};
+	o['data'] = { 
+			xSort:false, 
+			xs:{' ': 'x'}, 
+			type:'scatter',
+			columns:columnData,
+			color: function(color,d){
+				if(d === " ") return;
+				let count = getScatterCount();
+				let x = d.x;
+				let y = d.value;
+				let frequency = frequencies[x][y];
+				color = "black";
+				if(frequency > count/5) color = "red";
+				if(frequency > count/2.5) color = "blue";
+				return color;
+			}};
 	o['point'] = {
 	        r: function(d) {
 	        	let xy = d['index'];
@@ -113,13 +99,14 @@ function drawAllScatterCharts() {
 	            return frequencies[x][y]*factor;
 	        }
 	    };
+
 	o['axis'] = {
 	        x: {
 	        	min: -0.4,
 	        	max:  4.4,
 	            label: {
 	            	position: 'outer-center',
-	            	text: scatterData.xTitle
+	            	text: SCATTER_X_TITLE
 	            },
 	            tick: {
 	            	count: 5,
@@ -136,7 +123,7 @@ function drawAllScatterCharts() {
 	        y: {
 	            label: {
 	            	position: 'outer-middle',
-	            	text: scatterData.yTitle
+	            	text: SCATTER_Y_TITLE
 	            },
 				tick: {
 					format: function(y) { 
