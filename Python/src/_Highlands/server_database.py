@@ -245,19 +245,6 @@ def getPieChartData():
                     if 'radio' in pair:
                         arr.append((pair["radio"]["selection"],pair["radio"]["optionCount"]))
                 chartData.append(arr)
-#         def getMinSize():
-#             minimum = 100
-#             for array in chartData:
-#                 if len(array) < minimum: minimum = len(array)
-#             return minimum
-#         def truncateArrays(length):
-#             for i in range(len(chartData)):
-#                 chartData[i] = chartData[i][:length]
-#         try:
-#             # all totals should be of the same length, but during development this might be the case
-#             truncateArrays(getMinSize())            
-#         except Exception as e:
-#             print(e) 
     finally:
         connection.close()
 
@@ -458,8 +445,37 @@ def getPieChartData2():
         return allPies
     return gatherPieInformation()
 
+def getEmailsAndClients():
+    def getEmails(results):
+        emails = []
+        for row in results:
+            emails.append(row['email'])
+        return list(set(emails))  # pick out unique emails
+    
+    def getClients(results):
+        clients = []
+        for row in results:
+            keyValuePairs = literal_eval(row['result'])
+            for pair in keyValuePairs:
+                if 'client' in pair:
+                    clients.append(pair['client']['name'])
+        return list(set(clients))  # pick out unique clients
+
+    connection = connect()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT `*` FROM `{}`".format(table)
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            emails = getEmails(results)
+            clients = getClients(results)
+    finally:
+        connection.close()
+    return emails, clients
+
 if __name__ == "__main__":
     main("highlands.xlsx")
+    print(getEmailsAndClients())
     print(getPieChartData())
 #     print(getChartData())
     allPies = getPieChartData2()

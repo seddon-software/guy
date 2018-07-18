@@ -33,7 +33,8 @@
 <script src="client/graph.js"></script>
 <script src="client/charts.js"></script>
 <script src="client/scatter.js"></script>
-
+<script src="client/utilities.js"></script>
+<script src="client/ajax.js"></script>
 <style type="text/css">
 
 body {
@@ -156,7 +157,9 @@ function setupTabs() {
 	  </div>
 	  <div id="extras-tab" style="background-color:gainsboro">
 	  	<h1>Extras</h1>
-		<div id="scatter"></div>
+	    <div id="scattercharts-title"></div>
+		<div><div id="scatter-filter-drop-down"></div></div>  <!-- don't remove the extra div -->
+		<div id="scattercharts"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>

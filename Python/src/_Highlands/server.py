@@ -62,6 +62,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             jsonString = json.dumps(xl.options)
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
+        elif(fileName == "emails-and-clients"):
+            sendHeaders()
+            jsonString = json.dumps(sql.getEmailsAndClients())
+            jsonAsBytes = jsonString.encode("UTF-8")
+            self.wfile.write(jsonAsBytes)
         elif(fileName == "chart-data"):
             sendHeaders()
             jsonString = json.dumps(sql.getChartData())

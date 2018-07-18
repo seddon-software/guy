@@ -24,58 +24,27 @@ function displayPieCharts() {
 	positionCopyright();
 	pieChartData = undefined;
 	pieChartQuestionsAndOptions = undefined;
-	getPieChartData();
-	getPieChartQuestionsAndOptions();
+	getAjaxData('/piechart-data2', getPieChartData);
+	getAjaxData('/piechart-questions-options', getPieChartQuestionsAndOptions);
 }
 
 function displayCharts() {
 	positionCopyright();
-	getChartData();
+	getAjaxData('/chart-data', drawChart);
 }
 
-function getChartData() {
-    $.ajax(
-    {
-        url: '/chart-data',
-        type: 'GET',
-        contentType:'application/json',
-        dataType:'json',
-        success: function(data) {
-        	drawChart(data);
-        }	
-    });
+function getPieChartData(data) {
+	pieChartData = data;
+	if (pieChartData && pieChartQuestionsAndOptions) {
+		drawPieChart(data);
+	}
 }
 
-function getPieChartData() {
-    $.ajax(
-    {
-        url: '/piechart-data2',
-        type: 'GET',
-        contentType:'application/json',
-        dataType:'json',
-        success: function(data) {
-        	pieChartData = data;
-        	if (pieChartData && pieChartQuestionsAndOptions) {
-        		drawPieChart(data);
-        	}
-        }	
-    });
-}
-
-function getPieChartQuestionsAndOptions() {
-    $.ajax(
-    {
-        url: '/piechart-questions-options',
-        type: 'GET',
-        contentType:'application/json',
-        dataType:'json',
-        success: function(data) {
-        	pieChartQuestionsAndOptions = data;
-        	if (pieChartData && pieChartQuestionsAndOptions) {
-	        	drawPieChart(data);
-        	}
-        }	
-    });
+function getPieChartQuestionsAndOptions(data) {
+	pieChartQuestionsAndOptions = data;
+	if (pieChartData && pieChartQuestionsAndOptions) {
+    	drawPieChart(data);
+	}
 }
 
 function cleanupSelectText(text) {
@@ -214,29 +183,9 @@ function drawChart(data) {
 			let it = set.values();
 			return Array.from(it);
 		}
-		function buildMenu() {
-			let menu = `		
-				<div><label>Filter:</label>
-				<select id="filter">
-				<optgroup label="filter">
-					<option value="-">none</option>
-				</optgroup>
-				<optgroup label="by&nbsp;client">`;
-			uniqueClients.forEach(function(client) {
-				menu += `<option value="client,${client.trim()}">${cleanupSelectText(client)}</option>`;
-				});
-			menu += `
-				</optgroup>
-				<optgroup label="by&nbsp;email">`;
-			uniqueEmails.forEach(function(email) {
-				menu += `<option value="email,${email.trim()}">${email.trim()}</option>`;
-			});
-			menu += `</optgroup></select></div>`;
-			return menu;
-		}
 		let uniqueClients = removeDuplicates(clients);
 		let uniqueEmails = removeDuplicates(emails);		
-		let html = $(`${buildMenu()}`);
+		let html = $(`${buildMenu(data, "filter", uniqueClients, uniqueEmails)}`);
 		html.css({'width':'auto'});
 		$(selector).prepend(html);
 
@@ -271,9 +220,17 @@ function drawChart(data) {
 	generateChart();
 }
 
+// 	getAjaxData("/emails-and-clients", scatterChartCallback);
+
 function drawPieChart() {
+	getAjaxData("/emails-and-clients", pieChartCallback);
+}
+function pieChartCallback(data) {
 	// uses globals: pieChartData, pieChartQuestionsAndOptions
 	// the server sends data values of -1 when there is no data
+	
+	let emails = data[0];
+	let clients = data[1];
 	
     function truncate(s, length) {
 	    if (s.length > length) {
@@ -281,44 +238,6 @@ function drawPieChart() {
 	    }
 	    return s;
 	}
-	function buildMenu() {
-		// pieChartData
-		function getClients() {
-			clients = [];
-			Object.keys(pieChartData).forEach(function(key) {
-				if(key.indexOf('@') === -1 && key !== 'all') clients.push(key);
-			});
-			return clients;
-		}
-		function getEmails() {
-			emails = [];
-			Object.keys(pieChartData).forEach(function(key) {
-				if(key.indexOf('@') !== -1) emails.push(key);
-			});
-			return emails;
-		}
-		clients = getClients();
-		emails = getEmails();
-		let menu = `
-			<div><label>Filter:</label>
-			<select id="pie-filter">
-			<optgroup label="filter">
-			<option value="-">none</option>
-			</optgroup>
-			<optgroup label="by&nbsp;client">`;
-		clients.forEach(function(client) {
-			menu += `<option value="client,${client.trim()}">${cleanupSelectText(client)}</option>`;
-			});
-		menu += `
-			</optgroup>
-			<optgroup label="by&nbsp;email">`;
-		emails.forEach(function(email) {
-			menu += `<option value="email,${email.trim()}">${email.trim()}</option>`;
-		});
-		menu += `</optgroup></select></div>`;
-		return menu;
-	}
-	
     
 	if($.isEmptyObject(pieChartData)) {
 		$("#piecharts-message").text("no pie charts available");
@@ -328,10 +247,10 @@ function drawPieChart() {
 	}
 
 	let maxLegendLength = 100;
-	let html = $(`${buildMenu()}`);
+	let menu = buildMenu(pieChartData, "pie-filter", clients, emails);
+	let html = $(`${menu}`);
 	html.css({'width':'auto'});
 	$("#pie-filter-drop-down").html(html);
-
 	$("#pie-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
 	$("#pie-filter").on("change", function(e) { 
 		if(e.val === "-") {
