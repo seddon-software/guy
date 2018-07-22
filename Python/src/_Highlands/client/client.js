@@ -95,7 +95,7 @@ function setStyles() {
 	    	text-shadow: 0 0 0 #f3f3f3
 	    }`);
 
-    $("#assessment-button, #charts-button, #piecharts-button, #growth-button").css({
+    $(".tabs-button").css({
     	"border":"red",
     	"color":TAB_BUTTON_COLOR,
     	"background-color":TAB_BUTTON_BACKGROUND_COLOR
@@ -124,7 +124,7 @@ function setStyles() {
 		"background-color": TITLE_BAR_COLOR
 	});
 
-	$("#charts-title, #piecharts-title").css({
+	$(".tab-title, #charts-title, #piecharts-title").css({
 	    "text-align": "center",
 	    "font-size": "xx-large",
 	    "margin-bottom": "4vh",

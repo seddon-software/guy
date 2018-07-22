@@ -24,6 +24,8 @@ function scatterChartCallback(data) {
 	html.css({'width':'auto'});
 	$("#scatter-filter-drop-down").html(html);
 	$("#scatter-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	let title = div("Growth");
+	$("#scattercharts-title").html(title);
 
 	// initial draw
 	scatterFrequencies = scatterData.frequencies['all'];
@@ -39,7 +41,7 @@ function scatterChartCallback(data) {
 			scatterFrequencies = scatterData.frequencies[text];
 		}
 		function clearAllScatterCharts() {
-	 	    $("#scatterchart").empty;
+	 	    $("#scatterchart").empty();
 		}
 		clearAllScatterCharts();
 		drawAllScatterCharts();

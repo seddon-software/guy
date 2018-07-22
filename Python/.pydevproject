@@ -4,6 +4,7 @@
 <path>/Python/src</path>
 <path>/${PROJECT_DIR_NAME}/src/_Highlands</path>
 <path>/${PROJECT_DIR_NAME}/src/_Highlands/testing</path>
+<path>/${PROJECT_DIR_NAME}/src/_Highlands/libs</path>
 </pydev_pathproperty>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 3.6</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>

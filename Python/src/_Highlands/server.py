@@ -6,13 +6,22 @@
 #
 ############################################################
 
+import sys
+sys.path.append("libs")
 import http.server
-#import cgitb
-import sys, urllib.parse, json
-import os.path
+import urllib.parse, json
+from myglobals import MyGlobals
+from checkbox import Checkbox
+from scatter import Scatter
+from radio import Radio
+from chart import Chart
+from excel import Excel
 
-
-#cgitb.enable()
+checkbox = Checkbox()
+scatter = Scatter()
+radio = Radio()
+chart = Chart()
+xl = Excel()
 
 class Handler(http.server.BaseHTTPRequestHandler):
 
@@ -54,12 +63,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
         elif(fileName == "questions"):
             sendHeaders()
-            jsonString = json.dumps(xl.questions)
+            jsonString = json.dumps(xl.getQuestions())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "options"):
             sendHeaders()
-            jsonString = json.dumps(xl.options)
+            jsonString = json.dumps(xl.getOptions())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "emails-and-clients"):
@@ -69,22 +78,27 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(jsonAsBytes)
         elif(fileName == "chart-data"):
             sendHeaders()
-            jsonString = json.dumps(sql.getChartData())
+            jsonString = json.dumps(chart.getChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "piechart-data"):
             sendHeaders()
-            jsonString = json.dumps(sql.getPieChartData())
+            jsonString = json.dumps(radio.getPieChartData())
+            jsonAsBytes = jsonString.encode("UTF-8")
+            self.wfile.write(jsonAsBytes)
+        elif(fileName == "checkbox-data"):
+            sendHeaders()
+            jsonString = json.dumps(checkbox.getCheckboxData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "scatter-data"):
             sendHeaders()
-            jsonString = json.dumps(sql.getScatterChartData())
+            jsonString = json.dumps(scatter.getScatterChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "piechart-data2"):
             sendHeaders()
-            jsonString = json.dumps(sql.getPieChartData2())
+            jsonString = json.dumps(radio.getPieChartData2())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "piechart-questions-options"):
@@ -104,37 +118,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 data = f.read()
                 self.wfile.write(data.encode())
 
-def parseCommandLine():
-    # default excel file is "highlands.xlsx", but can be changed on command line:
-    #    python server.py [excel-file]
-    if len(sys.argv) > 2:
-        print("Useage: python server.py [excel-file]")
-        sys.exit()
-    if len(sys.argv) == 1:
-        excelFile = "highlands.xlsx"
-    else:
-        excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
-    
-    if not os.path.isfile(excelFile):
-        print("{} does not exist".format(excelFile))
-        sys.exit()
-
-    return excelFile
-    
-excelFile = parseCommandLine()
-import server_excel as xl
+g = MyGlobals()
 import server_database as sql
-xl.main(excelFile)
-sql.main(excelFile)
-PORT = sql.port
-SERVER = sql.server
+PORT = g.get("port")
+SERVER = g.get("server")
 httpd = http.server.HTTPServer((SERVER, PORT), Handler)
 print("server:", SERVER)
 print("port:", PORT)
-print("database:", sql.database)
-print("table:", sql.table)
+print("database:", g.get("database"))
+print("table:", g.get("table"))
 
-try:
-    httpd.serve_forever()
-except:
-    pass
+httpd.serve_forever()

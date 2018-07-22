@@ -7,10 +7,6 @@
 ############################################################
 
 import pymysql.cursors, sys, os
-#import cgitb
-#cgitb.enable()
-# import uuid
-# import datetime
 import pandas as pd
 
 
@@ -80,8 +76,6 @@ def dropTable(table, manager, managerPassword, database):
     connection = connect(manager, managerPassword, database)
     sql = "DROP TABLE IF EXISTS {}".format(table)
     execute(connection, sql)
-
-#         email VARCHAR(30) NOT NULL,
 
 def createTable(table, manager, managerPassword, database):
     connection = connect(manager, managerPassword, database)
