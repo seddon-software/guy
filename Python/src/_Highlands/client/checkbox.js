@@ -1,38 +1,3 @@
-var tableData = {
-		'all': [
-            ['option1', 3, 15, 30, 43],
-            ['option2', 1,  5, 10, 12],
-            ['option3', 2, 10, 20, 27],
-            ['option4', 4,  7, 40, 18]
-        ],
-		'client1': [
-            ['option1', 3, 15, 30, 43],
-            ['option2', 1,  5, 10, 12],
-            ['option3', 2, 10, 20, 27],
-            ['option4', 4,  7, 40, 18]
-        ],
-		'client2': [
-            ['option1', 3, 15, 30, 43],
-            ['option2', 1,  5, 10, 12],
-            ['option3', 2, 10, 20, 27],
-            ['option4', 4,  7, 40, 18]
-        ],
-		'email1@def.com': [
-            ['option1', 3, 15, 30, 43],
-            ['option2', 1,  5, 10, 12],
-            ['option3', 2, 10, 20, 27],
-            ['option4', 4,  7, 40, 18]
-        ],
-		'email2@def.com': [
-            ['option1', 29],
-            ['option2', 14],
-            ['option3', 43],
-            ['option4', 14]
-        ],
-};
-
-
-
 var checkboxData;
 
 function displayCheckboxData() {
@@ -57,7 +22,7 @@ function drawCheckboxCharts(data) {
 	$("#checkbox-title").html(title);
 
 	function drawAllCheckboxCharts(clientOrEmail) {
-//	 	$("#checkboxchart").empty();
+	 	$("#checkboxcharts").empty();
 		for(let i = 0; i < checkboxData['record'].length; i++) {
 			let number = checkboxData['record'][i]['Number'];
 			let question = checkboxData['record'][i]['Question'];

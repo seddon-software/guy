@@ -63,6 +63,13 @@ def getPieChartQuestionsAndOptions():
     questionsAndOptions = pd.concat([questions, options], axis=1)
     return questionsAndOptions.values.tolist()
 
+def getTableQuestionsAndOptions():
+    questions = xl.filterQuestions("table")
+    options = xl.filterOptions("table")
+    questionsAndOptions = pd.concat([questions, options], axis=1)
+    return questionsAndOptions.values.tolist()
+    
+    
 def getEmailsAndClients():
     def getEmails(results):
         emails = []

@@ -1,28 +1,11 @@
-var tableData =
-{
- 'tabs':["Last 30 days", "Last 90 days", "Last 180 days", "In the past year"],	
- 'data':
-	{'all':[
-		[["Extremely serious", 5], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-        [["Extremely serious", 2], ["Significant but quickly resolved", 0], ["Minor", 0], ["None", 0]],
-        [["Extremely serious", 4], ["Significant but quickly resolved", 0], ["Minor", 1], ["None", 4]],
-        [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]],
-	 'BT':[
-		[["Extremely serious", 2], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-	    [["Extremely serious", 3], ["Significant but quickly resolved", 4], ["Minor", 0], ["None", 0]],
-	    [["Extremely serious", 4], ["Significant but quickly resolved", 1], ["Minor", 1], ["None", 4]],
-	    [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]]
-	}
-}
-var numberOfTabs;
+var tableData;
 
 function displayTableData() {
 	getAjaxData("/table-data", setTableData);
 }
 
 function setTableData(data) {
-//	tableData = data;
-	numberOfTabs = tableData['tabs'].length;
+	tableData = data;
 	getAjaxData("/emails-and-clients", drawTableCharts);
 }
 
@@ -38,41 +21,41 @@ function drawTableCharts(data) {
 	let title = div("Table Charts");
 	$("#table-title").html(title);
 
-	function attachPieChart(set) {
+	function attachPieChart(key, filter) {
 		o = {
 			    data: {
 			        columns: [],
 			        type : 'pie'
 			    }
 			};
-			let filter = 'BT';
-			let n = tableData['tabs'].length;
+			let n = tableData[key]['tabs'].length;
 			for(let i = 0; i < n; i++) {
-				o['bindto'] = `#table-chart-${set}-${i}`;
-				o['data']['columns'] = tableData['data'][filter][i];
-				$(`#table-tab-title-${set}-${i}`).text(`${tableData['tabs'][i]}`);
+				o['bindto'] = `#table-chart-${key}-${i}`;
+				o['data']['columns'] = tableData[key]['data'][filter][i];
+				$(`#table-tab-title-${key}-${i}`).text(`${tableData[key]['tabs'][i]}`);
 				c3.generate(o);
 			}
 	}
 	
 	function drawAllTableCharts(clientOrEmail) {
-		for(let i = 0; i < numberOfTabs; i++) {
-			createTabs("#tablecharts", i);
-			attachPieChart(i);
+	 	$("#tablecharts").empty();
+		for(let key in tableData) {
+			$("#tablecharts").append(`<p>${key}.${tableData[key]['question']}<br/>`);			
+			createTabs("#tablecharts", key);
+			attachPieChart(key, clientOrEmail);
 		}
 	}
 	// initial draw
 	drawAllTableCharts('all');
 
 	$("#table-filter").on("change", function(e) { 
-		return;
 		if(e.val === "-") {
-			drawAllCheckboxCharts('all');
+			drawAllTableCharts('all');
 		} else {
 			let parts = e.val.split(',');
 			let group = parts[0];
-			let text = parts[1];
-			drawAllCheckboxCharts(text);
+			let clientOrEmail = parts[1];
+			drawAllTableCharts(clientOrEmail);
 		}
 	});
 
@@ -89,7 +72,7 @@ function createTabs(selector, n) {
 	$(ulist).attr("id", `table-ulist-${n}`);
 	$(`#table-tabs-${n}`).append(ulist);
 	
-	for(let i = 0; i < numberOfTabs; i++) {
+	for(let i = 0; i < tableData[n]['tabs'].length; i++) {
 		let list = $(`<li onmousemove='setTimeout(positionCopyright, 100)'></li>`);
 		let anchor = $(`<a href="#tab-${n}-${i}" id="table-tab-title-${n}-${i}"></a>`);
 		$(ulist).append(list);
@@ -97,7 +80,7 @@ function createTabs(selector, n) {
 	}
 
 	// then add divs
-	for(let i = 0; i < numberOfTabs; i++) {
+	for(let i = 0; i < tableData[n]['tabs'].length; i++) {
 		let outer = div("", `tab-${n}-${i}`);
 		outer.addClass(`table-tab-${n}-class`);
 		let inner = div("", `table-chart-${n}-${i}`);
