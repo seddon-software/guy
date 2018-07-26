@@ -1,6 +1,5 @@
 import pandas as pd
 from ast import literal_eval
-import server_excel as xl
 from database import Database
 from myglobals import MyGlobals
 

@@ -16,12 +16,14 @@ from scatter import Scatter
 from radio import Radio
 from chart import Chart
 from excel import Excel
+from table import Table
 
 checkbox = Checkbox()
 scatter = Scatter()
 radio = Radio()
 chart = Chart()
 xl = Excel()
+table = Table()
 
 class Handler(http.server.BaseHTTPRequestHandler):
 
@@ -84,6 +86,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif(fileName == "piechart-data"):
             sendHeaders()
             jsonString = json.dumps(radio.getPieChartData())
+            jsonAsBytes = jsonString.encode("UTF-8")
+            self.wfile.write(jsonAsBytes)
+        elif(fileName == "table-data"):
+            sendHeaders()
+            jsonString = json.dumps(table.getTableData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "checkbox-data"):

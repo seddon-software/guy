@@ -34,6 +34,7 @@
 <script src="client/scatter.js"></script>
 <script src="client/utilities.js"></script>
 <script src="client/checkbox.js"></script>
+<script src="client/table.js"></script>
 <script src="client/ajax.js"></script>
 
 <!-- 
@@ -86,6 +87,7 @@ $(window).on('load', function () {
 		displayPieCharts();
 		displayScatterChart();
 		displayCheckboxData();
+		displayTableData();
 	} else {
 		// assessments
 		removeCookiesOnStartup();
@@ -122,7 +124,7 @@ function setupTabs() {
 	}
 	let tabObject = {};
 	if($(location).attr('search')==="?charts") {
-		tabObject["active"] = 1;
+		tabObject["active"] = 5;
 		hideTab("#questions-tab");		
 	} else {
 		tabObject["active"] = 0;
@@ -130,6 +132,7 @@ function setupTabs() {
 		hideTab("#responses-tab");
 		hideTab("#growth-tab");
 		hideTab("#checkbox-tab");
+		hideTab("#table-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
 }
@@ -145,6 +148,7 @@ function setupTabs() {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#responses-tab" class="tabs-button" id="piecharts-button">Responses</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#growth-tab" class="tabs-button" id="growth-button">Growth</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#checkbox-tab" class="tabs-button" id="checkbox-button">Checkboxes</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
 	  </ul>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
@@ -174,6 +178,11 @@ function setupTabs() {
 	    <div class="tab-title" id="checkbox-title"></div>
 		<div id="checkbox-filter-drop-down"></div>
 		<div id="checkboxcharts"></div>
+	  </div>
+	  <div id="table-tab">
+	    <div class="tab-title" id="table-title"></div>
+		<div id="table-filter-drop-down"></div>
+		<div id="tablecharts"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>

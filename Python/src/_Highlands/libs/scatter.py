@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from ast import literal_eval
-import server_excel as xl
 from database import Database
 
 class Scatter:
@@ -17,8 +16,7 @@ class Scatter:
             
             where [[mxn]] signifies a 2D array of shape mxn
         '''
-    
-        
+            
         # this routine assumes the client always comes before other results
         scatterData = {}
         frequencies = {}
