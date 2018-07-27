@@ -86,9 +86,14 @@ function createTabs(selector, n) {
 	for(let i = 0; i < tableData[n]['tabs'].length; i++) {
 		let list = $(`<li onmousemove='setTimeout(positionCopyright, 100)'></li>`);
 		let anchor = $(`<a href="#tab-${n}-${i}" id="table-tab-title-${n}-${i}"></a>`);
+		anchor.addClass("table-tab-titles");
 		$(ulist).append(list);
 		$(list).append(anchor);
 	}
+    $(".table-tab-titles").css({
+    	"font-size":TABLE_TAB_TITLES_FONT_SIZE
+    });
+
 
 	// then add divs
 	for(let i = 0; i < tableData[n]['tabs'].length; i++) {
