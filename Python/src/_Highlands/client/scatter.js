@@ -24,7 +24,7 @@ function scatterChartCallback(data) {
 	html.css({'width':'auto'});
 	$("#scatter-filter-drop-down").html(html);
 	$("#scatter-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let title = div("Growth");
+	let title = div(`${SCATTER_TAB_TEXT}`);
 	$("#scattercharts-title").html(title);
 
 	// initial draw

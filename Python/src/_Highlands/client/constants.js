@@ -59,11 +59,26 @@ var TEXTAREA_PADDING = "5%";
 var TABLE_COLUMN_SPACING = 1.0;
 var TABLE_SPACING_BETWEEN_ROWS = 5;
 
+// Tab Titles
+var ASSESSMENT_TAB_TITLE = "Assessment";
+var OVERVIEW_TAB_TITLE = "Overview";
+var RESPONSES_TAB_TITLE = "Responses";
+var SCATTER_TAB_TITLE = "Growth";
+var CHECKBOXES_TAB_TITLE = "Checkboxes";
+var TABLE_CHARTS_TAB_TITLE = "Table Charts";
+
+
+// Tab Text
+var ASSESSMENT_TAB_TEXT = "----AssessmentA";
+var OVERVIEW_TAB_TEXT = "Forensics:";
+var RESPONSES_TAB_TEXT = "Frequency of Answer:";
+var SCATTER_TAB_TEXT = "Growth:";
+var CHECKBOXES_TAB_TEXT = "Checkboxes:";
+var TABLE_CHARTS_TAB_TEXT = "Table Charts:";
+
 //miscellaneous
 var BANNER_TEXT = "Highlands Negotiations LLC";
 var COPYRIGHT_MESSAGE = "© Highlands Negotiations, June-August 2018, v0.8";
-var OVERVIEW_TAB_TEXT = "Aspects:";
-var RESPONSES_TAB_TEXT = "Frequency of Answer:";
 var SCATTER_X_TITLE = 'Client Revenue Growth';
 var SCATTER_Y_TITLE = 'Market Growth';
 var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";

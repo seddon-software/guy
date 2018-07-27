@@ -116,6 +116,13 @@ function setupHeadings() {
 
 	$("#charts-title").text(`${OVERVIEW_TAB_TEXT}`);
 	$("#piecharts-title").text(`${RESPONSES_TAB_TEXT}`);
+
+    $("#assessment-button").text(ASSESSMENT_TAB_TITLE);
+    $("#charts-button").text(OVERVIEW_TAB_TITLE);
+    $("#piecharts-button").text(RESPONSES_TAB_TITLE);
+    $("#growth-button").text(SCATTER_TAB_TITLE);
+    $("#checkbox-button").text(CHECKBOXES_TAB_TITLE);
+    $("#table-button").text(TABLE_CHARTS_TAB_TITLE);
 }
 
 function setupTabs() {
@@ -124,7 +131,7 @@ function setupTabs() {
 	}
 	let tabObject = {};
 	if($(location).attr('search')==="?charts") {
-		tabObject["active"] = 5;
+		tabObject["active"] = 1;
 		hideTab("#questions-tab");		
 	} else {
 		tabObject["active"] = 0;

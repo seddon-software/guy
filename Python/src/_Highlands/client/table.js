@@ -18,7 +18,7 @@ function drawTableCharts(data) {
 	html.css({'width':'auto'});
 	$("#table-filter-drop-down").html(html);
 	$("#table-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let title = div("Table Charts");
+	let title = div(`${TABLE_CHARTS_TAB_TEXT}`);
 	$("#table-title").html(title);
 
 	function attachPieChart(key, filter) {
@@ -26,12 +26,23 @@ function drawTableCharts(data) {
 			    data: {
 			        columns: [],
 			        type : 'pie'
-			    }
+			    },
+			    "tooltip": {"contents":"this_will_be_replaced"}
 			};
 			let n = tableData[key]['tabs'].length;
 			for(let i = 0; i < n; i++) {
 				o['bindto'] = `#table-chart-${key}-${i}`;
 				o['data']['columns'] = tableData[key]['data'][filter][i];
+		 	    o["tooltip"]["contents"] = function(d, defaultTitleFormat, defaultValueFormat, color) {
+		 	    	var sum = 0;
+					d.forEach(function (e) {
+						sum += e.value;
+					});
+					defaultTitleFormat = function() {
+						return `Frequency = ${sum}`;
+					};
+					return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
+				};
 				$(`#table-tab-title-${key}-${i}`).text(`${tableData[key]['tabs'][i]}`);
 				c3.generate(o);
 			}

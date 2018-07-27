@@ -18,7 +18,7 @@ function drawCheckboxCharts(data) {
 	html.css({'width':'auto'});
 	$("#checkbox-filter-drop-down").html(html);
 	$("#checkbox-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let title = div("Checkboxes");
+	let title = div(`${CHECKBOXES_TAB_TEXT}`);
 	$("#checkbox-title").html(title);
 
 	function drawAllCheckboxCharts(clientOrEmail) {
@@ -72,7 +72,7 @@ function drawCheckboxChart(selector, clientOrEmail, i) {
 		    return `Frequency`;
 	    };
 	    defaultValueFormat = function(value) {
-	    	return value*recordCount/100;
+	    	return Math.round(value*recordCount/100);
 	    }
 	    return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
     }
