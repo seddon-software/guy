@@ -33,7 +33,7 @@ var PIECHART_TITLES_COLOR = "blue";
 var PIECHART_BACKGROUND_COLOR = "Gainsboro";
 var PIECHART_BORDER_COLOR = "Gainsboro";
 var QUESTION_ANSWER_INVALID_COLOR = "Thistle";
-var QUESTION_ANSWERED_COLOR = 'rgb(100, 150, 200)';
+var QUESTION_ANSWERED_COLOR = 'cornflowerblue';
 var QUESTION_BODY_COLOR = "DarkSeaGreen";
 var QUESTION_HEADER_COLOR = "azure";
 var TAB_BUTTON_COLOR = "black";
@@ -43,7 +43,7 @@ var TITLE_BAR_COLOR = "azure";
 
 // fonts
 var GRID_CHILDREN_FONT_SIZE = "16px";
-var TABLE_TAB_TITLES_FONT_SIZE = "xx-small"; // xx-small, x-small, small, medium, large, x-large, xx-large
+var TABLE_TAB_TITLES_FONT_SIZE = "x-small"; // xx-small, x-small, small, medium, large, x-large, xx-large
 
 // layout
 var BANNER_WIDTH = "60%";
