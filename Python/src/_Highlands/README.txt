@@ -24,3 +24,5 @@ To run automatic tests you will need to install selenium:
 	pip install selenium
 	
 
+
+
