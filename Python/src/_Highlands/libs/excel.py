@@ -1,5 +1,5 @@
 import pandas as pd
-import math
+import math, sys
 import json
 from myglobals import MyGlobals
 
@@ -55,6 +55,49 @@ class Excel:
         return self.options
     
     def __init__(self):
+        def validate():
+            validated = True
+            previousRowIsAQuestion = False
+            previousRowIsAnOption = False
+
+            '''
+            check each question row is not followed by a blank row
+            but is preceded by a blank row
+            '''
+            for row in table.itertuples():
+                thisRowIsAQuestion = isinstance(row.Question, str)
+                thisRowIsAnOption = isinstance(row.Option1, str)
+
+                def questionIsFollowedByABlankRow():
+                    if(previousRowIsAQuestion and not thisRowIsAnOption):
+                        number = table[row.Index-1:row.Index]['Number'].to_string(index=False)
+                        if number == "0": number = " "
+                        question = table[row.Index-1:row.Index]['Question'].to_string(index=False)
+                        print("Error, blank row after: {}. {}".format(number, question))
+                        return False
+                    else:
+                        return True
+                    
+                def questionPrecededByABlankRow():
+                    if thisRowIsAQuestion:
+                        if previousRowIsAnOption:
+                            number = table[row.Index:row.Index+1]['Number'].to_string(index=False)
+                            if number == "0": number = " "
+                            question = table[row.Index:row.Index+1]['Question'].to_string(index=False)
+                            print("Error, no blank row before: {}. {}".format(number, question))
+                            return False
+                        else:
+                            return True
+                    else:
+                        return True
+                
+                if not questionIsFollowedByABlankRow(): validated = False
+                if not questionPrecededByABlankRow(): validated = False
+                previousRowIsAQuestion = thisRowIsAQuestion
+                previousRowIsAnOption = thisRowIsAnOption
+            if not validated: 
+                print("\nErrors exist in Questions in {} ... exiting".format(excelFile))
+                sys.exit()
         global excelFile, questions, options
         excelFile = g.get("excelFile")
         pd.set_option('display.width', 1000)
@@ -63,5 +106,7 @@ class Excel:
         table[['Number']] = table[['Number']].fillna(value=0)
         table['Number'] = table.Number.astype(int)
         table[['Section']] = table[['Section']].fillna(value="")
+        validate()
+        pd.options.display.max_rows = 999999
         self.questions = self.extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
         self.options = self.extractOptions(table)

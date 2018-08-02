@@ -1,0 +1,100 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red102\green177\blue50;\red0\green170\blue0;\red0\green0\blue0;
+\red85\green142\blue40;}
+{\*\expandedcolortbl;;\cssrgb\c46532\c73327\c25364;\csgenericrgb\c0\c66667\c0;\cssrgb\c0\c0\c0;
+\cssrgb\c39975\c61335\c20601;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28300\viewh15320\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Server\
+\
+The server uses 
+\f1 http.server.HTTPServer 
+\f0 to handle all client requests.  The HTTPServer library uses a callback to handle client requests (in our case the handler is called: "Handler").\
+Most client requests use a GET request that contains a URL to determine what the server should send back to the client.  The exception is when the client sends the server the results of the survey when the client uses a POST.  The choice of GET and POST is arbitrary and initially I decided to use GET for the request of the Questions and POST to return the results.  As the application expanded I decided to use GET for all subsequent requests.\
+\
+The server contains a lengthy multiple if statement to separate GET reqests.  Currently the following URLs are used:\
+\cf2     
+\i questions			- send list of [QuestionNo, Section, Question, Type, Autofill] tuples\
+    options				- send list of [Option1, Option2, Option3, ...]\
+\pard\pardeftab720\partightenfactor0
+
+\i0 \cf2     
+\i emails-and-clients	- return a pair of lists: [email1, email2, ...], [client1, client2, ...]
+\i0 \
+    
+\i chart-data			- return a dictionary of each database record.  Each key is of the form: section, client, <email>, uuid.  Each value is sum of marks for the database record
+\i0 \
+    
+\i piechart-data		- return ...\
+\pard\pardeftab720\partightenfactor0
+\cf2     piechart-data2		- return ...\
+\pard\pardeftab720\partightenfactor0
+
+\i0 \cf2     
+\i table-data			- return ...\
+    checkbox-data		- return ...\
+    scatter-data		- return ...\
+
+\i0     
+\i piechart-questions-options  - return ...\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\i0 \cf0 Additionally the client can request a file resource by giving the name of the file as the URL.  For example:\
+\cf2     
+\i favicon.ico\
+    images/highlands.png\cf3 \
+
+\i0 \cf4 For all resources it is important the server returns the correct MIME type, otherwise the browser may render the resource incorrectly (see getMimeType and sendHeaders).\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf4 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 During development, some of the Python files were getting very long, so I decided to split them up.\'a0 The best way of doing that is to create a set of class files:\
+
+\i \cf2 \'a0\'a0\'a0 excel.py\
+\'a0\'a0\'a0 chart.py\
+\'a0\'a0\'a0 myglobals.py\
+\'a0\'a0\'a0 scatter.py\cf4 \
+
+\i0 etc.\'a0 I then instantiate one object for each of the classes in any file that needs to use the functionality of the class.\'a0 For example, in server.py:\
+
+\i \cf2 \'a0\'a0\'a0 # import class files\
+\'a0\'a0\'a0 from myglobals import MyGlobals\
+\'a0\'a0\'a0 from checkbox import Checkbox\
+\'a0\'a0\'a0 from scatter import Scatter\
+\'a0\'a0\'a0 from radio import Radio\
+\'a0\'a0\'a0 from chart import Chart\
+\'a0\'a0\'a0 from excel import Excel\
+\'a0\'a0\'a0 from table import Table\
+\
+\'a0\'a0\'a0 # create an object for each class\
+\'a0\'a0\'a0 checkbox = Checkbox()\
+\'a0\'a0\'a0 scatter = Scatter()\
+\'a0\'a0\'a0 radio = Radio()\
+\'a0\'a0\'a0 chart = Chart()\
+\'a0\'a0\'a0 xl = Excel()\
+\'a0\'a0\'a0 table = Table()\
+
+\i0 \cf5 \
+\cf4 Each time you create an object in Python the __init__() method is called.\'a0 After that no methods are called until a client request is sent to the server.\'a0 For example, the client will make a request with the URL: "piechart-data2" and the server has a massive if statement to process requests (inside doGET()) and half way down is he code:\
+\
+    
+\i \cf2 elif(fileName == "piechart-data2"):\
+\'a0\'a0\'a0\'a0    sendHeaders()\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0jsonString = json.dumps(radio.getPieChartData2())\
+\'a0
+\i0 \cf4 \
+The server sends back the headers to the browser to say it received the request and then calls "radio.getPieChartData2()".\'a0 The radio object was instantiated earlier, so we just call the method "getPieChartData2().\'a0 If the code was smaller I would have just had a function called getPieChartData2 (that's how I did do it originally), but its easier to use a method because the code is in a different file and Python doesn't allow global variables across files.\'a0 So if you put a break point on the first line of getPieChartData2 and then refresh the browser pie charts you will hit the breakpoint.\'a0 When the method returns it has all the data the client needs as a JSON string.\'a0 However, we can't send JSON strings directly to the client from Python web servers - it needs to be converted to bytes first.  Hence the code fragment:\cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\pard\pardeftab720\partightenfactor0
+
+\i \cf2         jsonAsBytes = jsonString.encode("UTF-8")\
+        self.wfile.write(jsonAsBytes)\expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec4 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\i0 \cf4 \
+Client\
+	TO BE WRITTEN\
+\
+}
