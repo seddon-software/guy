@@ -6,9 +6,9 @@
 #
 ############################################################
 
-import pymysql.cursors
+# import pymysql.cursors
 import pandas as pd
-import numpy as np
+# import numpy as np
 import uuid
 import datetime
 from ast import literal_eval

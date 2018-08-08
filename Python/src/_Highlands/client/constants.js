@@ -43,7 +43,7 @@ var TITLE_BAR_COLOR = "azure";
 
 // fonts
 var GRID_CHILDREN_FONT_SIZE = "16px";
-var TABLE_TAB_TITLES_FONT_SIZE = "x-small"; // xx-small, x-small, small, medium, large, x-large, xx-large
+var TABLE_TAB_TITLES_FONT_SIZE = "medium"; // xx-small, x-small, small, medium, large, x-large, xx-large
 
 // layout
 var BANNER_WIDTH = "60%";

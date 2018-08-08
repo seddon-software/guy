@@ -31,7 +31,7 @@ class Radio:
             # so convert to a list in order including zero counts
             optionCount = int(series.index.values.tolist()[0][1])
             frequencies = [0]*optionCount
-            for (value,size),count in series.iteritems():
+            for (value,size),count in series.iteritems():   #@UnusedVariable
                 frequencies[int(value)] = count
             return frequencies
             
@@ -91,7 +91,7 @@ class Radio:
             # so convert to a list in order including zero counts
             optionCount = int(series.index.values.tolist()[0][1])
             frequencies = [0]*optionCount
-            for (value,size),count in series.iteritems():
+            for (value,size),count in series.iteritems():   #@UnusedVariable
                 frequencies[int(value)] = count
             return frequencies
             
@@ -106,13 +106,13 @@ class Radio:
             chartData = chartData.astype(int)
             return chartData
         
-        def getData(results, filterType = "", filter = "all"):
+        def getData(results, filterType = "", filter_ = "all"):
             chartData = []
             for row in results:
                 if filterType == 'email': 
-                    if getEmail(row) != filter: continue
+                    if getEmail(row) != filter_: continue
                 if filterType == 'client': 
-                    if getClient(row) != filter: continue
+                    if getClient(row) != filter_: continue
                 arr = []
                 keyValuePairs = literal_eval(row['result'])
                 for pair in keyValuePairs:

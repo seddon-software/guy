@@ -14,10 +14,10 @@ class Chart:
         yaxis: [section, client]
         tooltip: email
         """
-        try:
-            client
-        except NameError:
-            client = ""
+#         try:
+#             client
+#         except NameError:
+#             client = ""
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
@@ -78,10 +78,10 @@ class Chart:
         xaxis: marks
         yaxis: [section, client]
         """
-        try:
-            client
-        except NameError:
-            client = ""
+#         try:
+#             client
+#         except NameError:
+#             client = ""
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
@@ -141,10 +141,10 @@ class Chart:
         xaxis: marks
         yaxis: [section, client, email]
         """
-        try:
-            client
-        except NameError:
-            client = ""
+#         try:
+#             client
+#         except NameError:
+#             client = ""
         connection = db.connect()
         try:
             with connection.cursor() as cursor:

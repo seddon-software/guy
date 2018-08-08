@@ -121,7 +121,8 @@ def doValidation(table):
                 if optionCount < values or values < 1: 
                     print("Option out of range in test {}, question {}".format(testNo, question))
                     sys.exit()
-            if category == "table":                
+            if category == "table":  
+                values = values.strip()
                 values = [int(x) for x in re.split("[ ]+", values)]
                 items, Max = [int(x) for x in optionCount.split(",")]
                 if len(values) != items:
@@ -131,6 +132,7 @@ def doValidation(table):
                     print("Option out of range in test {}, question {}".format(testNo, question))
                     sys.exit()
             if category == "table2": 
+                values = values.strip()
                 rowValue, colValue = [int(x) for x in re.split("[ ]+", values)]
                 rowMax, colMax = [int(x) for x in optionCount.split(",")]
                 if rowValue > rowMax or rowValue < 1 or colValue > colMax or colValue < 1:

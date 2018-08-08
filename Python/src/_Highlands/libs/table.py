@@ -1,74 +1,7 @@
-'''
-var tableData = {
-    '26':{
-         'question': 'This is Question A',
-         'tabs':["Last 30 days", "Last 90 days", "Last 180 days", "In the past year"],    
-         'data':
-            {'all':[
-                [["Extremely serious", 5], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 2], ["Significant but quickly resolved", 0], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 0], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]],
-             'BT':[
-                [["Extremely serious", 2], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 3], ["Significant but quickly resolved", 4], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 1], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]]
-            }
-    },
-    '31':{
-         'question': 'This is Question B',
-         'tabs':["Last 30 days", "Last 90 days", "Last 180 days", "In the past year"],    
-         'data':
-            {'all':[
-                [["Extremely serious", 5], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 2], ["Significant but quickly resolved", 0], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 0], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]],
-             'BT':[
-                [["Extremely serious", 2], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 3], ["Significant but quickly resolved", 4], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 1], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]]
-            }
-    },
-    '37':{
-         'question': 'This is Question C',
-         'tabs':["Last 30 days", "Last 90 days", "Last 180 days", "In the past year"],    
-         'data':
-            {'all':[
-                [["Extremely serious", 5], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 2], ["Significant but quickly resolved", 0], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 0], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]],
-             'BT':[
-                [["Extremely serious", 2], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 3], ["Significant but quickly resolved", 4], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 1], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]]
-            }
-    },
-    '41':{
-         'question': 'This is Question D',
-         'tabs':["Last 30 days", "Last 90 days", "Last 180 days", "In the past year"],    
-         'data':
-            {'all':[
-                [["Extremely serious", 5], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 2], ["Significant but quickly resolved", 0], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 0], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]],
-             'BT':[
-                [["Extremely serious", 2], ["Significant but quickly resolved", 2], ["Minor", 2], ["None", 2]],
-                [["Extremely serious", 3], ["Significant but quickly resolved", 4], ["Minor", 0], ["None", 0]],
-                [["Extremely serious", 4], ["Significant but quickly resolved", 1], ["Minor", 1], ["None", 4]],
-                [["Extremely serious", 1], ["Significant but quickly resolved", 3], ["Minor", 0], ["None", 1]]]
-            }
-    }
-}
-
-'''
 import os
+# this line is only executed if this file is run stand alone (for testing only)
 if __name__ == "__main__": os.chdir("..")
+
 import pandas as pd
 from ast import literal_eval
 from myglobals import MyGlobals
@@ -140,7 +73,6 @@ class Table:
        
         client = None
         results = db.getDatabaseResults()
-        n = 0
         for row in results:
             keyValuePairs = literal_eval(row['result'])
 
@@ -183,6 +115,7 @@ class Table:
                             tableData[key]['data'][k][row][col][0] = tableData[key]['dataItems'][col]
         return tableData
 
+# this code is only executed if this file is run stand alone (for testing only)
 if __name__ == "__main__":
     table = Table()
     data = table.getTableData()

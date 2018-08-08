@@ -1,3 +1,7 @@
+/*
+ * This function is a simple wrapper around the JQuery AJAX call
+ */
+
 function getAjaxData(url, fn) {
     $.ajax(
     {

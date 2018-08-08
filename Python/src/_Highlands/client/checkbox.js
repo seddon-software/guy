@@ -1,3 +1,18 @@
+/*
+ * This file handles the display of checkbox data.
+ * 
+ * Entry point: function displayCheckboxData()
+ * 
+ * Checkbox data is requested from the server in displayCheckboxData() and received in the data parameter of setCheckboxData().
+ * The checkbox data is then transfered to a global variable for later processing.  The client also needs email and client 
+ * data for the filter on the checkbox page and this is requested from the server once the checkbox data is received using a
+ * further AJAX call.
+ * The email and client information is received in drawCheckboxCharts() as two arrays and unpacked into local variables: emails 
+ * and clients.  The function then builds the filter using code from "utilities.js" and displays the checkbox data unfiltered.
+ * If the user invokes the filter, then the callback code is called to implement the filter:
+ *  	$("#checkbox-filter").on("change", function(e) { ...
+ */
+
 var checkboxData;
 
 function displayCheckboxData() {

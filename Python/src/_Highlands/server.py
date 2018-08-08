@@ -28,6 +28,7 @@ table = Table()
 class Handler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
+        # print("*************", self.client_address[0])
         jsonResponse = self.rfile.read(int(self.headers['Content-Length']))
 
         self.send_response(200)

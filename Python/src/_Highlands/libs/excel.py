@@ -1,6 +1,5 @@
 import pandas as pd
-import math, sys
-import json
+import sys
 from myglobals import MyGlobals
 
 g = MyGlobals()
@@ -38,7 +37,7 @@ class Excel:
         
     def filterQuestions(self, questionType):
         listQuestions = []
-        for question, option in zip(self.questions, self.options):
+        for question, option in zip(self.questions, self.options):    #@UnusedVariable
             if(question[3] == questionType): listQuestions.append(question)
         return pd.DataFrame(listQuestions)
      
