@@ -102,8 +102,7 @@ class Excel:
         pd.set_option('display.width', 1000)
         table = pd.read_excel(excelFile, 'questions')
         table = table.drop(['Comments'], axis=1)
-        table[['Number']] = table[['Number']].fillna(value=0)
-        table['Number'] = table.Number.astype(int)
+        table[['Number']] = table[['Number']].fillna(value="")
         table[['Section']] = table[['Section']].fillna(value="")
         validate()
         pd.options.display.max_rows = 999999

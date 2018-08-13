@@ -6,9 +6,9 @@
 #
 ############################################################
 
+import socket
 import pandas as pd
-import subprocess, os, sys, re, time
-from threading import Thread
+import os, sys, re
 from selenium import webdriver
 
 
@@ -82,22 +82,13 @@ def clickIt(selector):
     scrollTo(element)
     element.click();   
 
-def startServer():
-    # start the server in a background thread
-    try:
-        serverThread = Thread(target=startServerInBackground)
-        serverThread.start()
-        time.sleep(5)
-    except OSError as e:
-        pass    # ignore this error (server already started)
-        
-def startServerInBackground():
-    try:
-        subprocess.check_output("python server.py".split(), stderr=subprocess.STDOUT, shell=True)
-    except OSError as e:
-        pass    # server has already started
-    except Exception as e:
-        print(e)
+def isServerRunning():
+    theSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = theSocket.connect_ex((server, port))
+    if result == 0:
+        return True
+    else:
+        return False
 
 def readExcelFile(page):
     table = pd.read_excel(excelFile, page)
@@ -108,10 +99,10 @@ def doValidation(table):
     validation = table[pd.notnull(table["OptionCount"])]
     validation = validation.dropna(axis="columns")
     validation = validation.drop(["Section", "Text"], axis="columns")
-    rows, cols = validation.shape
+    rows, cols = validation.shape       #@UnusedVariable
 
     for testNo in range(1, cols-3): # 3 non test columns
-        for index, row in validation.iterrows():
+        for index, row in validation.iterrows():        #@UnusedVariable
             question = row["Question"]
             category = row["Category"]
             optionCount = row["OptionCount"]
@@ -170,9 +161,9 @@ def getNamesAndPasswords():
 
 def parseCommandLine():
     # default excel file is "highlands.xlsx", but can be changed on command line:
-    #    python server.py [excel-file]
+    #    python run_tests.py [excel-file]
     if len(sys.argv) > 2:
-        print("Useage: python server.py [excel-file]")
+        print("Useage: python run_tests.py [excel-file]")
         sys.exit()
     if len(sys.argv) == 1:
         excelFile = "highlands.xlsx"
@@ -182,7 +173,6 @@ def parseCommandLine():
     if not os.path.isfile(excelFile):
         print("{} does not exist".format(excelFile))
         sys.exit()
-
     return excelFile
     
 excelFile = parseCommandLine()
@@ -190,10 +180,14 @@ root, rootPassword, manager, managerPassword, database, table, server, port = ge
 pd.set_option('display.width', 1000)
 table = readExcelFile('tests')
 table = table[pd.notnull(table['Question'])]
-table['Question'] = table['Question'].astype(int)
 doValidation(table)
 table = table.dropna(axis="columns")
 table.drop(axis=1, labels="Text", inplace=True)
+if not isServerRunning(): 
+    print("Server not running ...\nexiting")
+    sys.exit()
+    
+#startServer()
 
 try:
     rows, cols = table.shape

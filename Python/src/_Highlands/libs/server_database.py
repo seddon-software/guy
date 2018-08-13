@@ -21,7 +21,7 @@ db = Database()
 g = MyGlobals()
 xl = Excel()
 
-def saveResults(results):
+def saveResults(results, headers):
     connection = db.connect()
     try:
         resultsAsString = ','.join(str(e) for e in results)
@@ -36,11 +36,11 @@ def saveResults(results):
             
         with connection.cursor() as cursor:
             # Create a new record
-            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `result`) 
-                               VALUES (   %s,          %s,      %s,       %s)""".format(g.get("table"))
+            sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `headers`, `result`) 
+                               VALUES (   %s,          %s,      %s,      %s,       %s)""".format(g.get("table"))
             guid = str(uuid.uuid4())
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            cursor.execute(sql, (guid, timestamp, email, resultsAsString))
+            cursor.execute(sql, (guid, timestamp, email, str(headers), resultsAsString))
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
         print("1 record committed")

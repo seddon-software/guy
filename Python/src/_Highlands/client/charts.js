@@ -301,10 +301,8 @@ function pieChartCallback(data) {
 	 	    for(let k = 1; k < data.length; k++) {
 	 	    	if(data[k] !== -1) pie += `,\n["${truncate(legend[k], maxLegendLength)}", ${data[k]}]`;
 	 	    }
-	
 	 	    // build object to generate piechart
 	 	    o = `{
-	 	    	"title": {"text":"${title}"},
 	 	    	"size": {"width":"${width}"},
 	 	    	"padding": {"bottom":"40"},
 	 	    	"legend": {"position":"right"},

@@ -28,7 +28,6 @@ table = Table()
 class Handler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
-        # print("*************", self.client_address[0])
         jsonResponse = self.rfile.read(int(self.headers['Content-Length']))
 
         self.send_response(200)
@@ -37,7 +36,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         jsonAsString = jsonResponse.decode("UTF-8")
         results = json.loads(jsonAsString)
 
-        sql.saveResults(results)
+        sql.saveResults(results, self.headers)
         return
 
     def do_GET(self):

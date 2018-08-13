@@ -84,6 +84,7 @@ def createTable(table, manager, managerPassword, database):
         guid VARCHAR(36) NOT NULL,
         timestamp TIMESTAMP NOT NULL,
         email VARCHAR(40) NOT NULL,
+        headers VARCHAR(1000) NOT NULL,
         result VARCHAR(5000) NOT NULL
         )""".format(table)
     execute(connection, sql)
