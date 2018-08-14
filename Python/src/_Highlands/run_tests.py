@@ -176,7 +176,7 @@ def parseCommandLine():
     return excelFile
     
 excelFile = parseCommandLine()
-root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
+root, rootPassword, manager, managerPassword, database, tableName, server, port = getNamesAndPasswords()
 pd.set_option('display.width', 1000)
 table = readExcelFile('tests')
 table = table[pd.notnull(table['Question'])]
@@ -186,7 +186,12 @@ table.drop(axis=1, labels="Text", inplace=True)
 if not isServerRunning(): 
     print("Server not running ...\nexiting")
     sys.exit()
-    
+
+print("server:", server)
+print("port:", port)
+print("database:", database)
+print("table:", tableName)
+
 #startServer()
 
 try:
