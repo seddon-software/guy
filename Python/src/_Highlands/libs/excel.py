@@ -100,11 +100,13 @@ class Excel:
         global excelFile, questions, options
         excelFile = g.get("excelFile")
         pd.set_option('display.width', 1000)
-        table = pd.read_excel(excelFile, 'questions')
+        table = pd.read_excel(excelFile, 'questions', converters={'Number':str})
         table = table.drop(['Comments'], axis=1)
         table[['Number']] = table[['Number']].fillna(value="")
         table[['Section']] = table[['Section']].fillna(value="")
+        print(table)
         validate()
         pd.options.display.max_rows = 999999
         self.questions = self.extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
+        print(self.questions)
         self.options = self.extractOptions(table)

@@ -94,7 +94,7 @@ def isServerRunning():
         return False
 
 def readExcelFile(page):
-    table = pd.read_excel(excelFile, page)
+    table = pd.read_excel(excelFile, page, converters={'Question':str})
     return table
     
     
