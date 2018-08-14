@@ -40,10 +40,13 @@ def scrollTo(element):
     
 def enterText(question, text):
     global browser
-    selector = "input#text-{}".format(question)
-    element = browser.find_element_by_css_selector(selector)
-    scrollTo(element)
-    element.send_keys(text);   
+    try:
+        selector = "input#text-{}".format(question)
+        element = browser.find_element_by_css_selector(selector)
+        scrollTo(element)
+        element.send_keys(text);
+    except Exception as e:
+        print(e, selector)
 
 def enterTextArea(question, text):
     global browser
