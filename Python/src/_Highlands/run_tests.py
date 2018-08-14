@@ -25,6 +25,7 @@ def startBrowser(url):
     except: pass
     try:
         browser.get(url)
+        browser.implicitly_wait(20) # seconds
     except Exception as e:
         print(e)
         print("aborting ...")
@@ -74,7 +75,7 @@ def clickCheckbox(question, col):
 def submit(choice):
     global browser
     clickIt("#showResults")
-    browser.implicitly_wait(10) # seconds
+    browser.implicitly_wait(20) # seconds
     if choice == "Yes": clickIt("#continue-yes")
     if choice == "No": clickIt("#continue-no")
 
@@ -195,13 +196,11 @@ print("port:", port)
 print("database:", database)
 print("table:", tableName)
 
-#startServer()
-
 try:
     rows, cols = table.shape
     
+    startBrowser("http://{}:{}/client.html".format(server, port))
     for testNo in range(1, cols-1):  # 1 non test column
-        startBrowser("http://{}:{}/client.html".format(server, port))
         print("Starting Test {}".format(testNo))
         data = "Test{}".format(testNo)
         df = table[["Question", "Category", data]]
@@ -226,7 +225,7 @@ try:
                 for value in values.split():
                     clickCheckbox(question, int(value))
         submit("No")
-        stopBrowser()
+    stopBrowser()
         
 except Exception as e:
     print(e)
