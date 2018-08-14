@@ -224,7 +224,7 @@ try:
                 values = str(values)
                 for value in values.split():
                     clickCheckbox(question, int(value))
-        submit("No")
+        submit("Yes")
     stopBrowser()
         
 except Exception as e:
