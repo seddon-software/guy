@@ -194,7 +194,7 @@ function displayQuestion(questionNumber, questionText, i, questionType) {
 	let period = ". ";
 	let asterisk = `<span id="asterisk-${i}" style="color:red;font-size:x-large"></span>`;
 	
-	if(questionNumber === "0") { 
+	if(questionNumber === "") { 
 		questionNumber = "";	// titles don't have question numbers
 		period = "";			// don't put a period in front of title
 	}
