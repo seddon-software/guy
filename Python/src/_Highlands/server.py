@@ -130,10 +130,15 @@ import server_database as sql
 PORT = g.get("port")
 SERVER = g.get("server")
 httpd = http.server.HTTPServer((SERVER, PORT), Handler)
+import ssl
+# httpd.socket = ssl.wrap_socket (httpd.socket, certfile='path/to/localhost.pem', server_side=True)
 print("server:", SERVER)
 print("port:", PORT)
 print("database:", g.get("database"))
 print("table:", g.get("table"))
 
 httpd.serve_forever()
+
+
+
 

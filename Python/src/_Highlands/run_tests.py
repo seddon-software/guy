@@ -10,9 +10,12 @@ import socket
 import pandas as pd
 import os, sys, re
 from selenium import webdriver
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 browser = None
+
 def startBrowser(url):
     global browser
     os.environ["PATH"] = "testing" + os.pathsep + os.environ["PATH"]
@@ -43,8 +46,11 @@ def enterText(question, text):
     global browser
     try:
         selector = "input#text-{}".format(question)
+        wait = WebDriverWait(browser, 60)
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector)))
         element = browser.find_element_by_css_selector(selector)
         scrollTo(element)
+        element.clear()
         element.send_keys(text);
     except Exception as e:
         print(e, selector)
@@ -54,6 +60,7 @@ def enterTextArea(question, text):
     selector = "textarea#text-{}".format(question)
     element = browser.find_element_by_css_selector(selector)
     scrollTo(element)
+    element.clear()
     element.send_keys(text);   
 
 def clickTable(question, row, col):
@@ -75,10 +82,20 @@ def clickCheckbox(question, col):
 def submit(choice):
     global browser
     clickIt("#showResults")
-    browser.implicitly_wait(20) # seconds
-    if choice == "Yes": clickIt("#continue-yes")
-    if choice == "No": clickIt("#continue-no")
 
+    wait = WebDriverWait(browser, 60)
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'ui-dialog-titlebar')))
+    wait = WebDriverWait(browser, 60)
+    wait.until(EC.element_to_be_clickable((By.ID, 'continue-yes')))
+    wait = WebDriverWait(browser, 60)
+    wait.until(EC.element_to_be_clickable((By.ID, 'continue-no')))
+
+    try:
+        if choice == "Yes": clickIt("#continue-yes")
+        if choice == "No": clickIt("#continue-no")
+    except Exception as e:
+        print(e)
+        print("Popup not displayed in 60 secs")
 
 def clickIt(selector):
     global browser
@@ -224,7 +241,10 @@ try:
                 values = str(values)
                 for value in values.split():
                     clickCheckbox(question, int(value))
-        submit("Yes")
+        if testNo < cols-2:
+            submit("Yes")
+        else:
+            submit("No")
     stopBrowser()
         
 except Exception as e:
