@@ -230,7 +230,7 @@ function displayCheckboxes(options, marks, n, questionType, questionNumber) {
 	    });
 	    if(checkedValues === "") {		// user has unchecked everything
 	    	questionAnswerInvalid(selector, n);
-	    	results[n] = undefined;
+	    	cancelResult(n);
 	    } else {
 			questionAnswered(selector, n);
 	    	let section = questions[n][1];
@@ -271,6 +271,10 @@ function displayRadioButtons(options, marks, n, questionType, questionNumber) {
 	});
 }
 
+function cancelResult(n) {
+	results[n] = undefined;
+}
+
 function displayEmail(text, n, questionType, autoFill, questionNumber) {
 	let selector = `#border${n}`;
 	if(text.trim() !== "blank" && text.trim() !== "autofill") $(selector).append(div(text));
@@ -293,7 +297,7 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
     		questionAnswerInvalid(selector, n);
-	    	results[n] = undefined;
+    		cancelResult(n);
     	}
 	});	
 }
@@ -312,7 +316,7 @@ function displayClient(text, n, questionType, autoFill, questionNumber) {
     	let value = $(this).val();
     	if(value.trim() === "") { // user has erased input
     		questionAnswerInvalid(selector, n);
-	    	results[n] = undefined;
+    		cancelResult(n);
     	} else {
     		questionAnswered(selector, n);
     		results[n] = keyValuePair(questionType, {"question":questionNumber, "name":value});
@@ -339,7 +343,7 @@ function displayTextArea(text, n, questionType, autoFill, questionNumber) {
 			results[n] = keyValuePair(questionType, answer);
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
-    		results[n] = undefined
+    		cancelResult(n);
     		questionAnswerInvalid(selector, n);
     	}
 	});
@@ -362,7 +366,7 @@ function displayText(text, n, questionType, autoFill, questionNumber) {
 			results[n] = keyValuePair(questionType, answer);
 		    if(autoFill) $.cookie(`cookie${n}`, JSON.stringify(answer));
     	} else {
-    		results[n] = undefined
+    		cancelResult(n);
     		questionAnswerInvalid(selector, n);
     	}
 	});
@@ -521,6 +525,7 @@ function displayQuestionsAndOptions() {
 		return result;
 	}
 	
+	results = new Array(questions.length);
  	let entries = zip(questions, options);
     for(var i = 0; i < entries.length; i++) {
     	let entry = entries[i];
@@ -597,7 +602,6 @@ function getQuestions() {
         dataType:'json',
         success: function(data) {
         	questions = data;
-        	results = new Array(questions.length);
         }	
     });
 }
@@ -630,46 +634,10 @@ function addClickHandlers() {
 	function continueOrExit() {
 		function clearPage() {
 		    $("#questions").empty();
-		    
 			getQuestions();
 			getOptions();
 			positionCopyright();
 		}
-		/*
-		$('#dialog').dialog({
-		    resizable: false,
-		    height:"auto",
-		    title: "Highlands Assessment",
-		    modal: true,
-		    // properties ... 
-		    buttons: [
-		    	{
-		    		id: "btn-no",
-		    		text: "No",
-		    		click: function() {
-		        		$(this).dialog("close");
-		        		setInterval(function() {location.assign(`${WHERE_TO_GO_ON_EXIT}`)}, 500);
-		        	}
-		    	},
-		    	{
-		    		id:"btn-yes",
-		    		text: "Yes",
-		    		click: function() {
-		    			$(this).dialog("close");
-		    			clearPage();
-		    		}
-		    	}
-		    ]
-		});
-		*/
-		/*
-		 {
-         text: "OK",
-         id: "okbtnid",
-         click: function(){
-             var bValid = true;
-         }   
-		 */
 		$("#modal_dialog").dialog({
 		    resizable: false,
 		    height:"auto",
@@ -713,6 +681,7 @@ function addClickHandlers() {
 			if(allQuestionsAnswered()) {
 				$("#errorMessage").html("Results Submitted");
 				let resultsAsText = JSON.stringify(results);
+   	        	console.log(results);
 				$.ajax(
 			   	    {
 			   	        url: '/results',
@@ -722,17 +691,15 @@ function addClickHandlers() {
 			   	        data: resultsAsText,
 			   	        success: function(data) {
 			   	        	console.log("results sent OK");
-			   	        	console.log(results);
-				    		results = [];
 			   	        	continueOrExit();
 			   	    }	
 			   	});
 			} else {
 				$("#errorMessage").html("Some questions still need valid answers");
 				$("#errorMessage").css({"margin-left":`${MARGIN_LEFT}`});
-   	        	setTimeout(function() {highlightMissingAnswers()}, 500);
+   	        	setTimeout(function() {highlightMissingAnswers()}, 50);
 			}
-		}, 200);
+		}, 250);
     });    
 }
 	

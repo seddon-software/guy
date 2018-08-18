@@ -130,8 +130,14 @@ import server_database as sql
 PORT = g.get("port")
 SERVER = g.get("server")
 httpd = http.server.HTTPServer((SERVER, PORT), Handler)
-import ssl
-# httpd.socket = ssl.wrap_socket (httpd.socket, certfile='path/to/localhost.pem', server_side=True)
+
+# import ssl
+# httpd.socket = ssl.wrap_socket(httpd.socket,
+#                                      server_side=True,
+#                                      keyfile='/Users/seddon/h/highlands.key',
+#                                      certfile='/Users/seddon/h/highlands.pem',
+#                                      ssl_version=ssl.PROTOCOL_TLSv1_2)
+
 print("server:", SERVER)
 print("port:", PORT)
 print("database:", g.get("database"))

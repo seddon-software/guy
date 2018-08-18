@@ -22,6 +22,12 @@ To start the client with the charts in a browser:
 
 To run automatic tests you will need to install selenium:
 	pip install selenium
+
+To run server on A2Hosting server:
+	ssh -p 7822 chris@68.66.241.111
+	nohup python server.py & disown
 	
-Guys IP Address:	68.66.241.111
+To start ftp server:
+	sudo systemctl start vsftpd
+	
 

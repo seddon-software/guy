@@ -28,7 +28,8 @@ def startBrowser(url):
     except: pass
     try:
         browser.get(url)
-        browser.implicitly_wait(20) # seconds
+        wait = WebDriverWait(browser, 60)
+        wait.until(lambda browser: browser.execute_script("return jQuery.active == 0"))
     except Exception as e:
         print(e)
         print("aborting ...")
@@ -81,6 +82,7 @@ def clickCheckbox(question, col):
 
 def submit(choice):
     global browser
+    
     clickIt("#showResults")
 
     wait = WebDriverWait(browser, 60)
