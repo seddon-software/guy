@@ -94,12 +94,12 @@ function drawAllScatterCharts() {
 			}};
 	o['point'] = {
 	        r: function(d) {
+				let count = getScatterCount();
 	        	let xy = d['index'];
 	        	let x = Math.floor(xy / rows);
 	        	let y = xy % rows;
-	        	let factor = 4;
-	        	console.log("scatter", x, y, frequencies[x][y]*factor)
-	            return frequencies[x][y]*factor;
+	        	let factor = 100;
+	            return frequencies[x][y]*factor / count;
 	        }
 	    };
 
