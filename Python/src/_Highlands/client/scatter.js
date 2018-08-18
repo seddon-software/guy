@@ -98,6 +98,7 @@ function drawAllScatterCharts() {
 	        	let x = Math.floor(xy / rows);
 	        	let y = xy % rows;
 	        	let factor = 4;
+	        	console.log("scatter", x, y, frequencies[x][y]*factor)
 	            return frequencies[x][y]*factor;
 	        }
 	    };
@@ -113,10 +114,6 @@ function drawAllScatterCharts() {
 	            tick: {
 	            	count: 5,
 	            	format: function(x) { 
-//	               		if(isInteger(x))
-//	            			return xLabels[x];
-//	            		else
-//	            			return '';
             			return scatterData.xLabels[x];
 	            	},
 	                fit: false
