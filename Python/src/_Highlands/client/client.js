@@ -503,8 +503,8 @@ function displayTable(entry, n, questionType, questionNumber) {
 				"section"    : section, 
 				"selection"  : value, 
 				"marks"      : mark, 
-				"xTitle"     : 'Client Revenue Growth',
-				"yTitle"     : 'Market Growth',
+				"xTitle"     : 'Market Growth',
+				"yTitle"     : 'Client Revenue Growth',
 				"xLabels"    : getLabels()[0],
 				"yLabels"	 : getLabels()[1],
 				"optionCount": optionCount});

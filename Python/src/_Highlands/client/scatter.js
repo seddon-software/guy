@@ -24,8 +24,13 @@ function scatterChartCallback(data) {
 	html.css({'width':'auto'});
 	$("#scatter-filter-drop-down").html(html);
 	$("#scatter-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let title = div(`${SCATTER_TAB_TEXT}`);
-	$("#scattercharts-title").html(title);
+	let heading = div(`${SCATTER_TAB_TEXT}`);
+	$("#scattercharts-title").html(heading);
+
+	let questionNumber = scatterData['question'][0];
+	let questionText = scatterData['question'][1];
+	let title = div(`<br/>${questionNumber}. ${questionText}`, "", { color:SCATTER_TITLES_COLOR});
+	$("#scatter-filter-drop-down").append(title);
 
 	// initial draw
 	scatterFrequencies = scatterData.frequencies['all'];
@@ -76,7 +81,7 @@ function drawAllScatterCharts() {
 		}
 	}
 	let o = {'bindto':"#scattercharts", 'legend':{hide:true} };
-	o['data'] = { 
+	o['data'] = {
 			xSort:false, 
 			xs:{' ': 'x'}, 
 			type:'scatter',

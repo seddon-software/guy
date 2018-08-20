@@ -1,6 +1,13 @@
+import os
+# this line is only executed if this file is run stand alone (for testing only)
+if __name__ == "__main__": os.chdir("..")
+
 import numpy as np
 from ast import literal_eval
 from database import Database
+from excel import Excel
+
+xl = Excel()
 
 class Scatter:
     def getScatterChartData(self):
@@ -16,7 +23,6 @@ class Scatter:
             where [[mxn]] signifies a 2D array of shape mxn
         '''
             
-        # this routine assumes the client always comes before other results
         scatterData = {}
         frequencies = {}
         db = Database()
@@ -41,4 +47,19 @@ class Scatter:
                     frequencies[client][r][c] += 1
                     frequencies[email][r][c] += 1
         scatterData['frequencies'] = frequencies
+
+        def getSingleQuestion():
+            questions = xl.filterQuestions("table2")
+            questions.columns = ["Number", "Section", "Question", "Type", "Ignore"]
+            # filter out unwanted columns
+            questions = questions[["Number", "Question"]]
+            question = questions.values[0].tolist()
+            return question
+            
+        scatterData['question'] = getSingleQuestion()
+
+        
         return scatterData
+
+if __name__ == "__main__": 
+    print(Scatter().getScatterChartData())

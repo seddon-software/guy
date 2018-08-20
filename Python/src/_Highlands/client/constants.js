@@ -36,6 +36,7 @@ var QUESTION_ANSWER_INVALID_COLOR = "Thistle";
 var QUESTION_ANSWERED_COLOR = 'cornflowerblue';
 var QUESTION_BODY_COLOR = "DarkSeaGreen";
 var QUESTION_HEADER_COLOR = "azure";
+var SCATTER_TITLES_COLOR = "blue";
 var TAB_BUTTON_COLOR = "black";
 var TAB_BUTTON_BACKGROUND_COLOR = "cornflowerblue";
 var TAB_HEADING_BACKGROUND_COLOR = "lightgray";
@@ -79,7 +80,7 @@ var TABLE_CHARTS_TAB_TEXT = "Table Charts:";
 
 //miscellaneous
 var BANNER_TEXT = "Highlands Negotiations LLC";
-var COPYRIGHT_MESSAGE = "© Highlands Negotiations, June-August 2018, v0.8";
-var SCATTER_X_TITLE = 'Client Revenue Growth';
-var SCATTER_Y_TITLE = 'Market Growth';
+var COPYRIGHT_MESSAGE = "© Highlands Negotiations, June-August 2018, v0.9";
+var SCATTER_X_TITLE = 'Market Growth';
+var SCATTER_Y_TITLE = 'Client Revenue Growth';
 var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";
