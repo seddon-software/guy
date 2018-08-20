@@ -30,5 +30,13 @@ To run server on A2Hosting server:
 	
 To start ftp server:
 	sudo systemctl start vsftpd
-	
+
+To connect FTP Client on FileZilla, use Site Manager, General Tab (ignore other tabs)	
+	Host:		68.66.241.111
+	Protocol:	FTP
+	Encryption:	Use plain FTP
+	Logon Type:	Normal
+	User:		your A2 login name
+	Password:	your A2 login password
+	Account:	leave blank
 
