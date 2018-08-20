@@ -25,6 +25,7 @@ To run automatic tests you will need to install selenium:
 
 To run server on A2Hosting server:
 	ssh -p 7822 chris@68.66.241.111
+	cd /opt/highlands/h-workshop/Python/src/_Highlands
 	nohup python server.py & disown
 	
 To start ftp server:
