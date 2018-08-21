@@ -33,7 +33,7 @@ function drawCheckboxCharts(data) {
 	html.css({'width':'auto'});
 	$("#checkbox-filter-drop-down").html(html);
 	$("#checkbox-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let title = div(`${CHECKBOXES_TAB_TEXT}`);
+	let title = div(`${CHECKBOXES_TAB_TEXT}`, "", { color:`${CHECKBOX_TITLE_COLOR}`});
 	$("#checkbox-title").html(title);
 
 	function drawAllCheckboxCharts(clientOrEmail) {
@@ -41,7 +41,7 @@ function drawCheckboxCharts(data) {
 		for(let i = 0; i < checkboxData['record'].length; i++) {
 			let number = checkboxData['record'][i]['Number'];
 			let question = checkboxData['record'][i]['Question'];
-			let title = div(`<br/>${number}. ${question}`);
+			let title = div(`<br/>${number}. ${question}`, "", { color:`${CHECKBOX_QUESTIONS_COLOR}`});
 			$("#checkboxcharts").append(title);
 			let html = div("", `checkbox-figure-${i}`);
 			$("#checkboxcharts").append(html);

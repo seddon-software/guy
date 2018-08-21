@@ -156,6 +156,17 @@ function drawChart(data) {
 	}
 	
 	function generateChart() {
+		function displayHeading() {
+			let entries = filteredColumnData[0].length;
+			let heading = div(`<br/>Number of records = ${entries}<br/>`, "forensics-heading", {color:`${OVERVIEW_STATUS}`});
+			if($("#forensics-heading").length) {
+				$("#forensics-heading").html(heading)
+			} else {
+				$("#filter-drop-down").append(heading);
+			}
+		}
+		displayHeading();
+		
 		// x-axis: <Aspect>, <values array>
 		// y-axis: <client array>
 		// axes are swapped
@@ -220,11 +231,10 @@ function drawChart(data) {
 	generateChart();
 }
 
-// 	getAjaxData("/emails-and-clients", scatterChartCallback);
-
 function drawPieChart() {
 	getAjaxData("/emails-and-clients", pieChartCallback);
 }
+
 function pieChartCallback(data) {
 	// uses globals: pieChartData, pieChartQuestionsAndOptions
 	// the server sends data values of -1 when there is no data
@@ -248,7 +258,7 @@ function pieChartCallback(data) {
 
 	let maxLegendLength = 100;
 	let menu = buildMenu(pieChartData, "pie-filter", clients, emails);
-	let html = $(`${menu}`);
+	let html = $(`${menu}<br/>`);
 	html.css({'width':'auto'});
 	$("#pie-filter-drop-down").html(html);
 	$("#pie-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});

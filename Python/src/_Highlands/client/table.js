@@ -18,7 +18,7 @@ function drawTableCharts(data) {
 	html.css({'width':'auto'});
 	$("#table-filter-drop-down").html(html);
 	$("#table-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let title = div(`${TABLE_CHARTS_TAB_TEXT}`);
+	let title = div(`${TABLE_CHARTS_TAB_TEXT}`, "", { color:`${TABLE_CHARTS_TITLE_COLOR}`});
 	$("#table-title").html(title);
 
 	function attachPieChart(key, filter) {
@@ -44,6 +44,7 @@ function drawTableCharts(data) {
 					return c3.chart.internal.fn.getTooltipContent.apply(this, arguments);
 				};
 				$(`#table-tab-title-${key}-${i}`).text(`${tableData[key]['tabs'][i]}`);
+				$(`#table-tab-title-${key}-${i}`).css({ "color":`${TABLE_CHARTS_TABS_COLOR}`, "background-color":`${TABLE_CHARTS_TABS_BACKGROUND_COLOR}`});
 				c3.generate(o);
 			}
 	}
@@ -51,7 +52,8 @@ function drawTableCharts(data) {
 	function drawAllTableCharts(clientOrEmail) {
 	 	$("#tablecharts").empty();
 		for(let key in tableData) {
-			$("#tablecharts").append(`<p>${key}.${tableData[key]['question']}<br/>`);			
+			let question = div(`<p>${key}.${tableData[key]['question']}<br/>`, "", {"color":`${TABLE_CHARTS_QUESTIONS_COLOR}`});
+			$("#tablecharts").append(question)
 			createTabs("#tablecharts", key);
 			attachPieChart(key, clientOrEmail);
 		}

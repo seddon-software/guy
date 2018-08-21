@@ -24,12 +24,12 @@ function scatterChartCallback(data) {
 	html.css({'width':'auto'});
 	$("#scatter-filter-drop-down").html(html);
 	$("#scatter-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
-	let heading = div(`${SCATTER_TAB_TEXT}`);
+	let heading = div(`${SCATTER_TAB_TEXT}`, "", {'color':`${GROWTH_TITLES_COLOR}`});
 	$("#scattercharts-title").html(heading);
 
 	let questionNumber = scatterData['question'][0];
 	let questionText = scatterData['question'][1];
-	let title = div(`<br/>${questionNumber}. ${questionText}`, "", { color:SCATTER_TITLES_COLOR});
+	let title = div(`<br/>${questionNumber}. ${questionText}`, "", { color:GROWTH_QUESTION_COLOR});
 	$("#scatter-filter-drop-down").append(title);
 
 	// initial draw
