@@ -8,6 +8,9 @@ db = Database()
 
 class Chart:
     def __init__(self):
+        self.refresh()
+        
+    def refresh(self):
         self.chartData = self.setChartData()
         self.chartData2 = self.setChartData2()
         self.chartData3 = self.setChartData3()

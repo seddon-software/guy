@@ -8,6 +8,9 @@ db = Database()
 
 class Radio:
     def __init__(self):
+        self.refresh()
+        
+    def refresh(self):
         self.pieChartData = self.setPieChartData()
         self.pieChartData2 = self.setPieChartData2()
     

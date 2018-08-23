@@ -37,6 +37,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         results = json.loads(jsonAsString)
 
         sql.saveResults(results, self.headers)
+        radio.refresh()
+        chart.refresh()
         return
 
     def do_GET(self):
