@@ -7,14 +7,24 @@ g = MyGlobals()
 db = Database()
 
 class Radio:
+    def __init__(self):
+        self.pieChartData = self.setPieChartData()
+        self.pieChartData2 = self.setPieChartData2()
+    
     def getPieChartData(self):
+        return self.pieChartData
+    
+    def getPieChartData2(self):
+        return self.pieChartData2
+    
+    def setPieChartData(self):
         ''' this routine returns pie chart data for the query:
                 frequencies for all questions
                 
             results are returned as a 2D list in the form:
                 [ [frequencies for all questions-1], [frequencies for all questions-2], ...]
         '''
-        results = db.getDatabaseResults
+        results = db.getDatabaseResults()
         
         chartData = []
         for row in results:
@@ -46,7 +56,7 @@ class Radio:
     
         return pd.DataFrame(chartData).values.tolist()
 
-    def getPieChartData2(self):
+    def setPieChartData2(self):
         ''' this routine returns pie chart data for three types of query:
                 all: frequencies for all questions
                 email: frequencies for questions filtered by email

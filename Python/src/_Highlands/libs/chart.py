@@ -7,7 +7,21 @@ g = MyGlobals()
 db = Database()
 
 class Chart:
+    def __init__(self):
+        self.chartData = self.setChartData()
+        self.chartData2 = self.setChartData2()
+        self.chartData3 = self.setChartData3()
+        
     def getChartData(self):
+        return self.chartData
+    
+    def getChartData2(self):
+        return self.chartData2
+    
+    def getChartData3(self):
+        return self.chartData3
+    
+    def setChartData(self):
         """
         Summary of marks for each database record
         xaxis: marks
@@ -72,7 +86,7 @@ class Chart:
             connection.close()
         return chartData    # return a dict
 
-    def getChartData2(self):
+    def setChartData2(self):
         """
         Summary of marks grouped by {section,client} pairs
         xaxis: marks
@@ -135,7 +149,7 @@ class Chart:
             connection.close()
         return chartData
     
-    def getChartData3(self):
+    def setChartData3(self):
         """
         Summary of marks grouped by {section,client,email} triples
         xaxis: marks
