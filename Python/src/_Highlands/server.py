@@ -60,6 +60,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         fileName = parsedUrl[2]
         queryString = parsedUrl[4]
         fileName = fileName[1:]  # remove leading '/'
+        if fileName == "": fileName = "client.html"
         data = urllib.parse.parse_qs(queryString)
         
         if(fileName == "favicon.ico"):

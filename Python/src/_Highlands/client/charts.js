@@ -19,6 +19,7 @@ var VALUES = 6;
 var pieChartData;
 var filteredPieChartData;
 var pieChartQuestionsAndOptions;
+var clientsAndEmailsForCharts;
 
 function displayPieCharts() {
 	positionCopyright();
@@ -30,6 +31,13 @@ function displayPieCharts() {
 
 function displayCharts() {
 	positionCopyright();
+	getAjaxData("/emails-and-clients", getClientsAndEmailsForCharts);
+}
+
+function getClientsAndEmailsForCharts(data) {
+	let emails = data[0];
+	let clients = data[1];
+	clientsAndEmailsForCharts = [emails, clients];
 	getAjaxData('/chart-data', drawChart);
 }
 
@@ -58,7 +66,7 @@ function drawChart(data) {
 	//		key = "<aspect>,<client>-<email>,<guid>"
 	//		value = <sum of marks>
 	
-	// work with copies of important arrays
+	// work with copies of important arrays	
 	var filteredClients;
 	var filteredEmails;
 	var filteredColumnData;
@@ -176,9 +184,8 @@ function drawChart(data) {
 		o["axis"] = { rotated:true, x:{ type:'category', categories:filteredClients}};
 	    o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
 		o["data"] = { columns: filteredColumnData, type: 'bar'};
-		o["size"] = {
-	        height: height
-	    },
+		o["size"] = { height: height },
+	    o["padding"] = { left: $(window).width()/8 },
 	    o["tooltip"] = {
 			format: {
 				title: function(i) { return filteredEmails[i]; },
@@ -196,6 +203,9 @@ function drawChart(data) {
 		}
 		let uniqueClients = removeDuplicates(clients);
 		let uniqueEmails = removeDuplicates(emails);		
+		uniqueClients = clientsAndEmailsForCharts[1];
+		uniqueEmails = clientsAndEmailsForCharts[0];
+
 		let html = $(`${buildMenu(data, "filter", uniqueClients, uniqueEmails)}`);
 		html.css({'width':'auto'});
 		$(selector).prepend(html);

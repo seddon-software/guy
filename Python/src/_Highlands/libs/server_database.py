@@ -69,7 +69,7 @@ def getTableQuestionsAndOptions():
     questionsAndOptions = pd.concat([questions, options], axis=1)
     return questionsAndOptions.values.tolist()
     
-    
+
 def getEmailsAndClients():
     def getEmails(results):
         emails = []
@@ -89,6 +89,8 @@ def getEmailsAndClients():
     results = db.getDatabaseResults()
     emails = getEmails(results)
     clients = getClients(results)
+    emails.sort()
+    clients.sort()
     return emails, clients
 
 
