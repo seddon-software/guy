@@ -157,8 +157,7 @@ function drawChart(data) {
 	
 	function generateChart() {
 		function displayHeading() {
-			console.log(filteredColumnData);
-			let entries = filteredColumnData[0].length;
+			let entries = filteredColumnData[0].length - 1;
 			let heading = div(`<br/>Number of records = ${entries}<br/>`, "forensics-heading", {color:`${OVERVIEW_STATUS}`});
 			if($("#forensics-heading").length) {
 				$("#forensics-heading").html(heading)
