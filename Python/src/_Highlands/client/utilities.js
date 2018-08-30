@@ -35,4 +35,18 @@ function buildMenu(data, id, clients, emails) {  // scatterData
 	return menu;
 }
 
+function div(item, id, css) {
+	let html = $(`<div>${item}</div>`);
+	if(id) html.attr("id", id);
+	if(css) html.css(css);
+	return html;
+}
+
+function span(item, id, css) {
+	let html = $(`<span>${item}</span>`);
+	if(id) html.attr("id", id);
+	if(css) html.css(css);
+	return html;
+}
+
 

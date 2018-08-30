@@ -201,8 +201,14 @@ function drawChart(data) {
 			let it = set.values();
 			return Array.from(it);
 		}
+		// the following 2 lines use emails and clients as calculated on the client
 		let uniqueClients = removeDuplicates(clients);
-		let uniqueEmails = removeDuplicates(emails);		
+		let uniqueEmails = removeDuplicates(emails);
+		
+		// the following 2 lines use emails and clients as calculated on the server
+		// I'm ignoring the client calculations because I use the server values everywhere else
+		// and they are also sorted.  The client calculation was my original idea but its not needed now.
+		// However, I haven't got around to removing the code from this file.
 		uniqueClients = clientsAndEmailsForCharts[1];
 		uniqueEmails = clientsAndEmailsForCharts[0];
 

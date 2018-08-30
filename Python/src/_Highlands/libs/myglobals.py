@@ -15,6 +15,7 @@ class MyGlobals:
         managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
         databaseFrame = table[table.TYPE == "database"]
         hostFrame = table[table.TYPE == "host"]
+        usersFrame = table[table.TYPE == "users"]
     
         self.root = rootFrame["NAME"].tolist()[0]
         self.rootPassword = rootFrame["OPTION"].tolist()[0]
@@ -24,6 +25,7 @@ class MyGlobals:
         self.table = databaseFrame["OPTION"].tolist()[0]
         self.server = hostFrame["NAME"].tolist()[0]
         self.port = hostFrame["OPTION"].tolist()[0]
+        self.usersTable = usersFrame["OPTION"].tolist()[0]
 
     def get(self, name):
             if name == "root": return self.root
@@ -35,6 +37,7 @@ class MyGlobals:
             if name == "server": return self.server
             if name == "port": return self.port
             if name == "excelFile": return self.excelFile
+            if name == "usersTable": return self.usersTable
 
     def parseCommandLine(self):
         # default excel file is "highlands.xlsx", but can be changed on command line:

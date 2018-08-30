@@ -8,6 +8,10 @@
 ############################################################
 */
 
+
+// should make email read only, but it would stop automatic testing, so uncomment the line
+// $(`#text-${questionNumber}`).prop("readonly", true);    
+
 // global variables: do not change
 var cookies;
 var results;
@@ -23,20 +27,6 @@ if(android) {
 } else {
     var ROWS = 21;
     var COLS = 21;
-}
-
-function div(item, id, css) {
-	let html = $(`<div>${item}</div>`);
-	if(id) html.attr("id", id);
-	if(css) html.css(css);
-	return html;
-}
-
-function span(item, id, css) {
-	let html = $(`<span>${item}</span>`);
-	if(id) html.attr("id", id);
-	if(css) html.css(css);
-	return html;
 }
 
 function setStyles() {
@@ -281,7 +271,14 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
 	let textbox = div(`<input type="text" name="text${n}" id="text-${questionNumber}"`);
     $(selector).append(textbox);
     textbox.css({"width":"100%", "transform":`translateX(${PERCENTAGE_SHIFT_TEXTBOX_RIGHT}%)`});
-    if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
+    // emails now get filled out with data from the login page
+    //if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
+    
+    // the login process adds the document.email attribute
+    $(`#text-${questionNumber}`).val(document.email);
+
+    // should make email read only, but it would stop automatic testing
+    // $(`#text-${questionNumber}`).prop("readonly", true);    
 
     // change the color when text changed
     $(`#text-${questionNumber}`).change(function(event) {

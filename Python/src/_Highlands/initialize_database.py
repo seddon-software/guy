@@ -48,6 +48,7 @@ def getNamesAndPasswords():
     rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
     managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
     databaseFrame = table[table.TYPE == "database"]
+    usersFrame = table[table.TYPE == "users"]
 
     root = rootFrame["NAME"].tolist()[0]
     rootPassword = rootFrame["OPTION"].tolist()[0]
@@ -55,7 +56,9 @@ def getNamesAndPasswords():
     managerPassword = managerFrame["OPTION"].tolist()[0]
     database = databaseFrame["NAME"].tolist()[0]
     table = databaseFrame["OPTION"].tolist()[0]
-    return [root, rootPassword, manager, managerPassword, database, table]
+    usersTable = usersFrame["OPTION"].tolist()[0]
+
+    return [root, rootPassword, manager, managerPassword, database, table, usersTable]
 
 def createDatabase(root, rootPassword, database):
     connection = connect(root, rootPassword)
@@ -86,6 +89,16 @@ def createTable(table, manager, managerPassword, database):
         email VARCHAR(40) NOT NULL,
         headers VARCHAR(1000) NOT NULL,
         result VARCHAR(5000) NOT NULL
+        )""".format(table)
+    execute(connection, sql)
+
+def createUsersTable(table, manager, managerPassword, database):
+    connection = connect(manager, managerPassword, database)
+    sql = """CREATE TABLE IF NOT EXISTS {} (
+        email VARCHAR(40) NOT NULL,
+        password VARCHAR(40),
+        code VARCHAR(20),
+        PRIMARY KEY (`email`)
         )""".format(table)
     execute(connection, sql)
 
@@ -131,12 +144,14 @@ def parseCommandLine():
 if __name__ == "__main__":
     global excelFile
     excelFile = parseCommandLine()
-    root, rootPassword, manager, managerPassword, database, table = getNamesAndPasswords()
+    root, rootPassword, manager, managerPassword, database, table, usersTable = getNamesAndPasswords()
     createDatabase(root, rootPassword, database)
     createManagerUser(root, rootPassword, manager, managerPassword)
     grantPrivilegesToManager(root, rootPassword, manager, database)
     dropTable(table, manager, managerPassword, database)
+    dropTable(usersTable, manager, managerPassword, database)
     createTable(table, manager, managerPassword, database)
+    createUsersTable(usersTable, manager, managerPassword, database)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
-    printTable(manager, managerPassword, database, table)
+#    printTable(manager, managerPassword, database, table)

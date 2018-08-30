@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+<link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
+<script src="client/js/jquery-3.2.1.js"></script>
+<script src="client/js/jquery_cookie.js"></script>
+<script src="client/utilities.js"></script>
+<script src="client/constants.js"></script>
+<script src="client/client.js"></script>
+</head>
+
+<style>
+#message, #login, #email {
+	font-size: x-large;
+    color: brown;
+	padding-top: 2vh;
+	padding-left: 2vw;
+}
+#message {
+	padding-bottom: 2vh;
+}
+#login > input[type="button"],
+#changePassword > input[type="button"],
+#register > input[type="button"] {
+    color: brown;
+	padding-top: 2vh;
+	padding-left: 5vw;
+	margin-right: 2vw;
+	float: left;
+  	text-align: center;
+}
+</style>
+
+<script>
+
+$(window).on('load', function () {
+	setStyles();
+	setupHeadings();
+	setTimeout(function() {
+		positionCopyright();
+	}, 100);
+	let html = div("what do you want to do?", "message");
+	$("body").append(html);
+	let loginButton = div(`<input type="button" value="login">`, "login");
+	let changePasswordButton = div(`<input type="button" value="change password">`, "changePassword");
+	let registerButton = div(`<input type="button" value="register">`, "register");
+	let blockDiv = div("", "block");
+	$("body").append(blockDiv);
+	$("#block").append(loginButton);
+	$("#block").append(changePasswordButton);
+	$("#block").append(registerButton);
+	$("#login").click(doLogin);
+	$("#changePassword").click(doChangePassword);
+	$("#register").click(doRegister);
+});
+
+xx = {
+    "color": "brown",
+	"padding-left": "5vw",
+	"margin-right": "2vw",
+	"float": "left",
+  	"text-align": "center"
+};
+
+function doLogin() {
+	$("#block").empty();
+	$("#message").html("login<br/>")
+	let emailBox = div(`<div>email<input type="text"></div>`, "email", xx);
+	let passwordBox = div(`<div>password<input type="password"></div>`, "password", xx);
+	let submitButton = div(`<input type="button" value="submit">`, "do-login", xx);
+	$("#block").append(emailBox);
+	$("#block").append(passwordBox);
+	$("#block").append(submitButton);	
+	$("#do-login").click(function() {
+		$.ajax({
+			url: "authentication",
+			dataType: 'text',
+			data: {},
+			success: function(data, status) {
+				// data is of the form:   <token>;<document for client.html>
+				let n = data.indexOf(";");
+				let token = data.slice(0, n);
+				let html = data.slice(n+1);
+				document.open();
+				document.email = token;
+				document.write(html);
+				document.close();
+			},
+			error: function(data, status, error) {
+				console.log("error data", data, status, error);	  
+				$("#message").html("wrong password, try again")
+				$("#password").val("");
+			},
+			beforeSend: function(xhr, settings) { 
+				let email = $("#email").val();
+				let password = $("#password").val();
+				xhr.setRequestHeader('Authorization', `${email}+${password}`); 
+			} 
+		});
+	});
+}
+
+function doChangePassword() {
+	$("#message").html("change password<br/>")
+	$("#block").empty();
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	let passwordBox0 = $(`<div>old password<input type="password" id="password0"></div>`);
+	let passwordBox1 = $(`<div>new password<input type="password" id="password1"></div>`);
+	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+	let submitButton = div(`<input type="button" id="do-changePassword" value="submit">`);
+	$("#block").append(emailBox);
+	$("#block").append(passwordBox0);
+	$("#block").append(passwordBox1);
+	$("#block").append(passwordBox2);
+	$("#block").append(submitButton);
+	$("#do-changePassword").click(function() {
+		let email = $("#email").val();
+		let password0 = $("#password0").val();
+		let password1 = $("#password1").val();
+		let password2 = $("#password2").val();
+		if(password1 !== password2) {
+			$("#message").html("passwords different, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;
+		}
+		$.ajax({
+			url: "change-password",
+			dataType: 'json',
+			data:{
+			    email: `${email}`,
+			    oldPassword: `${password0}`,
+				newPassword: `${password1}`
+			},
+			success: function(data, status) {
+				$("#block").empty();					
+    			$("#message").html("change successful")
+				setTimeout(function() {
+					location.reload();
+	    		}, 3000);
+			},
+			error: function(data, status, error) {
+				$("#message").html("wrong password, try again")
+				$("#password0").val("");
+				$("#password1").val("");
+				$("#password2").val("");
+			} 
+		});
+	});
+}
+
+function doRegister() {
+	function startRegistration() {
+		let email = $("#email").val();
+		$.ajax({
+			url: "start-registration",
+			dataType: 'json',
+			data:{
+			    email: `${email}`
+			},
+			success: function(data, status) {
+				$("#message").html("Please enter a password for your account and the code sent to you by email")
+				$("#block").append(passwordBox1);
+				$("#block").append(passwordBox2);
+				$("#start-registration").remove();
+				let codeBox = div(`enter code<input type="text" id="code">`);
+				$("#block").append(codeBox);
+				let submitButton = div(`<input type="button" id="complete-registration" value="submit">`);
+				$("#block").append(submitButton);	
+				$("#complete-registration").click(completeRegistration);
+			},
+			error: function(data, status, error) {
+				$("#message").html("Registration failed")
+			} 
+		});
+		
+	}
+	
+	function completeRegistration() {
+		let email = $("#email").val();
+		let password1 = $("#password1").val();
+		let password2 = $("#password2").val();
+		let code = $("#code").val();
+		if(password1 !== password2) {
+			$("#message").html("passwords different, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;
+		}
+		$.ajax({
+			url: "complete-registration",
+			dataType: 'json',
+			data:{
+			    email: `${email}`,
+			    password: `${password1}`,
+			    code: `${code}`
+			},
+			success: function(data, status) {
+				$("#message").html("Registration succeeded - you can now logon")
+				setTimeout(function() {
+					location.reload();
+				}, 3000);
+			},
+			error: function(data, status, error) {
+				console.log(data, status, error);
+				$("#message").html("Registration failed")
+			} 
+		});
+	}
+	
+	$("#message").html("Register for assessmydeal")
+	$("#block").empty();
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
+	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+	let submitButton = div(`<input type="button" id="start-registration" value="submit">`);
+	let messageBox = div("", "message");
+	$("#block").append(emailBox);
+	$("#block").append(submitButton);	
+	$("#block").append(messageBox);	
+	$("#start-registration").click(startRegistration);
+}
+
+function setupHeadings() {	
+	let image = div("<img src='client/images/highlands.png'/>", "highlands-image", {"float":"left"});
+	let headingFrame = div("", "heading-frame", {"width":BANNER_WIDTH, "background-color":TITLE_BAR_COLOR});
+	let headingTopFrame = div("", "heading-top-frame", {"width":BANNER_WIDTH, "border-style": "solid"});
+	let headingText = div(`${BANNER_TEXT}`, "heading-text", {"width":BANNER_WIDTH, "display":"inline-block", "text-align":"center"});
+	let headingBottomFrame = div("", "heading-bottom-frame", {"width":"60%", "border-style": "solid"});
+	$("#headings").append(image);
+	$("#headings").append(headingFrame);
+	$("#heading-frame").append(headingTopFrame);
+	$("#heading-frame").append(headingText);
+	$("#heading-frame").append(headingBottomFrame);	
+	$("div#headings").css({
+		"display": "flex",
+		"width": "100%",
+		"flex-direction": "row",
+		"justify-content": "center",
+		"align-items": "center",
+		"align-content": "space-between",
+		"background-color": TITLE_BAR_COLOR
+	});
+	$("#heading-frame").css({
+		"display": "flex",
+		"flex-direction": "column",
+		"text-align": "center",
+		"padding-left": "15vw",
+	    "font-size": "xx-large",
+		"color": BANNER_TITLE_COLOR
+	});
+
+}
+
+</script>
+
+<body>
+	<div id="headings"></div>
+</body>
+</html>
+

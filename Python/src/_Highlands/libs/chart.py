@@ -105,9 +105,9 @@ class Chart:
                 sql = "SELECT `*` FROM `{}`".format(g.get("table"))
                 cursor.execute(sql)
                 results = cursor.fetchall()
-                
                 chartData = pd.DataFrame(columns=['client','section','marks'])
                 
+                if(len(results) == 0): return {}    # return empty dict if no records found
                 for row in results:
                     keyValuePairs = literal_eval(row['result'])
     
@@ -171,6 +171,7 @@ class Chart:
                 
                 chartData = pd.DataFrame(columns=['client','section','email','marks'])
                 
+                if(len(results) == 0): return {}    # return empty dict if no records found
                 for row in results:
                     keyValuePairs = literal_eval(row['result'])
     
