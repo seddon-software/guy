@@ -20,6 +20,7 @@ def execute(connection, sql):
         connection.commit()    
     finally:
         connection.close()
+        
 
 def connect(user, password, database=""):
     connection = pymysql.connect(host='localhost',
