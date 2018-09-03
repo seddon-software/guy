@@ -7,6 +7,9 @@ from excel import Excel
 xl = Excel()
 
 class Checkbox:
+    def __init__(self):
+        pass
+    
     def getCheckboxData(self):
         '''
         var checkboxData = [

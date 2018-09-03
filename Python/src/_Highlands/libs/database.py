@@ -7,6 +7,9 @@ if __name__ == "__main__": os.chdir("..")
 g = MyGlobals()
 
 class Database:
+    def __init__(self):
+        pass
+    
     def connect(self):
         connection = pymysql.connect(host='localhost',
                                      user=g.get("manager"),

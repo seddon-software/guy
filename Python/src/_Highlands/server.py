@@ -170,11 +170,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif(fileName == "start-registration"):
             sendHeaders()
             code = generateCode()
-            print(code)
             sendCodeInEmail(data['email'][0], code)
             db.createUser(data['email'][0], "", code)
             self.wfile.write('["registration code sent"]'.encode())
-            print("registration code sent to {}".format(data['email'][0]))
+            print("registration code {} sent to {}".format(code, data['email'][0]))
         elif(fileName == "complete-registration"):
             code1 = db.getCode(data['email'][0])
             code2 = data['code'][0]
@@ -244,7 +243,7 @@ print("server:", SERVER)
 print("port:", PORT)
 print("database:", g.get("database"))
 print("table:", g.get("table"))
-
+print("users table:", g.get("usersTable"))
 httpd.serve_forever()
 
 

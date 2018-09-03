@@ -1,5 +1,6 @@
 var tableData;
 
+
 function displayTableData() {
 	getAjaxData("/table-data", setTableData);
 }

@@ -2,9 +2,7 @@
 <?eclipse-pydev version="1.0"?><pydev_project>
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/Python/src</path>
-<path>/${PROJECT_DIR_NAME}/src/03 More on Data Types/_Highlands</path>
-<path>/${PROJECT_DIR_NAME}/src/03 More on Data Types/_Highlands/testing</path>
-<path>/${PROJECT_DIR_NAME}/src/03 More on Data Types/_Highlands/libs</path>
+<path>/${PROJECT_DIR_NAME}/src/_Highlands/libs</path>
 </pydev_pathproperty>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 3.6</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
