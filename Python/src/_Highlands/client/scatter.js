@@ -29,7 +29,7 @@ function scatterChartCallback(data) {
 
 	let questionNumber = scatterData['question'][0];
 	let questionText = scatterData['question'][1];
-	let title = div(`<br/>${questionNumber}. ${questionText}`, "", { color:GROWTH_TITLES_COLOR});
+	let title = div(`<br/>${questionNumber}. ${questionText}`, "", { color:GROWTH_QUESTIONS_COLOR});
 	$("#scatter-filter-drop-down").append(title);
 
 	// initial draw

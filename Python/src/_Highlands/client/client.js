@@ -284,9 +284,14 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
     // not using autofill here: email should be filled in from document.email property
     //    if(autoFill) useCookiesToSetFields(selector, `#text-${questionNumber}`, n, questionType);
     $(`#text-${questionNumber}`).val(document.email);
-    // should make this field read only (but will break automatic tests)
+	let answer = {"question":questionNumber, "name":document.email}
+	results[n] = keyValuePair(questionType, answer);
+	questionAnswered(selector, n);
+
+	// should make this field read only (but will break automatic tests)
     $(`#text-${questionNumber}`).prop("readonly", true);
     
+    // this field is automatically fiiled in and is read only.  Therefore the change function is longer called.
     // change the color when text changed
     $(`#text-${questionNumber}`).change(function(event) {
     	function isEmail(email) {

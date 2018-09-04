@@ -53,7 +53,7 @@ function drawTableCharts(data) {
 	function drawAllTableCharts(clientOrEmail) {
 	 	$("#tablecharts").empty();
 		for(let key in tableData) {
-			let question = div(`<p>ZZZ${key}.${tableData[key]['question']}<br/>`, "", {"color":`${TABLE_CHARTS_QUESTIONS_COLOR}`});
+			let question = div(`<p>${key}.${tableData[key]['question']}<br/>`, "", {"color":`${TABLE_CHARTS_QUESTIONS_COLOR}`});
 //			$("#tablecharts").append(`<p>ZZZ${key}.${tableData[key]['question']}<br/>`, "", {"color":`${TABLE_CHARTS_QUESTIONS_COLOR}`});			
 			$("#tablecharts").append(question)
 			createTabs("#tablecharts", key);

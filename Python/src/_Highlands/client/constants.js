@@ -27,14 +27,13 @@ var CHART_BACKGROUND_COLOR = "Gainsboro";
 var CHART_BORDER_COLOR = "Gainsboro";
 var CHECKBOX_QUESTIONS_COLOR = "blue";
 var CHECKBOX_TITLE_COLOR = "darkmagenta";
-var TABLE_CHARTS_QUESTIONS_COLOR = "red";
 var COPYRIGHT_BACKGROUND_COLOR = "rgba(0, 0, 0, 0.1)"; 
 var COPYRIGHT_TEXT_COLOR = "rgba(0, 0, 0, 0.6)";
 var DIALOG_BACKGROUND_COLOR = 'rgb(255, 150, 200)'; 
 var ERROR_MESSAGE_COLOR = "red";
 var GROWTH_HEADING_COLOR = "darkmagenta";
-var GROWTH_QUESTION_COLOR = "blue";
-var GROWTH_TITLES_COLOR = "blue";
+var GROWTH_QUESTIONS_COLOR = "blue";
+var GROWTH_TITLES_COLOR = "darkmagenta";
 var OVERVIEW_STATUS = "blue";
 var PIECHART_TITLES_COLOR = "blue";
 var PIECHART_BACKGROUND_COLOR = "Gainsboro";
@@ -81,7 +80,6 @@ var TABLE_CHARTS_TAB_TITLE = "Table Charts";
 
 
 // Tab Text
-var ASSESSMENT_TAB_TEXT = "----AssessmentA";
 var OVERVIEW_TAB_TEXT = "Forensics:";
 var RESPONSES_TAB_TEXT = "Frequency of Answer:";
 var SCATTER_TAB_TEXT = "Growth:";

@@ -41,7 +41,7 @@ function drawCheckboxCharts(data) {
 		for(let i = 0; i < checkboxData['record'].length; i++) {
 			let number = checkboxData['record'][i]['Number'];
 			let question = checkboxData['record'][i]['Question'];
-			let title = div(`<br/>${number}. ${question}`, "", { color:`${CHECKBOX_QUESTION_COLOR}`});
+			let title = div(`<br/>${number}. ${question}<p>`, "", { color:`${CHECKBOX_QUESTIONS_COLOR}`});
 			$("#checkboxcharts").append(title);
 			let html = div("", `checkbox-figure-${i}`);
 			$("#checkboxcharts").append(html);
@@ -68,6 +68,9 @@ function drawCheckboxCharts(data) {
 function drawCheckboxChart(selector, clientOrEmail, i) {
 	let o = {
 		bindto: selector,
+		padding: {
+	        top:   10,
+	    },
 		axis: { rotated:false, x:{ type:'category', categories: ['frequencies (%)']}},
 	    data: {
 	        columns: [],

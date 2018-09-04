@@ -54,7 +54,6 @@ class Scatter:
             # filter out unwanted columns
             questions = questions[["Number", "Question"]]
             question = questions.values[0].tolist()
-            print(question)
             return question
             
         scatterData['question'] = getSingleQuestion()
